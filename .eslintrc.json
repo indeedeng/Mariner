@@ -1,0 +1,31 @@
+{
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "plugins": ["prettier"],
+    "extends": [
+        "airbnb-base",
+        "plugin:@typescript-eslint/recommended",
+        "eslint:recommended",
+        "prettier",
+        "prettier/@typescript-eslint"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "modules": true
+        }
+    },
+    "rules": {
+        /* If you need to disable a rule coming from the Airbnb style guide, you can do it in the ESLint configuration. */
+        "prettier/prettier": "error",
+        "no-console": "off"
+    }
+}
