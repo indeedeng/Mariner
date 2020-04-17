@@ -27,6 +27,7 @@ export class OrderedMap<K, V> {
         if (this.ks.length > 0) {
             return this.ks[0];
         }
+
         return undefined;
     }
 }

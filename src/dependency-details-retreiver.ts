@@ -8,9 +8,8 @@ import { FetchHttpClient, IHttpClient } from './http';
 
 const REQUEST_DELAY_MS = 1400;
 const RELEVANT_LABELS = ['good+first+issue', 'help+wanted', 'documentation'];
-const MIN_ISSUE_DATE = moment()
-    .subtract(365, 'days')
-    .format('YYYY-MM-DD');
+const MIN_ISSUE_DATE = moment().subtract(365, 'days')
+.format('YYYY-MM-DD');
 
 export class DependencyDetailsRetriever {
     public async run(abbreviated: boolean, githubToken: string): Promise<number> {
@@ -46,7 +45,7 @@ export class DependencyDetailsRetriever {
         for (const owner of ownerDataCollection.getSortedOwners()) {
             const ownerDataRequestParams: RequestParams = {
                 owner,
-                type: 'funding'
+                type: 'funding',
             };
             requestQueue.queueRequest(ownerDataRequestParams, restfulOwnersDataFetcher);
             // *************** */
@@ -58,7 +57,7 @@ export class DependencyDetailsRetriever {
                 const dependenciesDataRequestParams = {
                     owner,
                     repo: dependency,
-                    type: 'funding'
+                    type: 'funding',
                 };
                 // *************** */
 
@@ -72,7 +71,7 @@ export class DependencyDetailsRetriever {
                 const languageAndOpenIssuesCountRequestParams = {
                     owner,
                     repo: dependency,
-                    type: 'repo'
+                    type: 'repo',
                 };
                 requestQueue.queueRequest(
                     languageAndOpenIssuesCountRequestParams,
@@ -86,7 +85,7 @@ export class DependencyDetailsRetriever {
                         owner,
                         repo: dependency,
                         type: 'issues',
-                        label
+                        label,
                     };
                     requestQueue.queueRequest(labelDataRequestParams, restfulLabelDataFetcher);
                 });
@@ -109,13 +108,14 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
         }
     }
 
-    protected getURL(params: RequestParams, type: string = 'api'): string {
+    protected getURL(params: RequestParams, type = 'api'): string {
         let subdomain = '';
         let subdirectory = '';
         if (type === 'api') {
             subdomain = 'api';
             subdirectory = 'repos';
         }
+
         return `https://${subdomain}.github.com/${subdirectory}/${params.owner}/${params.repo}`;
     }
 
@@ -133,11 +133,13 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
                 if (responseJson instanceof Object) {
                     const err = new Error(responseJson.message);
                     this.handleError(err);
+
                     return;
                 } else if (responseJson instanceof Array) {
                     for (const file of responseJson) {
                         if (file.name.toLowerCase() === 'funding.yml') {
                             const fundingUrl = file.html_url;
+
                             return fundingUrl;
                         }
                     }
@@ -153,6 +155,7 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
             ownerData.funding_url = fundingUrl;
+
             return ownerData;
         });
     }
@@ -172,10 +175,11 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefi
     ): void {
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (__) => {
             const libraryUrl = this.getURL(params);
+
             return {
                 html_url: this.getURL(params, undefined),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
-                issues: {}
+                issues: {},
             };
         });
     }
@@ -189,14 +193,16 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     public executeRequest(params: RequestParams): Promise<LanguageAndOpenIssuesCount> {
         const requestUrl = this.getURL(params);
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
+
         return this.httpClient
             .get(requestUrl)
             .then((responseText) => {
                 const responseJson = JSON.parse(responseText);
+
                 return {
                     language: responseJson.language as string,
                     openIssuesCount: responseJson.open_issues_count as number,
-                    archived: responseJson.archived as boolean
+                    archived: responseJson.archived as boolean,
                 };
             })
             .catch((err) => {
@@ -213,6 +219,7 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (repoData) => {
             repoData.language = languageAndOpenIssuesCount.language;
             repoData.open_issues_count = languageAndOpenIssuesCount.openIssuesCount;
+
             return repoData;
         });
     }
@@ -235,7 +242,7 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
                     owner: params.owner,
                     repo: params.repo,
                     type: 'issues',
-                    label
+                    label,
                 };
                 requestQueue.dequeueRequest(labelDataRequestParams);
             });
@@ -249,10 +256,12 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
             params.label
         }`;
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
+
         return this.httpClient
             .get(requestUrl)
             .then((responseText) => {
                 const listOfIssues = JSON.parse(responseText);
+
                 return listOfIssues;
             })
             .catch((err) => this.handleError(err));
@@ -282,10 +291,11 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
                                 title: issue.title,
                                 url: issue.html_url,
                                 created_at: issue.created_at,
-                                tagged: [(params.label as string).replace(/\+/g, ' ')]
+                                tagged: [(params.label as string).replace(/\+/g, ' ')],
                             };
                         } else {
                             issueData.tagged.push((params.label as string).replace(/\+/g, ' '));
+
                             return issueData;
                         }
                     }

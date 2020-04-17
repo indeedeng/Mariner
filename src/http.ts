@@ -12,13 +12,14 @@ export class FetchHttpClient {
     constructor(authorizationToken: string) {
         this.headers = {
             'User-Agent': 'request',
-            Authorization: 'token ' + authorizationToken
+            Authorization: 'token ' + authorizationToken,
         };
     }
 
     public get(url: string): Promise<string> {
         return fetch(url, { headers: this.headers }).then((resp) => {
             this.checkForRateLimiting(resp);
+
             return resp.text();
         });
     }
@@ -27,6 +28,7 @@ export class FetchHttpClient {
         if (response.status === 403) {
             console.error('RATE LIMITED');
         }
+
         return;
     }
 }

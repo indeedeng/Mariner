@@ -36,11 +36,13 @@ export class RequestQueue {
             request = this.requestQueue.get(key);
             this.requestQueue.remove(key);
         }
+
         return request;
     }
 
     private createKeyFromParams(params: RequestParams): string {
         const key = `${params.owner}'-'${params.repo}'-'${params.type}'-'${params.label}`;
+
         return key;
     }
 }

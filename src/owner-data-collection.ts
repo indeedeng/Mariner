@@ -36,7 +36,7 @@ export class OwnerDataCollection {
     constructor(abbreviated: boolean) {
         this.abbreviated = abbreviated;
         const contents = fs.readFileSync('./CountSourceFiles/mini.json', {
-            encoding: 'utf8'
+            encoding: 'utf8',
         });
         this.libraryUrlToDependentCount = JSON.parse(contents);
         this.initialize();
@@ -88,7 +88,7 @@ export class OwnerDataCollection {
 
     public save(): void {
         fs.writeFileSync(this.OUTPUT_FILE_PATH, JSON.stringify(this.ownerDataMap), {
-            encoding: 'utf8'
+            encoding: 'utf8',
         });
     }
 
@@ -119,9 +119,9 @@ export class OwnerDataCollection {
                         repos: {
                             [repo]: {
                                 count: dependentCount,
-                                issues: {}
-                            }
-                        }
+                                issues: {},
+                            },
+                        },
                     };
                 }
                 const ownerData = this.ownerDataMap[owner];
@@ -135,6 +135,7 @@ export class OwnerDataCollection {
         this.ownersArray.sort((a, b) => {
             const bb = this.ownerDataMap[b];
             const aa = this.ownerDataMap[a];
+
             return bb.dependent_count - aa.dependent_count;
         });
     }
