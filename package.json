@@ -1,0 +1,38 @@
+{
+    "name": "mariner",
+    "version": "1.0.0",
+    "description": "A node.js library for analyzing open source library dependencies",
+    "main": "src/index.js",
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "typescript": "^3.8.3"
+    },
+    "devDependencies": {
+        "@types/node": "^13.11.1",
+        "@typescript-eslint/eslint-plugin": "^2.28.0",
+        "@typescript-eslint/parser": "^2.28.0",
+        "eslint": "^6.8.0",
+        "eslint-config-prettier": "^6.10.1",
+        "eslint-plugin-prettier": "^3.1.3",
+        "prettier": "^2.0.4"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
+        "lint": "npx eslint . --ext .js,.ts && echo 'Lint complete'",
+        "lint:fix": "npx eslint . --fix . --ext .js,.ts && echo 'Fixed errors'"
+    },
+    "keywords": [
+        "nodejs",
+        "typescript"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/indeedeng/mariner.git"
+    },
+    "bugs": {
+        "url": "https://github.com/indeedeng/mariner/issues"
+    },
+    "homepage": "https://github.com/indeedeng/mariner/blob/master/README.md"
+}
