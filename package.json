@@ -6,7 +6,11 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "typescript": "^3.8.3"
+        "typescript": "^3.8.3",
+        "@types/moment": "^2.13.0",
+        "@types/node-fetch": "^2.5.5",
+        "moment": "^2.24.0",
+        "node-fetch": "^2.6.0"
     },
     "devDependencies": {
         "@types/node": "^13.11.1",

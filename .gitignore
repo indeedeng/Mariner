@@ -48,3 +48,4 @@ Thumbs.db
 
 # Local History for Visual Studio Code
 .history/
+.vscode/tasks.json
