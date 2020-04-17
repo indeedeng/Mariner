@@ -24,7 +24,7 @@
         "sourceType": "module",
         "ecmaFeatures": {
             "modules": true
-         }
+        }
     },
     "rules": {
         "prettier/prettier": "error",
