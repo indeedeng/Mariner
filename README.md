@@ -2,10 +2,11 @@
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/indeedeng/default-template.svg)
 
+A node.js library for analyzing open source library dependencies.
 
 Mariner takes an input list of dependencies, fetches details about them from GitHub, 
 and outputs a file containing funding information for each project owner, and a list 
-of issues for each project
+of issues for each project.
 
 ## Getting Started
 
@@ -13,7 +14,7 @@ Run ```npm ci``` to install the libraries used in the project. Read more about [
 
 ## Getting Help
 
-The Open Source team at Indeed, who can be reached at opensource@indeed.com 
+The [Open Source team at Indeed](https://opensource.indeedeng.io/), who can be reached at opensource@indeed.com. 
 
 ## How To Contribute
 
@@ -24,7 +25,7 @@ work on it, to avoid duplicating effort.
 
 ## Project Maintainers
 
-The Open Source team at Indeed, who can be reached at opensource@indeed.com
+The [Open Source team at Indeed](https://opensource.indeedeng.io/), who can be reached at opensource@indeed.com.
 
 ## Code of Conduct
 This project is governed by the [Contributor Covenant v 1.4.1](CODE_OF_CONDUCT.md). 
