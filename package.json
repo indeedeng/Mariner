@@ -6,6 +6,7 @@
     "types": "dist/mariner.d.ts",
     "author": "",
     "license": "Apache-2.0",
+    "publishConfig": {"registry": "https://registry.npmjs.org "},
     "dependencies": {},
     "devDependencies": {
         "@types/node": "^13.11.1",
