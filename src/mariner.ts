@@ -1,1 +1,1 @@
-console.log('hello, welcome to mariner!');
+export const hello = 'hello, welcome to mariner!';
