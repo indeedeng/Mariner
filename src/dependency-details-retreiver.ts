@@ -194,7 +194,7 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
             TabDepthLogger.info(5, 'Found Issues!');
             listOfIssues.forEach((issue) => {
                 // If the issue is actually a pull request, skip it and move on.
-                if (issue.hasOwnProperty('pull_request') === true) {
+                if (Object.prototype.hasOwnProperty.call(issue, 'pull_request') === true) {
                     return;
                 }
 

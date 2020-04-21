@@ -83,7 +83,10 @@ export class OwnerDataCollection {
     }
 
     public hasIssue(owner: string, repo: string, issue: string): boolean {
-        return this.ownerDataMap[owner].repos[repo].issues.hasOwnProperty(issue);
+        return Object.prototype.hasOwnProperty.call(
+            this.ownerDataMap[owner].repos[repo].issues,
+            issue
+        );
     }
 
     public save(): void {
@@ -94,7 +97,9 @@ export class OwnerDataCollection {
 
     private initialize(): void {
         for (const libraryUrl in this.libraryUrlToDependentCount) {
-            if (!this.libraryUrlToDependentCount.hasOwnProperty(libraryUrl)) {
+            if (
+                !Object.prototype.hasOwnProperty.call(this.libraryUrlToDependentCount, libraryUrl)
+            ) {
                 continue;
             }
             // skip the library if it's number of dependents is below the abbreviationThreshold
@@ -108,7 +113,7 @@ export class OwnerDataCollection {
                     .replace('https://api.github.com/repos/', '')
                     .split('/');
                 // parse owners master counts out of dependencies list
-                if (this.ownerDataMap.hasOwnProperty(owner)) {
+                if (Object.prototype.hasOwnProperty.call(this.ownerDataMap.hasOwnProperty, owner)) {
                     this.ownerDataMap[owner].dependentCount += dependentCount;
                 } else {
                     this.ownersArray.push(owner);
