@@ -103,7 +103,7 @@ export class OwnerDataCollection {
                 continue;
             }
 
-            if (libraryUrl.match(/^https\:\/\/api.github.com\/repos\//)) {
+            if (libraryUrl.match(/^https:\/\/api.github.com\/repos\//)) {
                 const [owner, repo] = libraryUrl
                     .replace('https://api.github.com/repos/', '')
                     .split('/');
