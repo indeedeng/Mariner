@@ -28,8 +28,11 @@ export abstract class DataFetcher<ResultType> {
         ownerDataCollection: OwnerDataCollection
     ): void;
     protected updateRequestQueue(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         params: RequestParams,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         result: ResultType,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         requestQueue: RequestQueue
     ): void {
         // Implemented by subclasses

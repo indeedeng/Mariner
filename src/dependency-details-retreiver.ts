@@ -82,6 +82,7 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefi
         const requestUrl = this.getURL(params) + '/contents/.github/';
 
         // TODO: find out why we do nothing with the result here.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         return this.httpClient.get(requestUrl).then((_) => undefined);
     }
 
@@ -90,6 +91,7 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefi
         _: undefined,
         ownerDataCollection: OwnerDataCollection
     ): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (__) => {
             const libraryUrl = this.getURL(params);
 

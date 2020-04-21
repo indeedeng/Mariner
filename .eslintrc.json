@@ -81,7 +81,7 @@
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
-        "no-unused-vars": "warn",   // Should be error
+        "no-unused-vars": "off",   // Needs to be disabled for @typescript/no-unused-vars to work
         "no-use-before-define": "error",
         "no-useless-call": "error",
         "no-useless-concat": "error",
