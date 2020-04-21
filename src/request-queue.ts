@@ -5,10 +5,10 @@ import { TabDepthLogger } from './tab-level-logger';
 export class RequesteQueueEntry {
     public requestParams: RequestParams;
     // tslint:disable-next-line: no-any
-    public dataFetcher: DataFetcher<any>;
+    public dataFetcher: DataFetcher<unknown>;
 
     // tslint:disable-next-line: no-any
-    constructor(requestParams: RequestParams, dataFetcher: DataFetcher<any>) {
+    constructor(requestParams: RequestParams, dataFetcher: DataFetcher<unknown>) {
         this.requestParams = requestParams;
         this.dataFetcher = dataFetcher;
     }
@@ -18,7 +18,7 @@ export class RequestQueue {
     private readonly requestQueue: OrderedMap<string, RequesteQueueEntry> = new OrderedMap();
 
     // tslint:disable-next-line: no-any
-    public queueRequest(requestParams: RequestParams, dataFetcher: DataFetcher<any>): void {
+    public queueRequest(requestParams: RequestParams, dataFetcher: DataFetcher<unknown>): void {
         const key = this.createKeyFromParams(requestParams);
         this.requestQueue.add(key, new RequesteQueueEntry(requestParams, dataFetcher));
     }
