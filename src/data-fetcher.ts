@@ -31,5 +31,7 @@ export abstract class DataFetcher<ResultType> {
         params: RequestParams,
         result: ResultType,
         requestQueue: RequestQueue
-    ): void {}
+    ): void {
+        // Implemented by subclasses
+    }
 }

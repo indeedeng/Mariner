@@ -81,7 +81,7 @@
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": "warn",   // Should be error
         "no-use-before-define": "error",
         "no-useless-call": "error",
         "no-useless-concat": "error",
@@ -117,7 +117,7 @@
         "keyword-spacing": "error",
         "new-parens": "error",
         "newline-before-return": "error",
-        "newline-per-chained-call": "error",
+        //"newline-per-chained-call": "error",  // this is also set in the typescript override
         "no-implicit-coercion": [
             "error",
             {

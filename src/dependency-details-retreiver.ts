@@ -8,91 +8,7 @@ import { FetchHttpClient, IHttpClient } from './http';
 
 const REQUEST_DELAY_MS = 1400;
 const RELEVANT_LABELS = ['good+first+issue', 'help+wanted', 'documentation'];
-const MIN_ISSUE_DATE = moment().subtract(365, 'days')
-.format('YYYY-MM-DD');
-
-export class DependencyDetailsRetriever {
-    public async run(abbreviated: boolean, githubToken: string): Promise<number> {
-        const requestQueue = new RequestQueue();
-        const ownerDataCollection = new OwnerDataCollection(abbreviated);
-        this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
-        let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
-        while (nextRequest) {
-            await nextRequest.dataFetcher.process(
-                nextRequest.requestParams,
-                ownerDataCollection,
-                requestQueue
-            );
-            nextRequest = requestQueue.popRequest();
-            await sleep(REQUEST_DELAY_MS);
-        }
-
-        return Promise.resolve(0);
-    }
-
-    private populateRequestQueue(
-        requestQueue: RequestQueue,
-        ownerDataCollection: OwnerDataCollection,
-        githubToken: string
-    ): void {
-        const httpClient = new FetchHttpClient(githubToken);
-        const restfulOwnersDataFetcher = new RestfulOwnersDataFetcher(httpClient);
-        const restfulDependenciesDataFetcher = new RestfulDependenciesDataFetcher(httpClient);
-        const restfulLanguageAndIssuesDataFetcher = new RestfulLanguageAndIssuesDataFetcher(
-            httpClient
-        );
-        const restfulLabelDataFetcher = new RestfulLabelDataFetcher(httpClient);
-        for (const owner of ownerDataCollection.getSortedOwners()) {
-            const ownerDataRequestParams: RequestParams = {
-                owner,
-                type: 'funding',
-            };
-            requestQueue.queueRequest(ownerDataRequestParams, restfulOwnersDataFetcher);
-            // *************** */
-
-            // iterate dependencies
-            // *************** */
-            for (const dependency of ownerDataCollection.getRepos(owner)) {
-                // CREATE contents args
-                const dependenciesDataRequestParams = {
-                    owner,
-                    repo: dependency,
-                    type: 'funding',
-                };
-                // *************** */
-
-                // CONTENTS
-                requestQueue.queueRequest(
-                    dependenciesDataRequestParams,
-                    restfulDependenciesDataFetcher
-                );
-
-                // LANGUAGE AND OPEN ISSUES
-                const languageAndOpenIssuesCountRequestParams = {
-                    owner,
-                    repo: dependency,
-                    type: 'repo',
-                };
-                requestQueue.queueRequest(
-                    languageAndOpenIssuesCountRequestParams,
-                    restfulLanguageAndIssuesDataFetcher
-                );
-
-                // LABELS
-                RELEVANT_LABELS.forEach((label) => {
-                    // CREATE labels args
-                    const labelDataRequestParams = {
-                        owner,
-                        repo: dependency,
-                        type: 'issues',
-                        label,
-                    };
-                    requestQueue.queueRequest(labelDataRequestParams, restfulLabelDataFetcher);
-                });
-            }
-        }
-    }
-}
+const MIN_ISSUE_DATE = moment().subtract(365, 'days').format('YYYY-MM-DD');
 
 abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
     protected httpClient: IHttpClient;
@@ -164,6 +80,7 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
 class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefined> {
     public executeRequest(params: RequestParams): Promise<undefined> {
         const requestUrl = this.getURL(params) + '/contents/.github/';
+
         // TODO: find out why we do nothing with the result here.
         return this.httpClient.get(requestUrl).then((_) => undefined);
     }
@@ -301,6 +218,89 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
                     }
                 );
             });
+        }
+    }
+}
+
+export class DependencyDetailsRetriever {
+    public async run(abbreviated: boolean, githubToken: string): Promise<number> {
+        const requestQueue = new RequestQueue();
+        const ownerDataCollection = new OwnerDataCollection(abbreviated);
+        this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
+        let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
+        while (nextRequest) {
+            await nextRequest.dataFetcher.process(
+                nextRequest.requestParams,
+                ownerDataCollection,
+                requestQueue
+            );
+            nextRequest = requestQueue.popRequest();
+            await sleep(REQUEST_DELAY_MS);
+        }
+
+        return Promise.resolve(0);
+    }
+
+    private populateRequestQueue(
+        requestQueue: RequestQueue,
+        ownerDataCollection: OwnerDataCollection,
+        githubToken: string
+    ): void {
+        const httpClient = new FetchHttpClient(githubToken);
+        const restfulOwnersDataFetcher = new RestfulOwnersDataFetcher(httpClient);
+        const restfulDependenciesDataFetcher = new RestfulDependenciesDataFetcher(httpClient);
+        const restfulLanguageAndIssuesDataFetcher = new RestfulLanguageAndIssuesDataFetcher(
+            httpClient
+        );
+        const restfulLabelDataFetcher = new RestfulLabelDataFetcher(httpClient);
+        for (const owner of ownerDataCollection.getSortedOwners()) {
+            const ownerDataRequestParams: RequestParams = {
+                owner,
+                type: 'funding',
+            };
+            requestQueue.queueRequest(ownerDataRequestParams, restfulOwnersDataFetcher);
+            // *************** */
+
+            // iterate dependencies
+            // *************** */
+            for (const dependency of ownerDataCollection.getRepos(owner)) {
+                // CREATE contents args
+                const dependenciesDataRequestParams = {
+                    owner,
+                    repo: dependency,
+                    type: 'funding',
+                };
+                // *************** */
+
+                // CONTENTS
+                requestQueue.queueRequest(
+                    dependenciesDataRequestParams,
+                    restfulDependenciesDataFetcher
+                );
+
+                // LANGUAGE AND OPEN ISSUES
+                const languageAndOpenIssuesCountRequestParams = {
+                    owner,
+                    repo: dependency,
+                    type: 'repo',
+                };
+                requestQueue.queueRequest(
+                    languageAndOpenIssuesCountRequestParams,
+                    restfulLanguageAndIssuesDataFetcher
+                );
+
+                // LABELS
+                RELEVANT_LABELS.forEach((label) => {
+                    // CREATE labels args
+                    const labelDataRequestParams = {
+                        owner,
+                        repo: dependency,
+                        type: 'issues',
+                        label,
+                    };
+                    requestQueue.queueRequest(labelDataRequestParams, restfulLabelDataFetcher);
+                });
+            }
         }
     }
 }
