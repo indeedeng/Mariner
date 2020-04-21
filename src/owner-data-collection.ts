@@ -4,23 +4,23 @@ import { TabDepthLogger } from './tab-level-logger';
 type IssueData = {
     title: string;
     url: string;
-    created_at: string;
+    createdAt: string;
     tagged: string[];
 };
 
 type RepoData = {
-    html_url?: string;
-    open_issues_count?: number;
+    htmlUrl?: string;
+    openIssuesCount?: number;
     language?: string;
-    funding_url?: string;
+    fundingUrl?: string;
     count: number;
     issues: { [key: string]: IssueData };
 };
 type OwnerData = {
-    funding_url?: string;
-    html_url: string;
-    dependent_count: number;
-    dependency_count: number;
+    fundingUrl?: string;
+    htmlUrl: string;
+    dependentCount: number;
+    dependencyCount: number;
     repos: { [key: string]: RepoData };
 };
 
@@ -109,13 +109,13 @@ export class OwnerDataCollection {
                     .split('/');
                 // parse owners master counts out of dependencies list
                 if (this.ownerDataMap.hasOwnProperty(owner)) {
-                    this.ownerDataMap[owner].dependent_count += dependentCount;
+                    this.ownerDataMap[owner].dependentCount += dependentCount;
                 } else {
                     this.ownersArray.push(owner);
                     this.ownerDataMap[owner] = {
-                        html_url: 'https://github.com/' + owner,
-                        dependent_count: dependentCount,
-                        dependency_count: 1,
+                        htmlUrl: 'https://github.com/' + owner,
+                        dependentCount: dependentCount,
+                        dependencyCount: 1,
                         repos: {
                             [repo]: {
                                 count: dependentCount,
@@ -125,7 +125,7 @@ export class OwnerDataCollection {
                     };
                 }
                 const ownerData = this.ownerDataMap[owner];
-                ownerData.dependency_count = Object.keys(ownerData.repos).length;
+                ownerData.dependencyCount = Object.keys(ownerData.repos).length;
             } else {
                 TabDepthLogger.info(0, `Not a GitHub Library. Skipping: ${libraryUrl}`);
             }
@@ -136,7 +136,7 @@ export class OwnerDataCollection {
             const bb = this.ownerDataMap[b];
             const aa = this.ownerDataMap[a];
 
-            return bb.dependent_count - aa.dependent_count;
+            return bb.dependentCount - aa.dependentCount;
         });
     }
 }

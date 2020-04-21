@@ -70,7 +70,7 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
         ownerDataCollection: OwnerDataCollection
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
-            ownerData.funding_url = fundingUrl;
+            ownerData.fundingUrl = fundingUrl;
 
             return ownerData;
         });
@@ -94,7 +94,7 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefi
             const libraryUrl = this.getURL(params);
 
             return {
-                html_url: this.getURL(params, undefined),
+                htmlUrl: this.getURL(params, undefined),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
             };
@@ -135,7 +135,7 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     ): void {
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (repoData) => {
             repoData.language = languageAndOpenIssuesCount.language;
-            repoData.open_issues_count = languageAndOpenIssuesCount.openIssuesCount;
+            repoData.openIssuesCount = languageAndOpenIssuesCount.openIssuesCount;
 
             return repoData;
         });
@@ -207,7 +207,7 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
                             return {
                                 title: issue.title,
                                 url: issue.html_url,
-                                created_at: issue.created_at,
+                                createdAt: issue.created_at,
                                 tagged: [(params.label as string).replace(/\+/g, ' ')],
                             };
                         } else {
