@@ -1,14 +1,19 @@
-import Logger from '@indeed/logger';
-
-const LOGGER = new Logger();
 const TAB = '   ';
+
+function logInfo(message: string): void {
+    console.log('INFO: ' + message);
+}
+
+function logError(message: string): void {
+    console.log('ERROR: ' + message);
+}
 
 export class TabDepthLogger {
     public static info(depth: number, message: string): void {
-        LOGGER.info(TAB.repeat(depth) + message);
+        logInfo(TAB.repeat(depth) + message);
     }
 
     public static error(depth: number, error: Error): void {
-        LOGGER.error(TAB.repeat(depth) + error.message);
+        logError(TAB.repeat(depth) + error.message);
     }
 }
