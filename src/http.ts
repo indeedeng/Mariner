@@ -1,6 +1,6 @@
 import fetch, { Response } from 'node-fetch';
 
-export interface IHttpClient {
+export interface HttpClient {
     get(url: string): Promise<string>;
 }
 

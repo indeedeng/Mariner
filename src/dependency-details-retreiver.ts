@@ -4,16 +4,16 @@ import { OwnerDataCollection } from './owner-data-collection';
 import { sleep } from './utils';
 import { DataFetcher, RequestParams } from './data-fetcher';
 import { TabDepthLogger } from './tab-level-logger';
-import { FetchHttpClient, IHttpClient } from './http';
+import { FetchHttpClient, HttpClient } from './http';
 
 const REQUEST_DELAY_MS = 1400;
 const RELEVANT_LABELS = ['good+first+issue', 'help+wanted', 'documentation'];
 const MIN_ISSUE_DATE = moment().subtract(365, 'days').format('YYYY-MM-DD');
 
 abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
-    protected httpClient: IHttpClient;
+    protected httpClient: HttpClient;
 
-    constructor(httpClient: IHttpClient) {
+    constructor(httpClient: HttpClient) {
         super();
         this.httpClient = httpClient;
     }
