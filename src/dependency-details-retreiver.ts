@@ -189,6 +189,7 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
     public updateOwnerDataCollection(
         params: RequestParams,
         // tslint:disable-next-line: no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listOfIssues: any[],
         ownerDataCollection: OwnerDataCollection
     ): void {
