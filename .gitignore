@@ -1,5 +1,7 @@
 #git ignore file
 
+dist
+
 # Dependency directories
 node_modules/
 
