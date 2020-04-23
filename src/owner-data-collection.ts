@@ -4,23 +4,31 @@ import { TabDepthLogger } from './tab-level-logger';
 type IssueData = {
     title: string;
     url: string;
-    createdAt: string;
+    // eslint-disable-next-line camelcase
+    created_at: string;
     tagged: string[];
 };
 
 type RepoData = {
-    htmlUrl?: string;
-    openIssuesCount?: number;
+    // eslint-disable-next-line camelcase
+    html_url?: string;
+    // eslint-disable-next-line camelcase
+    open_issues_count?: number;
     language?: string;
-    fundingUrl?: string;
+    // eslint-disable-next-line camelcase
+    funding_url?: string;
     count: number;
     issues: { [key: string]: IssueData };
 };
 type OwnerData = {
-    fundingUrl?: string;
-    htmlUrl: string;
-    dependentCount: number;
-    dependencyCount: number;
+    // eslint-disable-next-line camelcase
+    funding_url?: string;
+    // eslint-disable-next-line camelcase
+    html_url: string;
+    // eslint-disable-next-line camelcase
+    dependent_count: number;
+    // eslint-disable-next-line camelcase
+    dependency_count: number;
     repos: { [key: string]: RepoData };
 };
 
@@ -114,13 +122,17 @@ export class OwnerDataCollection {
                     .split('/');
                 // parse owners master counts out of dependencies list
                 if (Object.prototype.hasOwnProperty.call(this.ownerDataMap.hasOwnProperty, owner)) {
-                    this.ownerDataMap[owner].dependentCount += dependentCount;
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    this.ownerDataMap[owner].dependent_count += dependentCount;
                 } else {
                     this.ownersArray.push(owner);
                     this.ownerDataMap[owner] = {
-                        htmlUrl: 'https://github.com/' + owner,
-                        dependentCount: dependentCount,
-                        dependencyCount: 1,
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        html_url: 'https://github.com/' + owner,
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        dependent_count: dependentCount,
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        dependency_count: 1,
                         repos: {
                             [repo]: {
                                 count: dependentCount,
@@ -130,7 +142,8 @@ export class OwnerDataCollection {
                     };
                 }
                 const ownerData = this.ownerDataMap[owner];
-                ownerData.dependencyCount = Object.keys(ownerData.repos).length;
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                ownerData.dependency_count = Object.keys(ownerData.repos).length;
             } else {
                 TabDepthLogger.info(0, `Not a GitHub Library. Skipping: ${libraryUrl}`);
             }
@@ -141,7 +154,7 @@ export class OwnerDataCollection {
             const bb = this.ownerDataMap[b];
             const aa = this.ownerDataMap[a];
 
-            return bb.dependentCount - aa.dependentCount;
+            return bb.dependent_count - aa.dependent_count;
         });
     }
 }

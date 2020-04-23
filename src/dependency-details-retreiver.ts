@@ -70,7 +70,8 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
         ownerDataCollection: OwnerDataCollection
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
-            ownerData.fundingUrl = fundingUrl;
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            ownerData.funding_url = fundingUrl;
 
             return ownerData;
         });
@@ -96,7 +97,8 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefi
             const libraryUrl = this.getURL(params);
 
             return {
-                htmlUrl: this.getURL(params, undefined),
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                html_url: this.getURL(params, undefined),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
             };
@@ -137,7 +139,8 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     ): void {
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (repoData) => {
             repoData.language = languageAndOpenIssuesCount.language;
-            repoData.openIssuesCount = languageAndOpenIssuesCount.openIssuesCount;
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            repoData.open_issues_count = languageAndOpenIssuesCount.openIssuesCount;
 
             return repoData;
         });
@@ -210,7 +213,8 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
                             return {
                                 title: issue.title,
                                 url: issue.html_url,
-                                createdAt: issue.created_at,
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                created_at: issue.created_at,
                                 tagged: [(params.label as string).replace(/\+/g, ' ')],
                             };
                         } else {
