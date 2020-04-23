@@ -81,7 +81,7 @@
         "no-unmodified-loop-condition": "error",
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": "off",   // Needs to be disabled for @typescript/no-unused-vars to work
         "no-use-before-define": "error",
         "no-useless-call": "error",
         "no-useless-concat": "error",
@@ -97,7 +97,7 @@
         ],
         "brace-style": ["error", "1tbs"],
         "block-spacing": "error",
-        "camelcase": "error",
+        "camelcase": "off",   // Needs to be disabled for @typescript-eslint/camelcase to work
         "dot-location": ["error", "property"],
         "eol-last": ["error", "always"],
         "indent": [
@@ -117,7 +117,7 @@
         "keyword-spacing": "error",
         "new-parens": "error",
         "newline-before-return": "error",
-        "newline-per-chained-call": "error",
+        //"newline-per-chained-call": "error",  // this is also set in the typescript override
         "no-implicit-coercion": [
             "error",
             {
