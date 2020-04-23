@@ -97,7 +97,7 @@
         ],
         "brace-style": ["error", "1tbs"],
         "block-spacing": "error",
-        "camelcase": "off",
+        "camelcase": "off",   // Needs to be disabled for @typescript-eslint/camelcase to work
         "dot-location": ["error", "property"],
         "eol-last": ["error", "always"],
         "indent": [
