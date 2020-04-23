@@ -97,7 +97,7 @@
         ],
         "brace-style": ["error", "1tbs"],
         "block-spacing": "error",
-        "camelcase": "error",
+        "camelcase": "off",
         "dot-location": ["error", "property"],
         "eol-last": ["error", "always"],
         "indent": [
