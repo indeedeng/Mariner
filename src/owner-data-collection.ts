@@ -34,16 +34,19 @@ type OwnerData = {
 
 export class OwnerDataCollection {
     private readonly libraryUrlToDependentCount: { [key: string]: number };
-    private readonly OUTPUT_FILE_PATH = './Temp/analysisOutputRaw.json';
+    private readonly outputFilePath: string;
+    private readonly inputFilePath: string;
     private readonly abbreviated: boolean;
     private readonly abbreviationThreshold: number = 5;
 
     private readonly ownersArray: string[] = [];
     private readonly ownerDataMap: { [key: string]: OwnerData } = {};
 
-    constructor(abbreviated: boolean) {
+    constructor(abbreviated: boolean, outputFilepath: string, inputFilePath: string) {
         this.abbreviated = abbreviated;
-        const contents = fs.readFileSync('./CountSourceFiles/mini.json', {
+        this.outputFilePath = outputFilepath;
+        this.inputFilePath = inputFilePath;
+        const contents = fs.readFileSync(this.inputFilePath, {
             encoding: 'utf8',
         });
         this.libraryUrlToDependentCount = JSON.parse(contents);
@@ -98,7 +101,7 @@ export class OwnerDataCollection {
     }
 
     public save(): void {
-        fs.writeFileSync(this.OUTPUT_FILE_PATH, JSON.stringify(this.ownerDataMap), {
+        fs.writeFileSync(this.outputFilePath, JSON.stringify(this.ownerDataMap), {
             encoding: 'utf8',
         });
     }
