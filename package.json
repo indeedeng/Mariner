@@ -4,7 +4,7 @@
     "description": "A node.js library for analyzing open source library dependencies",
     "main": "src/index.js",
     "author": "",
-    "license": "ISC",
+    "license": "Apache-2.0",
     "dependencies": {
         "typescript": "^3.8.3",
         "@types/moment": "^2.13.0",
