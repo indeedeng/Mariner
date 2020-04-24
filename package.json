@@ -6,6 +6,19 @@
     "types": "dist/mariner.d.ts",
     "author": "",
     "license": "Apache-2.0",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
+        "lint": "npx eslint . --ext .js,.ts && echo 'Lint complete'",
+        "lint:fix": "npx eslint . --fix . --ext .js,.ts && echo 'Fixed errors'",
+        "build": "tsc",
+        "prepublish": "tsc",
+        "NOTYET-prepublishOnly": "npm test && npm run lint",
+        "preversion": "npm run lint",
+        "NOTYET-version": "npm run format && git add -A src",
+        "NOTYET-postversion": "git push && git push --tags",
+        "prepare": "npm run build"
+    },
     "dependencies": {
         "typescript": "^3.8.3",
         "@types/moment": "^2.13.0",
@@ -25,19 +38,6 @@
         "eslint-plugin-prettier": "^3.1.3",
         "prettier": "^2.0.4",
         "typescript": "^3.8.3"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
-        "lint": "npx eslint . --ext .js,.ts && echo 'Lint complete'",
-        "lint:fix": "npx eslint . --fix . --ext .js,.ts && echo 'Fixed errors'",
-        "build": "tsc",
-        "prepublish": "tsc",
-        "NOTYET-prepublishOnly": "npm test && npm run lint",
-        "preversion": "npm run lint",
-        "NOTYET-version": "npm run format && git add -A src",
-        "NOTYET-postversion": "git push && git push --tags",
-        "prepare": "npm run build"
     },
     "keywords": [
         "nodejs",
