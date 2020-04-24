@@ -13,9 +13,11 @@
         "moment": "^2.24.0",
         "node-fetch": "^2.6.0"
     },
-    "publishConfig": {"registry": "https://registry.npmjs.org "},
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org "
+    },
     "devDependencies": {
-        "@types/node": "^13.11.1",
+        "@types/node": "^13.13.2",
         "@typescript-eslint/eslint-plugin": "^2.28.0",
         "@typescript-eslint/parser": "^2.28.0",
         "eslint": "^6.8.0",
@@ -31,10 +33,10 @@
         "lint:fix": "npx eslint . --fix . --ext .js,.ts && echo 'Fixed errors'",
         "build": "tsc",
         "prepublish": "tsc",
-        "NOTYET-prepublishOnly" : "npm test && npm run lint",
-        "preversion" : "npm run lint",
-        "NOTYET-version" : "npm run format && git add -A src",
-        "NOTYET-postversion" : "git push && git push --tags",
+        "NOTYET-prepublishOnly": "npm test && npm run lint",
+        "preversion": "npm run lint",
+        "NOTYET-version": "npm run format && git add -A src",
+        "NOTYET-postversion": "git push && git push --tags",
         "prepare": "npm run build"
     },
     "keywords": [
