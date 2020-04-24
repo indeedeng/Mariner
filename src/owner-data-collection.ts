@@ -34,8 +34,8 @@ type OwnerData = {
 
 export class OwnerDataCollection {
     private readonly libraryUrlToDependentCount: { [key: string]: number };
-    private readonly outputFilePath: string;
     private readonly inputFilePath: string;
+    private readonly outputFilePath: string;
     private readonly abbreviated: boolean;
     private readonly abbreviationThreshold: number = 5;
 

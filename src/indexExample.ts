@@ -25,4 +25,4 @@ const inputFilePath = getOrThrow("INPUT_FILE_PATH");
 const outputFilePath = getOrThrow("OUTPUT_FILE_PATH");
 
 const ddr = new DependencyDetailsRetriever();
-ddr.run(token, inputFilePath, outputFilePath, false);
+ddr.run(token, inputFilePath, outputFilePath);
