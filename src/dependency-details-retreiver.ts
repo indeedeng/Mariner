@@ -230,9 +230,9 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
 }
 
 export class DependencyDetailsRetriever {
-    public async run(abbreviated: boolean, githubToken: string): Promise<number> {
+    public async run(githubToken: string, inputFilePath: string, outputFilePath: string, abbreviated?: boolean): Promise<number> {
         const requestQueue = new RequestQueue();
-        const ownerDataCollection = new OwnerDataCollection(abbreviated);
+        const ownerDataCollection = new OwnerDataCollection(inputFilePath, outputFilePath, abbreviated=false);
         this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
         while (nextRequest) {
