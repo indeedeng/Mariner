@@ -10,12 +10,12 @@ of issues for each project.
 
 ## Getting Started Using Mariner
 
-Install the oss-mariner package via npm:
+If you just want to USE Mariner, you don't need to do a git clone. 
+Instead, create your own new node project, and install the oss-mariner package via npm:
 ```npm install oss-mariner```
 
-Run ```npm ci``` to install the libraries used in the project. Read more about [npm ci here.](https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable)
-
-Mariner can be used from Javascript or from Typescript. 
+Mariner can be called from Javascript or from Typescript. You can see an example here:
+https://github.com/indeedeng/Mariner/blob/master/src/indexExample.ts
 
 In your code, invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:
 ```
@@ -23,7 +23,7 @@ const ddr = new DependencyDetailsRetriever();
 const githubToken = Process.env.GITHUB_TOKEN;   // from an environment variable
 const inputFilePath = '<full path to your input file>';
 const outputFilePath = '<full path to the file that ddr should create>';
-const abbreviated = false;  // OPTIONAL; true will exclude some dependencies
+const abbreviated = false;  // OPTIONAL; default is fales; true will exclude some dependencies
 ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
 
 ```
@@ -31,12 +31,18 @@ ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
 The GitHub token must be a valid personal token. It does not require any permissions beyond 
 the default, so when you create it you can leave all the boxes unchecked. Be careful not to 
 share your token with anyone. If it gets exposed, revoke it and create a replacement. 
+See https://github.com/settings/tokens/new for how to create a token. 
 
 The input file is a JSON file in the format: 
-- TODO. (See exampleData/mini.json for an example)
+- TODO: Provide a definition of the format. 
+(For now, see exampleData/mini.json for an example)
 
 The output file is a JSON file in the format:
-- TODO. (See exampleData/analysisOutputRaw.json after running the app)
+- TODO: Provide a definition of the format. 
+(For now, see exampleData/analysisOutputRaw.json after running the app)
+
+We don't recommend using the ```abbreviated``` feature.
+It will omit entries that have fewer than a hard-coded number of projects that depend on them. 
 
 ## Getting Help
 
