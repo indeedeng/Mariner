@@ -23,23 +23,23 @@ const ddr = new DependencyDetailsRetriever();
 const githubToken = Process.env.GITHUB_TOKEN;   // from an environment variable
 const inputFilePath = '<full path to your input file>';
 const outputFilePath = '<full path to the file that ddr should create>';
-const abbreviated = false;  // OPTIONAL; default is fales; true will exclude some dependencies
+const abbreviated = false;  // OPTIONAL; default is false; true will exclude some dependencies
 ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
 
 ```
 
-The GitHub token must be a valid personal token. It does not require any permissions beyond 
+The GitHub token must be a valid personal access token. It does not require any permissions beyond 
 the default, so when you create it you can leave all the boxes unchecked. Be careful not to 
 share your token with anyone. If it gets exposed, revoke it and create a replacement. 
 See https://github.com/settings/tokens/new for how to create a token. 
 
 The input file is a JSON file in the format: 
-- TODO: Provide a definition of the format. 
-(For now, see exampleData/mini.json for an example)
+- (We'll add a definition of the format later. 
+For now, you can look at exampleData/mini.json for an example)
 
 The output file is a JSON file in the format:
-- TODO: Provide a definition of the format. 
-(For now, see exampleData/analysisOutputRaw.json after running the app)
+- (We'll add a definition of the format later. 
+For now, you can look at exampleData/analysisOutputRaw.json after running the app)
 
 We don't recommend using the ```abbreviated``` feature.
 It will omit entries that have fewer than a hard-coded number of projects that depend on them. 
