@@ -42,7 +42,7 @@ export class OwnerDataCollection {
     private readonly ownersArray: string[] = [];
     private readonly ownerDataMap: { [key: string]: OwnerData } = {};
 
-    constructor(abbreviated: boolean, outputFilepath: string, inputFilePath: string) {
+    constructor(inputFilePath: string, outputFilepath: string, abbreviated: boolean) {
         this.abbreviated = abbreviated;
         this.outputFilePath = outputFilepath;
         this.inputFilePath = inputFilePath;
