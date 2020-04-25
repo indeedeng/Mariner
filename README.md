@@ -70,14 +70,23 @@ Run ```node dist/indexExample.js``` to run the example program. It requires inte
 since it calls the GitHub API. It will take a couple minutes to complete. 
 Some of the output includes the word "ERROR", so don't panic. 
 
+## Local testing of the npm packaging
+
+You should have local copies of both the oss-mariner project and the project that will include it. 
+In the oss-mariner project, run ```npm link```. This will "publish" oss-mariner locally on your 
+computer. Then in the other project, run ```npm link oss-mariner```. 
+This will replace the public npm version of oss-mariner with your local copy. 
+
 ## Project Maintainers
 
 The [Open Source team at Indeed](https://opensource.indeedeng.io/), who can be reached at opensource@indeed.com.
 
 ## How to Publish
 
-1. If you are a maintainer, you can follow these steps to publish a new version of the package:
+If you are a maintainer, you can follow these steps to publish a new version of the package:
 1. Be sure the version number in package.json is correct
+1. Run ```npm install``` to update package-lock.json
+1. Run ```npm run build``` and ```npm run lint``` to make sure there are no errors
 1. Login to npm if you haven’t already: npm login
 1. Do a dry run to make sure the package looks good: npm publish --dry-run
 1. Publish: npm publish
