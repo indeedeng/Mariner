@@ -86,7 +86,6 @@ export class OwnerDataCollection {
     }
 
     public hasIssue(owner: string, repo: string, issue: string): boolean {
-        // eslint-disable-next-line no-prototype-builtins
         return Object.prototype.hasOwnProperty.call(
             this.ownerDataMap[owner].repos[repo].issues,
             issue

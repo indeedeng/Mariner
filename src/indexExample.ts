@@ -1,4 +1,4 @@
-import { DependencyDetailsRetriever } from './dependency-details-retreiver';
+import { DependencyDetailsRetriever } from './dependency-details-retriever';
 
 /* This is an example of how to invoke DependencyDetailsRetriever
    It mostly exists to be able to test and debug while working on the library code
