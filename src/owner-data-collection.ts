@@ -1,36 +1,30 @@
 import fs from 'fs';
 import { TabDepthLogger } from './tab-level-logger';
 
+// eslint-disable camelcase
 type IssueData = {
     title: string;
     url: string;
-    // eslint-disable-next-line camelcase
     created_at: string;
     tagged: string[];
 };
 
 type RepoData = {
-    // eslint-disable-next-line camelcase
     html_url?: string;
-    // eslint-disable-next-line camelcase
     open_issues_count?: number;
     language?: string;
-    // eslint-disable-next-line camelcase
-    funding_url?: string;
+    funding_url: string | null;
     count: number;
     issues: { [key: string]: IssueData };
 };
 type OwnerData = {
-    // eslint-disable-next-line camelcase
-    funding_url?: string;
-    // eslint-disable-next-line camelcase
+    funding_url: string | null;
     html_url: string;
-    // eslint-disable-next-line camelcase
     dependent_count: number;
-    // eslint-disable-next-line camelcase
     dependency_count: number;
     repos: { [key: string]: RepoData };
 };
+// eslint-enable camelcase
 
 export class OwnerDataCollection {
     private readonly libraryUrlToDependentCount: { [key: string]: number };
@@ -42,10 +36,10 @@ export class OwnerDataCollection {
     private readonly ownersArray: string[] = [];
     private readonly ownerDataMap: { [key: string]: OwnerData } = {};
 
-    constructor(inputFilePath: string, outputFilepath: string, abbreviated: boolean) {
+    constructor(inputFilePath: string, outputFilePath: string, abbreviated: boolean) {
         this.abbreviated = abbreviated;
-        this.outputFilePath = outputFilepath;
         this.inputFilePath = inputFilePath;
+        this.outputFilePath = outputFilePath;
         const contents = fs.readFileSync(this.inputFilePath, {
             encoding: 'utf8',
         });
@@ -94,6 +88,7 @@ export class OwnerDataCollection {
     }
 
     public hasIssue(owner: string, repo: string, issue: string): boolean {
+        // eslint-disable-next-line no-prototype-builtins
         return Object.prototype.hasOwnProperty.call(
             this.ownerDataMap[owner].repos[repo].issues,
             issue
@@ -124,12 +119,15 @@ export class OwnerDataCollection {
                     .replace('https://api.github.com/repos/', '')
                     .split('/');
                 // parse owners master counts out of dependencies list
-                if (Object.prototype.hasOwnProperty.call(this.ownerDataMap.hasOwnProperty, owner)) {
+                if (Object.prototype.hasOwnProperty.call(this.ownerDataMap, owner)) {
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     this.ownerDataMap[owner].dependent_count += dependentCount;
                 } else {
                     this.ownersArray.push(owner);
                     this.ownerDataMap[owner] = {
+                        // tslint:disable-next-line: no-null-keyword
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        funding_url: null,
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         html_url: 'https://github.com/' + owner,
                         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -138,6 +136,9 @@ export class OwnerDataCollection {
                         dependency_count: 1,
                         repos: {
                             [repo]: {
+                                // tslint:disable-next-line: no-null-keyword
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                funding_url: null,
                                 count: dependentCount,
                                 issues: {},
                             },
