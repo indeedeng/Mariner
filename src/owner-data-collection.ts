@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { TabDepthLogger } from './tab-level-logger';
 
-// eslint-disable camelcase
 type IssueData = {
     title: string;
     url: string;
@@ -24,7 +23,6 @@ type OwnerData = {
     dependency_count: number;
     repos: { [key: string]: RepoData };
 };
-// eslint-enable camelcase
 
 export class OwnerDataCollection {
     private readonly libraryUrlToDependentCount: { [key: string]: number };
