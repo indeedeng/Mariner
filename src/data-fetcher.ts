@@ -20,7 +20,6 @@ export abstract class DataFetcher<ResultType> {
             ownerDataCollection.save();
         });
     }
-
     protected abstract executeRequest(params: RequestParams): Promise<ResultType>;
     protected abstract updateOwnerDataCollection(
         params: RequestParams,

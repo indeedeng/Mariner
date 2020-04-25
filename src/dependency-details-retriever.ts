@@ -18,55 +18,61 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
         this.httpClient = httpClient;
     }
 
+    // tslint:disable-next-line: no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    protected extractFundingUrl(responseJson: any): string | null {
+        if (Array.isArray(responseJson)) {
+            for (const file of responseJson) {
+                if (file.name.toLowerCase() === 'funding.yml') {
+                    return file.html_url;
+                }
+            }
+        } else if (Object.prototype.hasOwnProperty.call(responseJson, 'message')) {
+            const err = new Error(responseJson.message);
+            this.handleError(err);
+        }
+
+        // tslint:disable-next-line: no-null-keyword
+        return null;
+    }
     protected handleError(err: Error): void {
         if (err) {
             TabDepthLogger.error(0, err);
         }
     }
 
-    protected getURL(params: RequestParams, type = 'api'): string {
-        let subdomain = '';
-        let subdirectory = '';
+    protected getURL(params: RequestParams, type: string | null = 'api'): string {
+        let baseUrl = 'github.com';
         if (type === 'api') {
-            subdomain = 'api';
-            subdirectory = 'repos';
+            baseUrl = `api.${baseUrl}/repos`;
         }
 
-        return `https://${subdomain}.github.com/${subdirectory}/${params.owner}/${params.repo}`;
+        return `https://${baseUrl}/${params.owner}/${params.repo}`;
     }
 
     // TODO: Factor out other commonalities between the three RESTful fetchers here.
 }
 
-class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
-    public executeRequest(params: RequestParams): Promise<string> {
+class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string | null> {
+    public executeRequest(params: RequestParams): Promise<string | null> {
         const requestUrl = 'https://api.github.com/repos/' + params.owner + '/.github/contents/';
 
         return this.httpClient
             .get(requestUrl)
             .then((responseText) => {
                 const responseJson = JSON.parse(responseText);
-                if (responseJson instanceof Object) {
-                    const err = new Error(responseJson.message);
-                    this.handleError(err);
 
-                    return;
-                } else if (responseJson instanceof Array) {
-                    for (const file of responseJson) {
-                        if (file.name.toLowerCase() === 'funding.yml') {
-                            const fundingUrl = file.html_url;
-
-                            return fundingUrl;
-                        }
-                    }
-                }
+                return this.extractFundingUrl(responseJson);
             })
-            .catch((err) => this.handleError(err));
+            .catch((err) => {
+                this.handleError(err);
+                throw err;
+            });
     }
 
     public updateOwnerDataCollection(
         params: RequestParams,
-        fundingUrl: string,
+        fundingUrl: string | null,
         ownerDataCollection: OwnerDataCollection
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
@@ -78,27 +84,38 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string> {
     }
 }
 
-class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<undefined> {
-    public executeRequest(params: RequestParams): Promise<undefined> {
+class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string | null> {
+    public executeRequest(params: RequestParams): Promise<string | null> {
         const requestUrl = this.getURL(params) + '/contents/.github/';
 
-        // TODO: find out why we do nothing with the result here.
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return this.httpClient.get(requestUrl).then((_) => undefined);
+        return this.httpClient
+            .get(requestUrl)
+            .then((responseText) => {
+                const responseJson = JSON.parse(responseText);
+
+                return this.extractFundingUrl(responseJson);
+            })
+            .catch((err) => {
+                this.handleError(err);
+                throw err;
+            });
     }
 
     public updateOwnerDataCollection(
         params: RequestParams,
-        _: undefined,
+        fundingUrl: string | null,
         ownerDataCollection: OwnerDataCollection
     ): void {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ownerDataCollection.updateRepoData(params.owner, params.repo as string, (__) => {
+        ownerDataCollection.updateRepoData(params.owner, params.repo as string, (_) => {
             const libraryUrl = this.getURL(params);
 
             return {
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                html_url: this.getURL(params, undefined),
+                funding_url: fundingUrl,
+                // tslint:disable-next-line: no-null-keyword
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                html_url: this.getURL(params, null),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
             };
@@ -230,9 +247,18 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
 }
 
 export class DependencyDetailsRetriever {
-    public async run(githubToken: string, inputFilePath: string, outputFilePath: string, abbreviated?: boolean): Promise<number> {
+    public async run(
+        githubToken: string,
+        inputFilePath: string,
+        outputFilePath: string,
+        abbreviated = false
+    ): Promise<number> {
         const requestQueue = new RequestQueue();
-        const ownerDataCollection = new OwnerDataCollection(inputFilePath, outputFilePath, abbreviated=false);
+        const ownerDataCollection = new OwnerDataCollection(
+            inputFilePath,
+            outputFilePath,
+            abbreviated
+        );
         this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
         while (nextRequest) {
