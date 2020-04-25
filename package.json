@@ -1,9 +1,9 @@
 {
     "name": "oss-mariner",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A node.js library for analyzing open source library dependencies",
-    "main": "dist/mariner.js",
-    "types": "dist/mariner.d.ts",
+    "main": "dist/dependency-details-retriever.js",
+    "types": "dist/dependency-details-retriever.d.ts",
     "author": "",
     "license": "Apache-2.0",
     "scripts": {

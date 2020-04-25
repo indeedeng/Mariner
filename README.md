@@ -76,8 +76,10 @@ The [Open Source team at Indeed](https://opensource.indeedeng.io/), who can be r
 
 ## How to Publish
 
-1. If you are a maintainer, you can follow these steps to publish a new version of the package:
+If you are a maintainer, you can follow these steps to publish a new version of the package:
 1. Be sure the version number in package.json is correct
+1. Run ```npm install``` to update package-lock.json
+1. Run ```npm run build``` and ```npm run lint``` to make sure there are no errors
 1. Login to npm if you haven’t already: npm login
 1. Do a dry run to make sure the package looks good: npm publish --dry-run
 1. Publish: npm publish
