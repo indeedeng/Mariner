@@ -252,7 +252,7 @@ export class DependencyDetailsRetriever {
         inputFilePath: string,
         outputFilePath: string,
         abbreviated = false
-    ): Promise<number> {
+    ): Promise<void> {
         const requestQueue = new RequestQueue();
         const ownerDataCollection = new OwnerDataCollection(
             inputFilePath,
@@ -270,8 +270,6 @@ export class DependencyDetailsRetriever {
             nextRequest = requestQueue.popRequest();
             await sleep(REQUEST_DELAY_MS);
         }
-
-        return Promise.resolve(0);
     }
 
     private populateRequestQueue(
