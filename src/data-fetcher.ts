@@ -17,7 +17,6 @@ export abstract class DataFetcher<ResultType> {
         return this.executeRequest(requestParams).then((result) => {
             this.updateOwnerDataCollection(requestParams, result, ownerDataCollection);
             this.updateRequestQueue(requestParams, result, requestQueue);
-            ownerDataCollection.save();
         });
     }
     protected abstract executeRequest(params: RequestParams): Promise<ResultType>;

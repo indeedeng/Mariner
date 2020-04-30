@@ -10,7 +10,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
         "lint": "npx eslint src/ --ext .js,.ts && echo 'Lint complete'",
-        "lint:fix": "npx eslint src/ --fix . --ext .js,.ts && echo 'Fixed errors'",
+        "lint:fix": "npx eslint src/ --fix --ext .js,.ts && echo 'Fixed errors'",
         "build": "tsc",
         "prepublish": "tsc",
         "NOTYET-prepublishOnly": "npm test && npm run lint",

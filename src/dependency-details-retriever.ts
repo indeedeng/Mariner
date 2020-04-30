@@ -260,16 +260,28 @@ export class DependencyDetailsRetriever {
             abbreviated
         );
         this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
+        const totalNumberOfRequests = requestQueue.getNumberOfRequests();
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
+        TabDepthLogger.info(0, `Processing ${totalNumberOfRequests} requests`);
         while (nextRequest) {
             await nextRequest.dataFetcher.process(
                 nextRequest.requestParams,
                 ownerDataCollection,
                 requestQueue
             );
+            const completedNumberOfRequests =
+                totalNumberOfRequests - requestQueue.getNumberOfRequests();
+            if (completedNumberOfRequests % 10 === 0) {
+                TabDepthLogger.info(
+                    0,
+                    `Completed: ${completedNumberOfRequests} of ${totalNumberOfRequests}`
+                );
+            }
             nextRequest = requestQueue.popRequest();
             await sleep(REQUEST_DELAY_MS);
         }
+        ownerDataCollection.save();
+        TabDepthLogger.info(0, 'Process complete! File saved');
     }
 
     private populateRequestQueue(

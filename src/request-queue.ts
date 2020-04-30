@@ -40,6 +40,10 @@ export class RequestQueue {
         return request;
     }
 
+    public getNumberOfRequests(): number {
+        return this.requestQueue.getLength();
+    }
+
     private createKeyFromParams(params: RequestParams): string {
         const key = `${params.owner}'-'${params.repo}'-'${params.type}'-'${params.label}`;
 
