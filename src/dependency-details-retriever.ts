@@ -127,7 +127,7 @@ type LanguageAndOpenIssuesCount = { language: string; openIssuesCount: number; a
 
 class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     LanguageAndOpenIssuesCount
-    > {
+> {
     public executeRequest(params: RequestParams): Promise<LanguageAndOpenIssuesCount> {
         const requestUrl = this.getURL(params);
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
@@ -193,7 +193,7 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
     public executeRequest(params: RequestParams): Promise<object[]> {
         const requestUrl = `${this.getURL(params)}/issues?since=${MIN_ISSUE_DATE}&labels=${
             params.label
-            }`;
+        }`;
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
 
         return this.httpClient
@@ -280,6 +280,8 @@ export class DependencyDetailsRetriever {
             nextRequest = requestQueue.popRequest();
             await sleep(REQUEST_DELAY_MS);
         }
+        ownerDataCollection.save();
+        TabDepthLogger.info(0, 'Process complete! File saved');
     }
 
     private populateRequestQueue(
