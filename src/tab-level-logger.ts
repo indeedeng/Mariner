@@ -1,19 +1,31 @@
-const TAB = '   ';
-
-function logInfo(message: string): void {
-    console.log('INFO: ' + message);
+export interface Logger {
+    info(message: string): void;
+    error(message: string): void;
 }
 
-function logError(message: string): void {
-    console.log('ERROR: ' + message);
+const TAB = '   ';
+
+class ConsoleLogger implements Logger {
+    info(message: string): void {
+        console.log('INFO: ' + message);
+    }
+    error(message: string): void {
+        console.log('ERROR: ' + message);
+    }
+}
+
+let currentLogger = new ConsoleLogger();
+
+export function setLogger(newLogger: Logger): void {
+    currentLogger = newLogger;
 }
 
 export class TabDepthLogger {
     public static info(depth: number, message: string): void {
-        logInfo(TAB.repeat(depth) + message);
+        currentLogger.info(TAB.repeat(depth) + message);
     }
 
     public static error(depth: number, error: Error): void {
-        logError(TAB.repeat(depth) + error.message);
+        currentLogger.error(TAB.repeat(depth) + error.message);
     }
 }
