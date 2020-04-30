@@ -6,10 +6,10 @@ export interface Logger {
 const TAB = '   ';
 
 class ConsoleLogger implements Logger {
-    info(message: string): void {
+    public info(message: string): void {
         console.log('INFO: ' + message);
     }
-    error(message: string): void {
+    public error(message: string): void {
         console.log('ERROR: ' + message);
     }
 }

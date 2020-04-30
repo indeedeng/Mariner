@@ -1,4 +1,5 @@
 import { DependencyDetailsRetriever } from './dependency-details-retriever';
+import { Logger, setLogger } from './tab-level-logger';
 
 /* This is an example of how to invoke DependencyDetailsRetriever
    It mostly exists to be able to test and debug while working on the library code
@@ -24,6 +25,18 @@ function getFromEnvOrThrow(configField: string): string {
 const token = getFromEnvOrThrow('GITHUB_TOKEN');
 const inputFilePath = getFromEnvOrThrow('INPUT_FILE_PATH');
 const outputFilePath = getFromEnvOrThrow('OUTPUT_FILE_PATH');
+
+class FancyLogger implements Logger {
+    public info(message: string): void {
+        console.log('***INFO: ' + message);
+    }
+    public error(message: string): void {
+        console.log('***ERROR: ' + message);
+    }
+}
+
+// Use a custom logger instead of the default console logger (this is optional!)
+setLogger(new FancyLogger());
 
 const ddr = new DependencyDetailsRetriever();
 ddr.run(token, inputFilePath, outputFilePath);
