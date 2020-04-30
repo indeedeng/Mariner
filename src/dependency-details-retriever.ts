@@ -127,7 +127,7 @@ type LanguageAndOpenIssuesCount = { language: string; openIssuesCount: number; a
 
 class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     LanguageAndOpenIssuesCount
-> {
+    > {
     public executeRequest(params: RequestParams): Promise<LanguageAndOpenIssuesCount> {
         const requestUrl = this.getURL(params);
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
@@ -193,7 +193,7 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
     public executeRequest(params: RequestParams): Promise<object[]> {
         const requestUrl = `${this.getURL(params)}/issues?since=${MIN_ISSUE_DATE}&labels=${
             params.label
-        }`;
+            }`;
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
 
         return this.httpClient
@@ -260,16 +260,23 @@ export class DependencyDetailsRetriever {
             abbreviated
         );
         this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
-        const totalNumberOfRequests = requestQueue.getNumberOfRequests(); 
+        const totalNumberOfRequests = requestQueue.getNumberOfRequests();
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
+        TabDepthLogger.info(0, `Processing ${totalNumberOfRequests} requests`);
         while (nextRequest) {
             await nextRequest.dataFetcher.process(
                 nextRequest.requestParams,
                 ownerDataCollection,
                 requestQueue
             );
-            const numberCompleted = totalNumberOfRequests - requestQueue.getNumberOfRequests();
-            TabDepthLogger.info(0, `Completed: ${numberCompleted} of ${totalNumberOfRequests}`);
+            const completedNumberOfRequests =
+                totalNumberOfRequests - requestQueue.getNumberOfRequests();
+            if (completedNumberOfRequests % 10 === 0) {
+                TabDepthLogger.info(
+                    0,
+                    `Completed: ${completedNumberOfRequests} of ${totalNumberOfRequests}`
+                );
+            }
             nextRequest = requestQueue.popRequest();
             await sleep(REQUEST_DELAY_MS);
         }
