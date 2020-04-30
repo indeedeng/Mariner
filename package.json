@@ -1,6 +1,6 @@
 {
     "name": "oss-mariner",
-    "version": "0.1.1",
+    "version": "0.2.0-alpha",
     "description": "A node.js library for analyzing open source library dependencies",
     "main": "dist/dependency-details-retriever.js",
     "types": "dist/dependency-details-retriever.d.ts",
