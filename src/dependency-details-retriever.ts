@@ -260,6 +260,7 @@ export class DependencyDetailsRetriever {
             abbreviated
         );
         this.populateRequestQueue(requestQueue, ownerDataCollection, githubToken);
+        const totalNumberOfRequests = requestQueue.getNumberOfRequests(); 
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
         while (nextRequest) {
             await nextRequest.dataFetcher.process(
@@ -267,6 +268,8 @@ export class DependencyDetailsRetriever {
                 ownerDataCollection,
                 requestQueue
             );
+            const numberCompleted = totalNumberOfRequests - requestQueue.getNumberOfRequests();
+            TabDepthLogger.info(0, `Completed: ${numberCompleted} of ${totalNumberOfRequests}`);
             nextRequest = requestQueue.popRequest();
             await sleep(REQUEST_DELAY_MS);
         }

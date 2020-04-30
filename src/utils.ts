@@ -30,4 +30,8 @@ export class OrderedMap<K, V> {
 
         return undefined;
     }
+
+    public getLength(): number {
+        return this.ks.length;
+    }
 }
