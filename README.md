@@ -8,6 +8,9 @@ Mariner takes an input list of dependencies, fetches details about them from Git
 and outputs a file containing funding information for each project owner, and a list 
 of issues for each project.
 
+NOTE: This library is in the experimental stage, so expect breaking changes 
+even if the version number does not indicate that. 
+
 ## Getting Started Using Mariner
 
 If you just want to USE Mariner, you don't need to do a git clone. 
@@ -34,8 +37,11 @@ share your token with anyone. If it gets exposed, revoke it and create a replace
 See https://github.com/settings/tokens/new for how to create a token. 
 
 The input file is a JSON file in the format: 
-- (We'll add a definition of the format later. 
-For now, you can look at exampleData/mini.json for an example)
+- At the top level is a map/object, where each entry consists of a dependency URL as the key, 
+and the number of projects that depend on that library as the value.
+- Example: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
+- The project count value is mostly ignored, but is used by the "abbreviated" feature. 
+- See exampleData/mini.json for a complete example. 
 
 The output file is a JSON file in the format:
 - (We'll add a definition of the format later. 
