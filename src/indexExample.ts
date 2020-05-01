@@ -15,7 +15,7 @@
 */
 
 import * as mariner from './mariner/index'; // This is used during development
-// import * as mariner from 'oss-mariner'    // This is how it the npm package would normally be used
+// import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
 
@@ -55,4 +55,6 @@ logger.info(`Output: ${outputFilePath}`);
 
 // Here is the code to actually call mariner
 const ddr = new mariner.DependencyDetailsRetriever();
-ddr.run(token, inputFilePath, outputFilePath);
+ddr.run(token, inputFilePath, outputFilePath)
+    .then(() => logger.info('Done!'))
+    .catch((err) => logger.error(err.message));
