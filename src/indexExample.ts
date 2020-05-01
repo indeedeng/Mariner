@@ -1,5 +1,4 @@
-import { DependencyDetailsRetriever } from './dependency-details-retriever';
-import { Logger, setLogger } from './tab-level-logger';
+import * as mariner from './mariner/index'; // in your code this should be `import * as mariner from 'oss-mariner'`
 
 /* This is an example of how to invoke DependencyDetailsRetriever
    It mostly exists to be able to test and debug while working on the library code
@@ -26,7 +25,7 @@ const token = getFromEnvOrThrow('GITHUB_TOKEN');
 const inputFilePath = getFromEnvOrThrow('INPUT_FILE_PATH');
 const outputFilePath = getFromEnvOrThrow('OUTPUT_FILE_PATH');
 
-class FancyLogger implements Logger {
+class FancyLogger implements mariner.Logger {
     public info(message: string): void {
         console.log('***INFO: ' + message);
     }
@@ -36,7 +35,7 @@ class FancyLogger implements Logger {
 }
 
 // Use a custom logger instead of the default console logger (this is optional!)
-setLogger(new FancyLogger());
+mariner.setLogger(new FancyLogger());
 
-const ddr = new DependencyDetailsRetriever();
+const ddr = new mariner.DependencyDetailsRetriever();
 ddr.run(token, inputFilePath, outputFilePath);
