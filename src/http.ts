@@ -1,4 +1,5 @@
 import fetch, { Response } from 'node-fetch';
+import { TabDepthLogger } from './tab-level-logger';
 
 export interface HttpClient {
     get(url: string): Promise<string>;
@@ -26,7 +27,7 @@ export class FetchHttpClient {
 
     private checkForRateLimiting(response: Response): void {
         if (response.status === 403) {
-            console.error('RATE LIMITED');
+            TabDepthLogger.error(0, 'RATE LIMITED');
         }
 
         return;

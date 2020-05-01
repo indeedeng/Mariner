@@ -25,7 +25,7 @@ export class TabDepthLogger {
         currentLogger.info(TAB.repeat(depth) + message);
     }
 
-    public static error(depth: number, error: Error): void {
-        currentLogger.error(TAB.repeat(depth) + error.message);
+    public static error(depth: number, message: string): void {
+        currentLogger.error(TAB.repeat(depth) + message);
     }
 }
