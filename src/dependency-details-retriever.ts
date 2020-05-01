@@ -20,7 +20,7 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
 
     // tslint:disable-next-line: no-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    protected extractFundingUrl(responseJson: any): string | null {
+    protected extractFundingUrl(responseJson: any, requestUrl: string): string | null {
         if (Array.isArray(responseJson)) {
             for (const file of responseJson) {
                 if (file.name.toLowerCase() === 'funding.yml') {
@@ -29,16 +29,15 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
             }
         } else if (Object.prototype.hasOwnProperty.call(responseJson, 'message')) {
             const err = new Error(responseJson.message);
-            this.handleError(err);
+            const errorMessage = this.createErrorMessage(err, requestUrl);
+            TabDepthLogger.error(0, errorMessage);
         }
 
         // tslint:disable-next-line: no-null-keyword
         return null;
     }
-    protected handleError(err: Error): void {
-        if (err) {
-            TabDepthLogger.error(0, err);
-        }
+    protected createErrorMessage(err: Error, requestUrl: string): string {
+        return `on request: ${requestUrl}\n${err.stack}`;
     }
 
     protected getURL(params: RequestParams, type: string | null = 'api'): string {
@@ -62,11 +61,11 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string | nul
             .then((responseText) => {
                 const responseJson = JSON.parse(responseText);
 
-                return this.extractFundingUrl(responseJson);
+                return this.extractFundingUrl(responseJson, requestUrl);
             })
             .catch((err) => {
-                this.handleError(err);
-                throw err;
+                const errorMessage = this.createErrorMessage(err, requestUrl);
+                throw new Error(errorMessage);
             });
     }
 
@@ -93,11 +92,11 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string
             .then((responseText) => {
                 const responseJson = JSON.parse(responseText);
 
-                return this.extractFundingUrl(responseJson);
+                return this.extractFundingUrl(responseJson, requestUrl);
             })
             .catch((err) => {
-                this.handleError(err);
-                throw err;
+                const errorMessage = this.createErrorMessage(err, requestUrl);
+                throw new Error(errorMessage);
             });
     }
 
@@ -144,8 +143,8 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
                 };
             })
             .catch((err) => {
-                this.handleError(err);
-                throw err;
+                const errorMessage = this.createErrorMessage(err, requestUrl);
+                throw new Error(errorMessage);
             });
     }
 
@@ -203,7 +202,10 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
 
                 return listOfIssues;
             })
-            .catch((err) => this.handleError(err));
+            .catch((err) => {
+                const errorMessage = this.createErrorMessage(err, requestUrl);
+                TabDepthLogger.error(0, errorMessage);
+            });
     }
 
     public updateOwnerDataCollection(
@@ -264,11 +266,13 @@ export class DependencyDetailsRetriever {
         let nextRequest: RequesteQueueEntry | undefined = requestQueue.popRequest();
         TabDepthLogger.info(0, `Processing ${totalNumberOfRequests} requests`);
         while (nextRequest) {
-            await nextRequest.dataFetcher.process(
-                nextRequest.requestParams,
-                ownerDataCollection,
-                requestQueue
-            );
+            const dataFetcher = nextRequest.dataFetcher;
+            const requestParams = nextRequest.requestParams;
+            await dataFetcher
+                .process(requestParams, ownerDataCollection, requestQueue)
+                .catch((error) => {
+                    TabDepthLogger.error(0, error.message);
+                });
             const completedNumberOfRequests =
                 totalNumberOfRequests - requestQueue.getNumberOfRequests();
             if (completedNumberOfRequests % 10 === 0) {
