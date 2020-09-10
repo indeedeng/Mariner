@@ -14,25 +14,25 @@ type RepoData = {
     language?: string;
     funding_url: string | null;
     count: number;
-    issues: { [key: string]: IssueData };
+    issues: Record<string, IssueData>;
 };
 type OwnerData = {
     funding_url: string | null;
     html_url: string;
     dependent_count: number;
     dependency_count: number;
-    repos: { [key: string]: RepoData };
+    repos: Record<string, RepoData>;
 };
 
 export class OwnerDataCollection {
-    private readonly libraryUrlToDependentCount: { [key: string]: number };
+    private readonly libraryUrlToDependentCount: Record<string, number>;
     private readonly inputFilePath: string;
     private readonly outputFilePath: string;
     private readonly abbreviated: boolean;
     private readonly abbreviationThreshold: number = 5;
 
     private readonly ownersArray: string[] = [];
-    private readonly ownerDataMap: { [key: string]: OwnerData } = {};
+    private readonly ownerDataMap: Record<string, OwnerData> = {};
 
     constructor(inputFilePath: string, outputFilePath: string, abbreviated: boolean) {
         this.abbreviated = abbreviated;
