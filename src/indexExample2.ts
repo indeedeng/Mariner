@@ -65,7 +65,6 @@ interface IssueCountAndIssues {
     edges: Edge[]
 }
 
-// NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
 const query = `
 query findByLabel($queryString:String!) {
     search(
@@ -102,6 +101,7 @@ class GitHubIssueFetcher {
 
         const listOfRepos = this.createListOfRepos(repositoryIdentifiers);
         const variables = {
+            // NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
             queryString: `label:\"${label}\" state:open ${listOfRepos}`
         };
         logger.info(variables.queryString);
