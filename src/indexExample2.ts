@@ -62,9 +62,35 @@ const contents = fs.readFileSync(inputFilePath, {
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
 
+interface Issue {
+    // TODO: Flesh this out
+}
 
-const label = 'good first issue';
-const fetcher = new GitHubIssueFetcher(logger);
-fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers)
-    .then((result) => logger.info(`Found ${result.issueCount} issues`))
+class IssueFinder {
+    private readonly logger: mariner.Logger;
+    private readonly fetcher: GitHubIssueFetcher;
+
+    public constructor(logger: mariner.Logger) {
+        this.logger = logger;
+        this.fetcher = new GitHubIssueFetcher(logger);
+    }
+
+    public async findIssues(token: string, labels: string[], repositoryIdentifiers: string[]): Promise<Issue[]> {
+        // TODO: loop through all the labels
+        const label = labels.shift() || '';
+
+        const result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
+        const issues = result.edges.map((edge) => {
+            // TODO: Create a real issue here
+            return {};
+        });
+
+        return issues;
+    }
+}
+
+const labels = ['good first issue'];
+const finder = new IssueFinder(logger);
+finder.findIssues(token, labels, repositoryIdentifiers)
+    .then((issues) => logger.info(`Found ${issues.length} issues`))
     .catch((err) => logger.error(err.message));
