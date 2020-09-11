@@ -20,6 +20,7 @@ import * as mariner from './mariner/index'; // This is used during development
 
 import * as path from 'path';
 import { GitHubIssueFetcher } from './GitHubIssueFetcher';
+import { IssueFinder } from './issueFinder';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -61,33 +62,6 @@ const contents = fs.readFileSync(inputFilePath, {
 });
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
-
-interface Issue {
-    // TODO: Flesh this out
-}
-
-class IssueFinder {
-    private readonly logger: mariner.Logger;
-    private readonly fetcher: GitHubIssueFetcher;
-
-    public constructor(logger: mariner.Logger) {
-        this.logger = logger;
-        this.fetcher = new GitHubIssueFetcher(logger);
-    }
-
-    public async findIssues(token: string, labels: string[], repositoryIdentifiers: string[]): Promise<Issue[]> {
-        // TODO: loop through all the labels
-        const label = labels.shift() || '';
-
-        const result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
-        const issues = result.edges.map((edge) => {
-            // TODO: Create a real issue here
-            return {};
-        });
-
-        return issues;
-    }
-}
 
 const labels = ['good first issue'];
 const finder = new IssueFinder(logger);
