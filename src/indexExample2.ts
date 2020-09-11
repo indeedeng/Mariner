@@ -105,8 +105,9 @@ class GraphQlRetriever {
             },
         });
 
+        const label = 'good first issue';
         const variables = {
-            queryString: "label:\"good first issue\" state:open repo:indeedeng/starfish"
+            queryString: `label:\"${label}\" state:open repo:indeedeng/starfish`
             // queryString: "state:open repo:indeedeng/starfish"
         };
         const { search } = await graphqlWithAuth(query, variables);
