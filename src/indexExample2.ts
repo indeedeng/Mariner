@@ -63,14 +63,6 @@ interface IssueCountAndIssues {
     edges: Edge[]
 }
 
-interface SearchResult {
-    search: IssueCountAndIssues
-}
-
-interface GraphQlResult {
-    data: SearchResult;
-}
-
 const query = `
 query findByLabel($queryString:String!) {
     search(
@@ -109,7 +101,7 @@ class GraphQlRetriever {
         const variables = {
             queryString: `label:\"${label}\" state:open ${listOfRepos}`
         };
-        console.log(variables.queryString);
+        logger.info(variables.queryString);
         const { search } = await graphqlWithAuth(query, variables);
         return search as IssueCountAndIssues;
     }
