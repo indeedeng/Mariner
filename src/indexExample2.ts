@@ -13,13 +13,13 @@
         You'll know it's run correctly if you have a new file
         exampleData/output.json with some GitHub issues in it.
 */
-const { graphql } = require("@octokit/graphql");
 
 import fs from 'fs';
 import * as mariner from './mariner/index'; // This is used during development
 // import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
+import { GitHubIssueFetcher } from './GitHubIssueFetcher';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -55,65 +55,6 @@ mariner.setLogger(logger);
 logger.info(`Input:  ${inputFilePath}`);
 logger.info(`Output: ${outputFilePath}`);
 
-// NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
-interface Edge {
-    node: unknown;
-}
-
-interface IssueCountAndIssues {
-    issueCount: number
-    edges: Edge[]
-}
-
-const query = `
-query findByLabel($queryString:String!) {
-    search(
-        type: ISSUE, 
-        query: $queryString
-        first: 100, 
-    )
-    {
-        issueCount
-        edges {
-        node {
-            ... on Issue {
-            title
-            labels(first: 100) {
-                edges {
-                node {
-                    id
-                }
-                }
-            }
-            }
-        }
-        }
-    }
-  }`;
-
-class GitHubIssueFetcher {
-    public async fetchMatchingIssues(token: string, label: string, repositoryIdentifiers: string[]): Promise<IssueCountAndIssues> {
-        const graphqlWithAuth = graphql.defaults({
-            headers: {
-                authorization: `token ${token}`,
-            },
-        });
-
-        const listOfRepos = this.createListOfRepos(repositoryIdentifiers);
-        const variables = {
-            // NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
-            queryString: `label:\"${label}\" state:open ${listOfRepos}`
-        };
-        logger.info(variables.queryString);
-        const { search } = await graphqlWithAuth(query, variables);
-        return search as IssueCountAndIssues;
-    }
-
-    private createListOfRepos(repos: string[]): string {
-        const withPrefixes = repos.map((repo) => { return `repo:${repo}`; });
-        return withPrefixes.join(' ');
-    }
-}
 
 const contents = fs.readFileSync(inputFilePath, {
     encoding: 'utf8',
@@ -123,7 +64,7 @@ const repositoryIdentifiers = Object.keys(countsByLibrary);
 
 
 const label = 'good first issue';
-const fetcher = new GitHubIssueFetcher();
+const fetcher = new GitHubIssueFetcher(logger);
 fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers)
     .then((result) => logger.info(`Found ${result.issueCount} issues`))
     .catch((err) => logger.error(err.message));
