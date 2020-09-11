@@ -72,11 +72,11 @@ interface GraphQlResult {
 }
 
 const query = `
-{
+query findByLabel($queryString:String!) {
     search(
         type: ISSUE, 
+        query: $queryString
         first: 100, 
-        query: "label:\\\"good first issue\\\" state:open repo:indeedeng/starfish"
     )
     {
         issueCount
@@ -105,7 +105,11 @@ class GraphQlRetriever {
             },
         });
 
-        const { search } = await graphqlWithAuth(query);
+        const variables = {
+            queryString: "label:\"good first issue\" state:open repo:indeedeng/starfish"
+            // queryString: "state:open repo:indeedeng/starfish"
+        };
+        const { search } = await graphqlWithAuth(query, variables);
         return search as IssueCountAndIssues;
     }
 }
