@@ -15,6 +15,7 @@
 */
 const { graphql } = require("@octokit/graphql");
 
+import fs from 'fs';
 import * as mariner from './mariner/index'; // This is used during development
 // import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
@@ -31,7 +32,7 @@ function getFromEnvOrThrow(configField: string): string {
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
 const inputFilePath =
-    process.env.INPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini.json');
+    process.env.INPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
 const outputFilePath =
     process.env.OUTPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
 
@@ -54,6 +55,7 @@ mariner.setLogger(logger);
 logger.info(`Input:  ${inputFilePath}`);
 logger.info(`Output: ${outputFilePath}`);
 
+// NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 interface Edge {
     node: unknown;
 }
@@ -63,6 +65,7 @@ interface IssueCountAndIssues {
     edges: Edge[]
 }
 
+// NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
 const query = `
 query findByLabel($queryString:String!) {
     search(
@@ -90,14 +93,14 @@ query findByLabel($queryString:String!) {
   }`;
 
 class GraphQlRetriever {
-    public async run(token: string, label: string, repositoryNames: string[]): Promise<IssueCountAndIssues> {
+    public async run(token: string, label: string, repositoryIdentifiers: string[]): Promise<IssueCountAndIssues> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
                 authorization: `token ${token}`,
             },
         });
 
-        const listOfRepos = this.createListOfRepos(repositoryNames);
+        const listOfRepos = this.createListOfRepos(repositoryIdentifiers);
         const variables = {
             queryString: `label:\"${label}\" state:open ${listOfRepos}`
         };
@@ -112,9 +115,15 @@ class GraphQlRetriever {
     }
 }
 
+const contents = fs.readFileSync(inputFilePath, {
+    encoding: 'utf8',
+});
+const countsByLibrary = JSON.parse(contents) as Record<string, number>;
+const repositoryIdentifiers = Object.keys(countsByLibrary);
+
+
 const label = 'good first issue';
-const repositoryNames = ['indeedeng/starfish', 'FasterXML/jackson-dataformats-text'];
 const ddr = new GraphQlRetriever();
-ddr.run(token, label, repositoryNames)
+ddr.run(token, label, repositoryIdentifiers)
     .then((result) => logger.info(`Found ${result.issueCount} issues`))
     .catch((err) => logger.error(err.message));
