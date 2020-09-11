@@ -98,25 +98,31 @@ query findByLabel($queryString:String!) {
   }`;
 
 class GraphQlRetriever {
-    public async run(token: string, repositoryNames: string[]): Promise<IssueCountAndIssues> {
+    public async run(token: string, label: string, repositoryNames: string[]): Promise<IssueCountAndIssues> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
                 authorization: `token ${token}`,
             },
         });
 
-        const label = 'good first issue';
+        const listOfRepos = this.createListOfRepos(repositoryNames);
         const variables = {
-            queryString: `label:\"${label}\" state:open repo:indeedeng/starfish`
-            // queryString: "state:open repo:indeedeng/starfish"
+            queryString: `label:\"${label}\" state:open ${listOfRepos}`
         };
+        console.log(variables.queryString);
         const { search } = await graphqlWithAuth(query, variables);
         return search as IssueCountAndIssues;
     }
+
+    private createListOfRepos(repos: string[]): string {
+        const withPrefixes = repos.map((repo) => { return `repo:${repo}`; });
+        return withPrefixes.join(' ');
+    }
 }
 
-const repositoryNames = ['indeedeng/starfish'];
+const label = 'good first issue';
+const repositoryNames = ['indeedeng/starfish', 'FasterXML/jackson-dataformats-text'];
 const ddr = new GraphQlRetriever();
-ddr.run(token, repositoryNames)
+ddr.run(token, label, repositoryNames)
     .then((result) => logger.info(`Found ${result.issueCount} issues`))
     .catch((err) => logger.error(err.message));
