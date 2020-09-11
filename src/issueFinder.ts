@@ -1,4 +1,4 @@
-import { GitHubIssueFetcher } from './GitHubIssueFetcher';
+import { GitHubIssueFetcher } from './gitHubIssueFetcher';
 import * as mariner from './mariner/index'; // This is used during development
 
 interface Issue {

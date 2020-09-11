@@ -19,7 +19,6 @@ import * as mariner from './mariner/index'; // This is used during development
 // import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
-import { GitHubIssueFetcher } from './GitHubIssueFetcher';
 import { IssueFinder } from './issueFinder';
 
 function getFromEnvOrThrow(configField: string): string {
