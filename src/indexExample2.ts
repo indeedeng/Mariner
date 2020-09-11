@@ -93,7 +93,7 @@ query findByLabel($queryString:String!) {
   }`;
 
 class GitHubIssueFetcher {
-    public async run(token: string, label: string, repositoryIdentifiers: string[]): Promise<IssueCountAndIssues> {
+    public async fetchMatchingIssues(token: string, label: string, repositoryIdentifiers: string[]): Promise<IssueCountAndIssues> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
                 authorization: `token ${token}`,
@@ -123,7 +123,7 @@ const repositoryIdentifiers = Object.keys(countsByLibrary);
 
 
 const label = 'good first issue';
-const ddr = new GitHubIssueFetcher();
-ddr.run(token, label, repositoryIdentifiers)
+const fetcher = new GitHubIssueFetcher();
+fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers)
     .then((result) => logger.info(`Found ${result.issueCount} issues`))
     .catch((err) => logger.error(err.message));
