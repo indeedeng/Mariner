@@ -55,7 +55,6 @@ mariner.setLogger(logger);
 logger.info(`Input:  ${inputFilePath}`);
 logger.info(`Output: ${outputFilePath}`);
 
-
 const contents = fs.readFileSync(inputFilePath, {
     encoding: 'utf8',
 });
@@ -65,5 +64,5 @@ const repositoryIdentifiers = Object.keys(countsByLibrary);
 const labels = ['good first issue'];
 const finder = new IssueFinder(logger);
 finder.findIssues(token, labels, repositoryIdentifiers)
-    .then((issues) => logger.info(`Found ${issues.length} issues`))
+    .then((issues) => logger.info(`Found ${issues.length} issues \n ${JSON.stringify(issues)}`))
     .catch((err) => logger.error(err.message));
