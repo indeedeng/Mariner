@@ -32,9 +32,9 @@ function getFromEnvOrThrow(configField: string): string {
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
 const inputFilePath =
-    process.env.INPUT_EXAMPLE_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
+    process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
 const outputFilePath =
-    process.env.OUTPUT_EXAMPLE_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
+    process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
