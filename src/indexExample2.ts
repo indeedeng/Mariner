@@ -32,9 +32,9 @@ function getFromEnvOrThrow(configField: string): string {
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
 const inputFilePath =
-    process.env.INPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
+    process.env.INPUT_EXAMPLE_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
 const outputFilePath =
-    process.env.OUTPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
+    process.env.OUTPUT_EXAMPLE_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
@@ -63,6 +63,7 @@ const repositoryIdentifiers = Object.keys(countsByLibrary);
 
 const labels = ['good first issue'];
 const finder = new IssueFinder(logger);
-finder.findIssues(token, labels, repositoryIdentifiers)
+finder
+    .findIssues(token, labels, repositoryIdentifiers)
     .then((issues) => logger.info(`Found ${issues.length} issues \n ${JSON.stringify(issues)}`))
     .catch((err) => logger.error(err.message));
