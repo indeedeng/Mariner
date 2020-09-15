@@ -27,14 +27,14 @@ export class IssueFinder {
         const result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
 
         const issues = result.edges.map((edge) => {
-            const issue = this.convertFromGithubIssue(edge);
+            const issue = this.convertFromGitHubIssue(edge);
             return issue;
         });
 
         return issues;
     }
     
-    private convertFromGithubIssue(edge: Edge): Issue {
+    private convertFromGitHubIssue(edge: Edge): Issue {
         const issue: Issue = {
             title: edge.node.title,
             createdAt: edge.node.createdAt,
