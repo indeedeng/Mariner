@@ -2,7 +2,7 @@ import * as mariner from './mariner/index'; // This is used during development
 import { graphql } from '@octokit/graphql';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
-interface Edge {
+export interface Edge {
     node: GitHubIssue;
 }
 

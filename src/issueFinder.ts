@@ -1,4 +1,4 @@
-import { GitHubIssueFetcher } from './gitHubIssueFetcher';
+import { GitHubIssueFetcher, Edge } from './gitHubIssueFetcher';
 import * as mariner from './mariner/index'; // This is used during development
 
 export interface Issue {
@@ -25,17 +25,22 @@ export class IssueFinder {
         // TODO: loop through all the labels
         const label = labels.shift() || '';
         const result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
-        const issues = result.edges.map((edge) => {
-            const issue: Issue = {
-                title: edge.node.title,
-                createdAt: edge.node.createdAt,
-                repositoryNameWithOwner: edge.node.repository.nameWithOwner,
-                url: edge.node.url,
-            };
 
+        const issues = result.edges.map((edge) => {
+            const issue = this.convertFromGithubIssue(edge);
             return issue;
         });
 
         return issues;
+    }
+    
+    private convertFromGithubIssue(edge: Edge): Issue {
+        const issue: Issue = {
+            title: edge.node.title,
+            createdAt: edge.node.createdAt,
+            repositoryNameWithOwner: edge.node.repository.nameWithOwner,
+            url: edge.node.url,
+        };
+        return issue;
     }
 }
