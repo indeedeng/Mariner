@@ -22,16 +22,20 @@ export class IssueFinder {
         labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Issue[]> {
-        // TODO: loop through all the labels
-        const label = labels.shift() || '';
-        const result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
+        let result;
+        for (let label of labels) {
+            result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
+        }
+
+        if (result === undefined) {
+            return [];
+        }
 
         const issues = result.edges.map((edge) => {
             const node = edge.node;
             const issue = this.convertFromGitHubIssue(node);
             return issue;
         });
-
         return issues;
     }
 
