@@ -1,5 +1,6 @@
 import * as mariner from './mariner/index'; // This is used during development
 import { graphql } from '@octokit/graphql';
+import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
@@ -9,6 +10,12 @@ export interface Edge {
 interface IssueCountAndIssues {
     issueCount: number;
     edges: Edge[];
+    pageInfo: {
+        startCursor?: string;
+        hasNextPage: boolean;
+        endCursor?: string;
+    }
+
 }
 
 export interface GitHubIssue {
@@ -22,28 +29,39 @@ interface GitHubRepository {
     nameWithOwner: string;
 }
 
+interface Variables extends RequestParameters {
+    queryString: string;
+    pageSize: number;
+    after?: string;
+}
 const query = `
-query findByLabel($queryString:String!) {
+query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
     search(
         type: ISSUE, 
         query: $queryString
-        first: 100, 
+        first: $pageSize, 
+        after: $after
     )
     {
         issueCount
         edges{
-      node{
-        ... on Issue{
-	  title
-	  createdAt
-          repository {
-            nameWithOwner
-          }
-          url
-    	}
-      }
+            node{
+                ... on Issue{
+                    title
+                    createdAt
+                        repository {
+                        nameWithOwner
+                    }
+                    url
+    	        }
+            }
+        }
+        pageInfo {
+            startCursor
+            hasNextPage
+            endCursor
+        }
     }
-  }
 }`;
 
 export class GitHubIssueFetcher {
@@ -58,21 +76,15 @@ export class GitHubIssueFetcher {
         label: string,
         repositoryIdentifiers: string[]
     ): Promise<IssueCountAndIssues> {
-        const graphqlWithAuth = graphql.defaults({
-            headers: {
-                authorization: `token ${token}`,
-            },
-        });
-
         const listOfRepos = this.createListOfRepos(repositoryIdentifiers);
-        const variables = {
+        const variables: Variables = {
             // NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
             queryString: `label:\"${label}\" state:open ${listOfRepos}`,
+            pageSize: 10,
         };
-        this.logger.info(variables.queryString);
-        const { search } = await graphqlWithAuth(query, variables);
+        const issueCountAndIssues = await this.fetchAllPages(token, query, variables);
 
-        return search as IssueCountAndIssues;
+        return issueCountAndIssues;
     }
 
     private createListOfRepos(repos: string[]): string {
@@ -81,5 +93,32 @@ export class GitHubIssueFetcher {
         });
 
         return withPrefixes.join(' ');
+    }
+
+    private async fetchAllPages(token: string, query: string, variables: Variables): Promise<IssueCountAndIssues> {
+        const graphqlWithAuth = graphql.defaults({
+            headers: {
+                authorization: `token ${token}`,
+            },
+        });
+
+        const result: IssueCountAndIssues = {
+            issueCount: 0,
+            edges: [],
+            pageInfo: {
+                hasNextPage: true,
+            }
+        }
+        while (result.pageInfo.hasNextPage) {
+            const { search } = await graphqlWithAuth(query, variables);
+            this.logger.info(JSON.stringify(search.pageInfo));
+            const issueCountsAndIssues = search as IssueCountAndIssues;
+            variables.after = issueCountsAndIssues.pageInfo.endCursor;
+            result.pageInfo.hasNextPage = issueCountsAndIssues.pageInfo.hasNextPage;
+            result.edges.push(...issueCountsAndIssues.edges);
+        }
+
+        result.issueCount = result.edges.length;
+        return result;
     }
 }
