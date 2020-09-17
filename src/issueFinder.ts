@@ -22,20 +22,24 @@ export class IssueFinder {
         labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Issue[]> {
-        let result;
-        for (let label of labels) {
-            result = await this.fetcher.fetchMatchingIssues(token, label, repositoryIdentifiers);
-        }
+        const arrayOfIssues = labels.map(async (label) => {
+            const result = await this.fetcher.fetchMatchingIssues(
+                token,
+                label,
+                repositoryIdentifiers
+            );
+            const issuesArray = result.edges.map((edge) => {
+                const node = edge.node;
+                const issue = this.convertFromGitHubIssue(node);
 
-        if (result === undefined) {
-            return [];
-        }
+                return issue;
+            });
 
-        const issues = result.edges.map((edge) => {
-            const node = edge.node;
-            const issue = this.convertFromGitHubIssue(node);
-            return issue;
+            return issuesArray;
         });
+
+        const issues = (await Promise.all(arrayOfIssues)).flat();
+
         return issues;
     }
 
@@ -46,6 +50,7 @@ export class IssueFinder {
             repositoryNameWithOwner: node.repository.nameWithOwner,
             url: node.url,
         };
+
         return issue;
     }
 }
