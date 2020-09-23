@@ -22,21 +22,19 @@ export class IssueFinder {
         labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Issue[]> {
-        const promises = labels.map(async (label) => {
+
+        const gitHubIssues: GitHubIssue[] = [];
+        for (const label of labels) {
             const result = await this.fetcher.fetchMatchingIssues(
                 token,
                 label,
                 repositoryIdentifiers
             );
-            return result;
-        });
+            gitHubIssues.push(...result);
+        }
 
-        const arraysOfEdges = await Promise.all(promises);
-        const edges = arraysOfEdges.flat();
-
-        const arrayOfIssues = edges.map((edge) => {
-            const node = edge;
-            const issue = this.convertFromGitHubIssue(node);
+        const arrayOfIssues = gitHubIssues.map((gitHubIssue) => {
+            const issue = this.convertFromGitHubIssue(gitHubIssue);
 
             return issue;
         });
