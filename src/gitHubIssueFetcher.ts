@@ -95,7 +95,6 @@ export class GitHubIssueFetcher {
         label: string,
         repositoryIdentifiers: string[]
     ): Promise<GitHubIssue[]> {
-
         const pageSize = 100;
         const numberOfReposPerCall = 1000;
         const chunks = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
@@ -114,18 +113,18 @@ export class GitHubIssueFetcher {
 
         this.logger.info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
 
-        const issues = edgeArray.flatMap((edge) => {
+        const issues = edgeArray.map((edge) => {
             return edge.node;
         });
 
         return issues;
     }
 
-    private splitArray(repositoryIdentifiers: string[], size: number): string[][] {
-        let chunkedArray = [];
-        let i = 0;
-        for (i; i < repositoryIdentifiers.length; i += size) {
-            let chunk = repositoryIdentifiers.slice(i, i + size);
+    private splitArray(allStrings: string[], size: number): string[][] {
+        const chunkedArray = [];
+
+        for (let i = 0; i < allStrings.length; i += size) {
+            const chunk = allStrings.slice(i, i + size);
             chunkedArray.push(chunk);
         }
 
@@ -161,10 +160,12 @@ export class GitHubIssueFetcher {
         };
         while (result.pageInfo.hasNextPage) {
             this.logger.info(`Calling: ${queryId}`);
-            const response = await graphqlWithAuth(query, variables) as Response;
+            const response = (await graphqlWithAuth(query, variables)) as Response;
             const issueCountsAndIssues = response.search;
-            this.logger.info(`Fetched: ${queryId} => ` +
-                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`);
+            this.logger.info(
+                `Fetched: ${queryId} => ` +
+                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+            );
             const rateLimit = response.rateLimit;
             this.logger.info(`Rate limits: ${JSON.stringify(rateLimit)}`);
             variables.after = issueCountsAndIssues.pageInfo.endCursor;
@@ -175,11 +176,13 @@ export class GitHubIssueFetcher {
             if (!edge.node.repository) {
                 console.log(`No repository for ${edge.node.title}`);
             }
+
             return edge.node.repository ? true : false;
         });
 
         result.issueCount = result.edges.length;
         this.logger.info(`Returning: ${queryId} => ${result.issueCount}`);
+
         return result;
     }
 }

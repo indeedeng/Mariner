@@ -67,7 +67,6 @@ finder
     .findIssues(token, labels, repositoryIdentifiers)
     .then((issues) => {
         logger.info(`Found ${issues.length} issues \n`);
-        // logger.info(`${JSON.stringify(issues)}`);
     })
     .catch((err) => {
         logger.error(err.message);
