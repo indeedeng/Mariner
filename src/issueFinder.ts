@@ -28,14 +28,14 @@ export class IssueFinder {
                 label,
                 repositoryIdentifiers
             );
-            return result.edges;
+            return result;
         });
 
         const arraysOfEdges = await Promise.all(promises);
         const edges = arraysOfEdges.flat();
 
         const arrayOfIssues = edges.map((edge) => {
-            const node = edge.node;
+            const node = edge;
             const issue = this.convertFromGitHubIssue(node);
 
             return issue;
