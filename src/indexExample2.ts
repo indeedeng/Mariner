@@ -61,9 +61,14 @@ const contents = fs.readFileSync(inputFilePath, {
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
 
-const labels = ['good first issue'];
+const labels = ['good first issue', 'help wanted', 'documentation'];
 const finder = new IssueFinder(logger);
 finder
     .findIssues(token, labels, repositoryIdentifiers)
-    .then((issues) => logger.info(`Found ${issues.length} issues \n ${JSON.stringify(issues)}`))
-    .catch((err) => logger.error(err.message));
+    .then((issues) => {
+        logger.info(`Found ${issues.length} issues \n`);
+    })
+    .catch((err) => {
+        logger.error(err.message);
+        console.log(err);
+    });

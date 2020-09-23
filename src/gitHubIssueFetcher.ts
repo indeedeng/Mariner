@@ -1,10 +1,15 @@
-import * as mariner from './mariner/index'; // This is used during development
 import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { Logger } from './tab-level-logger';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
     node: GitHubIssue;
+}
+
+interface Response {
+    search: IssueCountAndIssues;
+    rateLimit: RateLimit;
 }
 
 interface IssueCountAndIssues {
@@ -14,8 +19,15 @@ interface IssueCountAndIssues {
         startCursor?: string;
         hasNextPage: boolean;
         endCursor?: string;
-    }
+    };
+    rateLimit?: RateLimit;
+}
 
+interface RateLimit {
+    limit: number;
+    cost: number;
+    remaining: number;
+    resetAt: number;
 }
 
 export interface GitHubIssue {
@@ -34,6 +46,7 @@ interface Variables extends RequestParameters {
     pageSize: number;
     after?: string;
 }
+
 const query = `
 query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
     search(
@@ -62,12 +75,18 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
             endCursor
         }
     }
+    rateLimit {
+        limit
+        cost
+        remaining
+        resetAt
+    }
 }`;
 
 export class GitHubIssueFetcher {
-    private readonly logger: mariner.Logger;
+    private readonly logger: Logger;
 
-    public constructor(logger: mariner.Logger) {
+    public constructor(logger: Logger) {
         this.logger = logger;
     }
 
@@ -75,16 +94,41 @@ export class GitHubIssueFetcher {
         token: string,
         label: string,
         repositoryIdentifiers: string[]
-    ): Promise<IssueCountAndIssues> {
-        const listOfRepos = this.createListOfRepos(repositoryIdentifiers);
-        const variables: Variables = {
-            // NOTE: See https://docs.github.com/en/github/searching-for-information-on-github/searching-issues-and-pull-requests
-            queryString: `label:\"${label}\" state:open ${listOfRepos}`,
-            pageSize: 10,
-        };
-        const issueCountAndIssues = await this.fetchAllPages(token, query, variables);
+    ): Promise<GitHubIssue[]> {
+        const pageSize = 100;
+        const numberOfReposPerCall = 1000;
+        const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
 
-        return issueCountAndIssues;
+        const edgeArray: Edge[] = [];
+        for (const chunk of reposForEachCall) {
+            const listOfRepos = this.createListOfRepos(chunk);
+            const variables: Variables = {
+                queryString: `label:\"${label}\" state:open ${listOfRepos}`,
+                pageSize,
+            };
+            const queryId = `${label}: ${chunk[0]}`;
+            const issue = await this.fetchAllPages(token, query, variables, queryId);
+            edgeArray.push(...issue);
+        }
+
+        this.logger.info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
+
+        const issues = edgeArray.map((edge) => {
+            return edge.node;
+        });
+
+        return issues;
+    }
+
+    private splitArray(allStrings: string[], size: number): string[][] {
+        const chunkedArray = [];
+
+        for (let i = 0; i < allStrings.length; i += size) {
+            const chunk = allStrings.slice(i, i + size);
+            chunkedArray.push(chunk);
+        }
+
+        return chunkedArray;
     }
 
     private createListOfRepos(repos: string[]): string {
@@ -95,7 +139,12 @@ export class GitHubIssueFetcher {
         return withPrefixes.join(' ');
     }
 
-    private async fetchAllPages(token: string, query: string, variables: Variables): Promise<IssueCountAndIssues> {
+    private async fetchAllPages(
+        token: string,
+        query: string,
+        variables: Variables,
+        queryId: string
+    ): Promise<Edge[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
                 authorization: `token ${token}`,
@@ -107,18 +156,33 @@ export class GitHubIssueFetcher {
             edges: [],
             pageInfo: {
                 hasNextPage: true,
-            }
-        }
+            },
+        };
         while (result.pageInfo.hasNextPage) {
-            const { search } = await graphqlWithAuth(query, variables);
-            this.logger.info(JSON.stringify(search.pageInfo));
-            const issueCountsAndIssues = search as IssueCountAndIssues;
+            this.logger.info(`Calling: ${queryId}`);
+            const response = (await graphqlWithAuth(query, variables)) as Response;
+            const issueCountsAndIssues = response.search;
+            this.logger.info(
+                `Fetched: ${queryId} => ` +
+                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+            );
+            const rateLimit = response.rateLimit;
+            this.logger.info(`Rate limits: ${JSON.stringify(rateLimit)}`);
             variables.after = issueCountsAndIssues.pageInfo.endCursor;
             result.pageInfo.hasNextPage = issueCountsAndIssues.pageInfo.hasNextPage;
             result.edges.push(...issueCountsAndIssues.edges);
         }
+        result.edges = result.edges.filter((edge) => {
+            if (!edge.node.repository) {
+                console.log(`No repository for ${edge.node.title}`);
+            }
+
+            return edge.node.repository ? true : false;
+        });
 
         result.issueCount = result.edges.length;
-        return result;
+        this.logger.info(`Returning: ${queryId} => ${result.issueCount}`);
+
+        return result.edges;
     }
 }
