@@ -21,34 +21,31 @@ export class IssueFinder {
         token: string,
         labels: string[],
         repositoryIdentifiers: string[]
-    ): Promise<Record<string, Issue[]>> {
-        const promises = labels.map(async (label) => {
+    ): Promise<Map<string, Issue[]>> {
+        const gitHubIssues: GitHubIssue[] = [];
+        for (const label of labels) {
             const result = await this.fetcher.fetchMatchingIssues(
                 token,
                 label,
                 repositoryIdentifiers
             );
-            return result.edges;
-        });
+            gitHubIssues.push(...result);
+        }
 
-        const arraysOfEdges = await Promise.all(promises);
-        const edges = arraysOfEdges.flat();
-
-        const arrayOfIssues = edges.map((edge) => {
-            const node = edge.node;
-            const issue = this.convertFromGitHubIssue(node);
+        const arrayOfIssues = gitHubIssues.map((gitHubIssue) => {
+            const issue = this.convertFromGitHubIssue(gitHubIssue);
 
             return issue;
         });
 
         const uniqueIssues = this.omitDuplicates(arrayOfIssues);
 
-        const issuesByRepo: Record<string, Issue[]> = {};
+        const issuesByRepo = new Map<string, Issue[]>();
         uniqueIssues.forEach((issue) => {
             const repo = issue.repositoryNameWithOwner;
-            const existing = issuesByRepo[repo] || [];
+            const existing = issuesByRepo.get(repo) || [];
             existing.push(issue);
-            issuesByRepo[repo] = existing;
+            issuesByRepo.set(repo, existing);
         });
 
         return issuesByRepo;
