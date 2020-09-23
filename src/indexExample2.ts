@@ -66,7 +66,11 @@ const finder = new IssueFinder(logger);
 finder
     .findIssues(token, labels, repositoryIdentifiers)
     .then((issues) => {
-        logger.info(`Found ${issues.size} issues \n`);
+        let issueCount = 0;
+        issues.forEach((issuesForRepo) => {
+            issueCount += issuesForRepo.length;
+        });
+        logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
     })
     .catch((err) => {
         logger.error(err.message);
