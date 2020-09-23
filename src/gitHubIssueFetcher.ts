@@ -7,6 +7,11 @@ export interface Edge {
     node: GitHubIssue;
 }
 
+interface Response {
+    search: IssueCountAndIssues;
+    rateLimit: RateLimit;
+}
+
 interface IssueCountAndIssues {
     issueCount: number;
     edges: Edge[];
@@ -15,6 +20,14 @@ interface IssueCountAndIssues {
         hasNextPage: boolean;
         endCursor?: string;
     };
+    rateLimit?: RateLimit;
+}
+
+interface RateLimit {
+    limit: number;
+    cost: number;
+    remaining: number;
+    resetAt: number;
 }
 
 export interface GitHubIssue {
@@ -33,6 +46,7 @@ interface Variables extends RequestParameters {
     pageSize: number;
     after?: string;
 }
+
 const query = `
 query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
     search(
@@ -61,6 +75,12 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
             endCursor
         }
     }
+    rateLimit {
+        limit
+        cost
+        remaining
+        resetAt
+    }
 }`;
 
 export class GitHubIssueFetcher {
@@ -75,26 +95,29 @@ export class GitHubIssueFetcher {
         label: string,
         repositoryIdentifiers: string[]
     ): Promise<GitHubIssue[]> {
-    
-        const numberOfReposPerCall = 10;
+
+        const pageSize = 100;
+        const numberOfReposPerCall = 1000;
         const chunks = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
 
-        const repos = chunks.map(async (chunk) => {
+        const edgeArray: Edge[] = [];
+        for (const chunk of chunks) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
                 queryString: `label:\"${label}\" state:open ${listOfRepos}`,
-                pageSize: 10,
+                pageSize,
             };
-            const issue = await this.fetchAllPages(token, query, variables);
-            return issue.edges;
-        });
-        const edges = await Promise.all(repos);
-        const edgeArray = edges.flat();
+            const queryId = `${label}: ${chunk[0]}`;
+            const issue = await this.fetchAllPages(token, query, variables, queryId);
+            edgeArray.push(...issue.edges);
+        }
+
+        this.logger.info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
 
         const issues = edgeArray.flatMap((edge) => {
             return edge.node;
         });
-    
+
         return issues;
     }
 
@@ -120,7 +143,8 @@ export class GitHubIssueFetcher {
     private async fetchAllPages(
         token: string,
         query: string,
-        variables: Variables
+        variables: Variables,
+        queryId: string
     ): Promise<IssueCountAndIssues> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
@@ -136,9 +160,13 @@ export class GitHubIssueFetcher {
             },
         };
         while (result.pageInfo.hasNextPage) {
-            this.logger.info(`Calling: ${JSON.stringify(variables)}`);
-            const { search } = await graphqlWithAuth(query, variables);
-            const issueCountsAndIssues = search as IssueCountAndIssues;
+            this.logger.info(`Calling: ${queryId}`);
+            const response = await graphqlWithAuth(query, variables) as Response;
+            const issueCountsAndIssues = response.search;
+            this.logger.info(`Fetched: ${queryId} => ` +
+                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`);
+            const rateLimit = response.rateLimit;
+            this.logger.info(`Rate limits: ${JSON.stringify(rateLimit)}`);
             variables.after = issueCountsAndIssues.pageInfo.endCursor;
             result.pageInfo.hasNextPage = issueCountsAndIssues.pageInfo.hasNextPage;
             result.edges.push(...issueCountsAndIssues.edges);
@@ -151,6 +179,7 @@ export class GitHubIssueFetcher {
         });
 
         result.issueCount = result.edges.length;
+        this.logger.info(`Returning: ${queryId} => ${result.issueCount}`);
         return result;
     }
 }
