@@ -97,10 +97,10 @@ export class GitHubIssueFetcher {
     ): Promise<GitHubIssue[]> {
         const pageSize = 100;
         const numberOfReposPerCall = 1000;
-        const chunks = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
+        const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
 
         const edgeArray: Edge[] = [];
-        for (const chunk of chunks) {
+        for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
                 queryString: `label:\"${label}\" state:open ${listOfRepos}`,
