@@ -108,7 +108,7 @@ export class GitHubIssueFetcher {
             };
             const queryId = `${label}: ${chunk[0]}`;
             const issue = await this.fetchAllPages(token, query, variables, queryId);
-            edgeArray.push(...issue.edges);
+            edgeArray.push(...issue);
         }
 
         this.logger.info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
@@ -144,7 +144,7 @@ export class GitHubIssueFetcher {
         query: string,
         variables: Variables,
         queryId: string
-    ): Promise<IssueCountAndIssues> {
+    ): Promise<Edge[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: {
                 authorization: `token ${token}`,
@@ -183,6 +183,6 @@ export class GitHubIssueFetcher {
         result.issueCount = result.edges.length;
         this.logger.info(`Returning: ${queryId} => ${result.issueCount}`);
 
-        return result;
+        return result.edges;
     }
 }
