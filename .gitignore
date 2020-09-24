@@ -1,6 +1,7 @@
 #git ignore file
 
 dist
+examples/output.json
 
 # Dependency directories
 node_modules/

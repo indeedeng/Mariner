@@ -1,25 +1,23 @@
-/*  This is an example of how to invoke mariner
+/*  This is an example of how to invoke mariner using the new GraphQL code.
     It mostly exists to be able to test and debug while working on the library code
 
     To use it, you will need to add a variable to your environment:
-        export GITHUB_TOKEN="<token here>"
+        export MARINER_GITHUB_TOKEN="<token here>"
     Optionally, you can have environment variables for INPUT_FILE_PATH and OUTPUT_FILE_PATH,
         but they have defaults that will work with the standard development environment.
     Then, run `npm run build`
-    Finally, run `node dist/indexExample.js`
+    Finally, run `node dist/examples/runFasterCode.js`
 
-    FYI, if it's running correctly, your first logged output in the console
-    will likely say "ERROR". Sorry about that ;-)
-        You'll know it's run correctly if you have a new file
-        exampleData/output.json with some GitHub issues in it.
+    You'll know it's run correctly if you have a new file
+        examples/output.json with some GitHub issues in it.
 */
 
 import fs from 'fs';
-import * as mariner from './mariner/index'; // This is used during development
+import * as mariner from '../src/mariner/index'; // This is used during development
 // import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
-import { IssueFinder } from './issueFinder';
+import { IssueFinder } from '../src/issueFinder';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -32,9 +30,11 @@ function getFromEnvOrThrow(configField: string): string {
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
 const inputFilePath =
-    process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/mini2.json');
+    process.env.MARINER_INPUT_FILE_PATH ||
+    path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
 const outputFilePath =
-    process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', 'exampleData/output.json');
+    process.env.MARINER_OUTPUT_FILE_PATH ||
+    path.join(__dirname, '..', '..', 'examples', 'output.json');
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
@@ -60,11 +60,19 @@ const contents = fs.readFileSync(inputFilePath, {
 });
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
+const prefix = 'https://api.github.com/repos/';
+const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
+    if (identifier.startsWith(prefix)) {
+        return identifier.substr(prefix.length);
+    } else {
+        return identifier;
+    }
+});
 
 const labels = ['good first issue', 'help wanted', 'documentation'];
 const finder = new IssueFinder(logger);
 finder
-    .findIssues(token, labels, repositoryIdentifiers)
+    .findIssues(token, labels, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {
