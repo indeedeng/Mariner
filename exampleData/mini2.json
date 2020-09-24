@@ -5,7 +5,8 @@
     "fasterxml/jackson": 4911,
     "springfox/springfox": 4854,
     "farmerx/sshtunnel": 4782,
-    "babel/babel": 4597,
-    "indeedeng/starfish": 99,
-    "FasterXML/jackson-dataformats-text": 27
+
+    "https://api.github.com/repos/babel/babel": 4597,
+    "https://api.github.com/repos/indeedeng/starfish": 99,
+    "https://api.github.com/repos/FasterXML/jackson-dataformats-text": 27
 }

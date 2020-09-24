@@ -60,11 +60,19 @@ const contents = fs.readFileSync(inputFilePath, {
 });
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
+const prefix = 'https://api.github.com/repos/';
+const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
+    if (identifier.startsWith(prefix)) {
+        return identifier.substr(prefix.length);
+    } else {
+        return identifier;
+    }
+});
 
 const labels = ['good first issue', 'help wanted', 'documentation'];
 const finder = new IssueFinder(logger);
 finder
-    .findIssues(token, labels, repositoryIdentifiers)
+    .findIssues(token, labels, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {
