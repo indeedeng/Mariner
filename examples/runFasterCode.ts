@@ -72,7 +72,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 const labels = ['good first issue', 'help wanted', 'documentation'];
 const finder = new IssueFinder(logger);
 
-function convertToRecord(issues: globalThis.Map<string, Issue[]>): void {
+function convertToRecord(issues: Map<string, Issue[]>): void {
     const record: Record<string, Issue[]> = {};
     issues.forEach((issuesForRepo: any, repo: any) => {
         record[repo] = issuesForRepo;
@@ -83,7 +83,9 @@ function convertToRecord(issues: globalThis.Map<string, Issue[]>): void {
 }
 
 function outputToJson(record: Record<string, Issue[]>): void {
-    const jsonResults = JSON.stringify(record, undefined, 2);
+    const noReplacer = undefined;
+    const indent = 2;
+    const jsonResults = JSON.stringify(record, noReplacer, indent);
     const data = fs.writeFileSync(outputFilePath, jsonResults);
 
     return data;
@@ -96,10 +98,10 @@ finder
         issues.forEach((issuesForRepo) => {
             issueCount += issuesForRepo.length;
         });
-        const directory = '\u001b[32m examples/output.json';
+
         convertToRecord(issues);
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
-        logger.info(`Saved issue results to: ${directory}`);
+        logger.info(`Saved issue results to: ${outputFilePath}`);
     })
     .catch((err) => {
         logger.error(err.message);
