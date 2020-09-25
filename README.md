@@ -27,22 +27,21 @@ Instead, create your own new node project, and install the oss-mariner package v
 Mariner can be called from Javascript or from Typescript. You can see an example here:
 https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts
 
+Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
+
 To invoke mariner using the new GraphQL code you can see an example here:
 https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts
 
-If you are using mariner with the new GraphQL code, Invoke the finder(),
-passing the appropiate parameters in finder.findIssues(),
+If you are using mariner with the new GraphQL code, Invoke the finder(), passing the
+appropiate parameters in finder.findIssues(),
 
 ````
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');  // from an environment variable
-const inputFilePath = process.env.MARINER_INPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
-const outputFilePath = process.env.MARINER_OUTPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'output.json');
+const inputFilePath = process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
+const outputFilePath = process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
 
 const finder = new IssueFinder(logger);
-finder
-    .findIssues(token, labels, repositoryLookupName)
+finder.findIssues(token, labels, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {
@@ -53,17 +52,18 @@ finder
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
         logger.info(`Saved issue results to: ${outputFilePath}`);
     })
-    .catch((err) => {
+.catch((err) => {
         logger.error(err.message);
         console.log(err);
     });
-    ```
-
-If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
-invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:`
 
 ````
 
+If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
+invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:
+
+
+````
 const ddr = new DependencyDetailsRetriever();
 const githubToken = Process.env.GITHUB_TOKEN; // from an environment variable
 const inputFilePath = '<full path to your input file>';
@@ -71,7 +71,8 @@ const outputFilePath = '<full path to the file that ddr should create>';
 const abbreviated = false; // OPTIONAL; default is false; true will exclude some dependencies
 ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
 
-```
+````
+
 For both the runOldCode.ts and runFasterCode.ts files you must create a token.
 The GitHub token must be a valid personal access token. It does not require any permissions beyond
 the default, so when you create it you can leave all the boxes unchecked. Be careful not to
@@ -80,13 +81,13 @@ See https://github.com/settings/tokens/new for how to create a token.
 
 The input file is a JSON file in the format:
 
--   At the top level is a map/object, where each entry consists of a dependency URL as the key,
+-   At the top level is a map/object, where each entry consists of a dependency as the key,
     and the number of projects that depend on that library as the value.
--   Both the name and the repos can either be complete urls or just owner/repo strings
--   Example complet url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
+-   Each dependency can be identified by a complete URL or just the owner/repo string.
+-   Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
 -   Example owner/repo strings: "square/retrofit": 5023,
 -   The project count value is mostly ignored, but is used by the "abbreviated" feature.
--   See exampleData.json for a complete example.
+-   See examples/exampleData.json for a complete example.
 
 The output file is a JSON file in the format:
 
@@ -113,12 +114,11 @@ Clone the repository from GitHub.
 
 Run `npm ci` to install the libraries used in the project. Read more about [npm ci here.](https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable)
 
-Follow the instructions in runFasterCode.ts or runOldCode.ts to configure the input and output files.
-NOTE that an example input file is included, in the examples directory.
+Follow the instructions in examples/runFasterCode.ts or examples/runOldCode.ts to configure the input and output files. NOTE: An example input file is included, in the examples directory.
 
 Run `npm run build` to compile the code to Javascript.
 
-Run `node dist/examples/runFasterCode.js` to use GraphQL or `node dist/examples/runOldCode.ts` to use REST calls, to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
+Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
 
 ## Local testing of the npm packaging
 
@@ -151,4 +151,3 @@ This project is governed by the [Contributor Covenant v 1.4.1](CODE_OF_CONDUCT.m
 ## License
 
 This project uses the [Apache 2.0](LICENSE) license.
-```
