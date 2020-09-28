@@ -1,4 +1,3 @@
-import { GitHubIssueFetcher, GitHubIssue } from './gitHubIssueFetcher';
 import * as mariner from './mariner/index'; // This is used during development
 
 export interface Issue {
@@ -10,11 +9,11 @@ export interface Issue {
 
 export class IssueFinder {
     private readonly logger: mariner.Logger;
-    private readonly fetcher: GitHubIssueFetcher;
+    private readonly fetcher: mariner.GitHubIssueFetcher;
 
     public constructor(logger: mariner.Logger) {
         this.logger = logger;
-        this.fetcher = new GitHubIssueFetcher(logger);
+        this.fetcher = new mariner.GitHubIssueFetcher(logger);
     }
 
     public async findIssues(
@@ -22,7 +21,7 @@ export class IssueFinder {
         labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Issue[]>> {
-        const gitHubIssues: GitHubIssue[] = [];
+        const gitHubIssues: mariner.GitHubIssue[] = [];
         for (const label of labels) {
             const result = await this.fetcher.fetchMatchingIssues(
                 token,
@@ -51,7 +50,7 @@ export class IssueFinder {
         return issuesByRepo;
     }
 
-    private convertFromGitHubIssue(node: GitHubIssue): Issue {
+    private convertFromGitHubIssue(node: mariner.GitHubIssue): Issue {
         const issue: Issue = {
             title: node.title,
             createdAt: node.createdAt,
