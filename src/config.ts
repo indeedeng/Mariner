@@ -7,7 +7,7 @@ export interface Config {
 }
 
 export function getConfig(): Config {
-    const configFilePath = path.join(__dirname, '..', 'src', 'config.json');
+    const configFilePath = path.join(__dirname, '..', '..', 'examples', 'config.json');
     const configJSON = fs.readFileSync(configFilePath, {
         encoding: 'utf8',
     });
