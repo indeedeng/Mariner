@@ -1,4 +1,4 @@
-import * as mariner from './mariner/index'; // This is used during development
+import { GitHubIssue, GitHubIssueFetcher, Logger } from './mariner/index'; // This is used during development
 
 export interface Issue {
     title: string;
@@ -8,12 +8,12 @@ export interface Issue {
 }
 
 export class IssueFinder {
-    private readonly logger: mariner.Logger;
-    private readonly fetcher: mariner.GitHubIssueFetcher;
+    private readonly logger: Logger;
+    private readonly fetcher: GitHubIssueFetcher;
 
-    public constructor(logger: mariner.Logger) {
+    public constructor(logger: Logger) {
         this.logger = logger;
-        this.fetcher = new mariner.GitHubIssueFetcher(logger);
+        this.fetcher = new GitHubIssueFetcher(logger);
     }
 
     public async findIssues(
@@ -21,7 +21,7 @@ export class IssueFinder {
         labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Issue[]>> {
-        const gitHubIssues: mariner.GitHubIssue[] = [];
+        const gitHubIssues: GitHubIssue[] = [];
         for (const label of labels) {
             const result = await this.fetcher.fetchMatchingIssues(
                 token,
@@ -50,7 +50,7 @@ export class IssueFinder {
         return issuesByRepo;
     }
 
-    private convertFromGitHubIssue(node: mariner.GitHubIssue): Issue {
+    private convertFromGitHubIssue(node: GitHubIssue): Issue {
         const issue: Issue = {
             title: node.title,
             createdAt: node.createdAt,
