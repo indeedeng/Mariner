@@ -1,4 +1,5 @@
-import { GitHubIssue, GitHubIssueFetcher, Logger } from './mariner/index'; // This is used during development
+import { GitHubIssue, GitHubIssueFetcher } from './gitHubIssueFetcher';
+import { Logger } from './tab-level-logger';
 
 export interface Issue {
     title: string;
