@@ -1,6 +1,7 @@
 import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 import { Logger } from './tab-level-logger';
+import { Config } from './config';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
@@ -85,9 +86,11 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
 
 export class GitHubIssueFetcher {
     private readonly logger: Logger;
+    private readonly config: Config;
 
-    public constructor(logger: Logger) {
+    public constructor(logger: Logger, config: Config) {
         this.logger = logger;
+        this.config = config;
     }
 
     public async fetchMatchingIssues(
@@ -96,7 +99,7 @@ export class GitHubIssueFetcher {
         repositoryIdentifiers: string[]
     ): Promise<GitHubIssue[]> {
         const pageSize = 100;
-        const numberOfReposPerCall = 1000;
+        const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
 
         const edgeArray: Edge[] = [];
@@ -164,7 +167,7 @@ export class GitHubIssueFetcher {
             const issueCountsAndIssues = response.search;
             this.logger.info(
                 `Fetched: ${queryId} => ` +
-                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
             );
             const rateLimit = response.rateLimit;
             this.logger.info(`Rate limits: ${JSON.stringify(rateLimit)}`);

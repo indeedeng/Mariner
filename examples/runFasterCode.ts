@@ -74,7 +74,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const labels = config.labelsToSearch;
-const finder = new IssueFinder(logger);
+const finder = new IssueFinder(logger, config);
 
 function convertToRecord(issues: Map<string, Issue[]>): void {
     const record: Record<string, Issue[]> = {};
@@ -96,7 +96,7 @@ function outputToJson(record: Record<string, Issue[]>): void {
 }
 
 finder
-    .findIssues(token, labels, repositoryLookupName)
+    .findIssues(token, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {
