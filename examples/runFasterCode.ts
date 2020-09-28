@@ -18,6 +18,7 @@ import * as mariner from '../src/mariner/index'; // This is used during developm
 
 import * as path from 'path';
 import { Issue, IssueFinder } from '../src/issueFinder';
+import { Config, getConfig } from '../src/config';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -58,6 +59,7 @@ logger.info(`Output: ${outputFilePath}`);
 const contents = fs.readFileSync(inputFilePath, {
     encoding: 'utf8',
 });
+
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
 const prefix = 'https://api.github.com/repos/';
@@ -69,7 +71,13 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     }
 });
 
-const labels = ['good first issue', 'help wanted', 'documentation'];
+const configFilePath = path.join(__dirname, '..', 'src', 'config.json');
+const configJSON = fs.readFileSync(configFilePath, {
+    encoding: 'utf8',
+});
+const entireConfig = JSON.parse(configJSON) as Config;
+const labels = getConfig().labelsToSearch;
+//const labels = entireConfig.labelsToSearch;
 const finder = new IssueFinder(logger);
 
 function convertToRecord(issues: Map<string, Issue[]>): void {
