@@ -47,7 +47,7 @@ interface Variables extends RequestParameters {
     after?: string;
 }
 
-const query = `
+const queryTemplate = `
 query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
     search(
         type: ISSUE, 
@@ -103,11 +103,11 @@ export class GitHubIssueFetcher {
         for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
-                queryString: `label:\"${label}\" state:open ${listOfRepos}`,
+                queryString: `label:"${label}" state:open ${listOfRepos}`,
                 pageSize,
             };
             const queryId = `${label}: ${chunk[0]}`;
-            const issue = await this.fetchAllPages(token, query, variables, queryId);
+            const issue = await this.fetchAllPages(token, queryTemplate, variables, queryId);
             edgeArray.push(...issue);
         }
 
@@ -177,7 +177,7 @@ export class GitHubIssueFetcher {
                 console.log(`No repository for ${edge.node.title}`);
             }
 
-            return edge.node.repository ? true : false;
+            return edge.node.repository;
         });
 
         result.issueCount = result.edges.length;

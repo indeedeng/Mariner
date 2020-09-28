@@ -68,6 +68,7 @@ export class IssueFinder {
             map.set(issue.url, issue);
         });
         const uniqueIssues: Issue[] = Array.from(map.values());
+
         return uniqueIssues;
     }
 }
