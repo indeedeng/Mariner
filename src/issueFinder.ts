@@ -1,5 +1,5 @@
-import { GitHubIssueFetcher, GitHubIssue } from './gitHubIssueFetcher';
-import * as mariner from './mariner/index'; // This is used during development
+import { GitHubIssue, GitHubIssueFetcher } from './gitHubIssueFetcher';
+import { Logger } from './tab-level-logger';
 
 export interface Issue {
     title: string;
@@ -9,10 +9,10 @@ export interface Issue {
 }
 
 export class IssueFinder {
-    private readonly logger: mariner.Logger;
+    private readonly logger: Logger;
     private readonly fetcher: GitHubIssueFetcher;
 
-    public constructor(logger: mariner.Logger) {
+    public constructor(logger: Logger) {
         this.logger = logger;
         this.fetcher = new GitHubIssueFetcher(logger);
     }
