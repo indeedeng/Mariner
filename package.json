@@ -1,6 +1,6 @@
 {
     "name": "oss-mariner",
-    "version": "0.2.2-alpha",
+    "version": "0.3.0-alpha",
     "description": "A node.js library for analyzing open source library dependencies",
     "main": "dist/mariner/index.js",
     "types": "dist/mariner/index.d.ts",
