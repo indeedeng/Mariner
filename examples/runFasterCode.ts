@@ -18,7 +18,9 @@ import * as mariner from '../src/mariner/index'; // This is used during developm
 
 import * as path from 'path';
 import { Issue, IssueFinder } from '../src/issueFinder';
-import { Config, getConfig } from '../src/config';
+import { getConfig } from '../src/config';
+const config = getConfig();
+
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -71,13 +73,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     }
 });
 
-const configFilePath = path.join(__dirname, '..', 'src', 'config.json');
-const configJSON = fs.readFileSync(configFilePath, {
-    encoding: 'utf8',
-});
-const entireConfig = JSON.parse(configJSON) as Config;
-const labels = getConfig().labelsToSearch;
-//const labels = entireConfig.labelsToSearch;
+const labels = config.labelsToSearch;
 const finder = new IssueFinder(logger);
 
 function convertToRecord(issues: Map<string, Issue[]>): void {
