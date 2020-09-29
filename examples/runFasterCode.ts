@@ -69,7 +69,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const labels = ['good first issue', 'help wanted', 'documentation'];
-const finder = new mariner.IssueFinder(logger);
+const finder = new mariner.IssueFinder();
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
     const record: Record<string, mariner.Issue[]> = {};

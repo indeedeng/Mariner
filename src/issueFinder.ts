@@ -9,12 +9,10 @@ export interface Issue {
 }
 
 export class IssueFinder {
-    private readonly logger: Logger;
     private readonly fetcher: GitHubIssueFetcher;
 
-    public constructor(logger: Logger) {
-        this.logger = logger;
-        this.fetcher = new GitHubIssueFetcher(logger);
+    public constructor() {
+        this.fetcher = new GitHubIssueFetcher();
     }
 
     public async findIssues(

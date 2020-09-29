@@ -16,6 +16,10 @@ class ConsoleLogger implements Logger {
 
 let currentLogger = new ConsoleLogger();
 
+export function getLogger(): Logger {
+    return currentLogger;
+}
+
 export function setLogger(newLogger: Logger): void {
     currentLogger = newLogger;
 }

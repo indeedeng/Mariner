@@ -1,6 +1,6 @@
 import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
-import { Logger } from './tab-level-logger';
+import { getLogger, Logger } from './tab-level-logger';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
@@ -84,12 +84,6 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
 }`;
 
 export class GitHubIssueFetcher {
-    private readonly logger: Logger;
-
-    public constructor(logger: Logger) {
-        this.logger = logger;
-    }
-
     public async fetchMatchingIssues(
         token: string,
         label: string,
@@ -111,7 +105,7 @@ export class GitHubIssueFetcher {
             edgeArray.push(...issue);
         }
 
-        this.logger.info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
+        getLogger().info(`-----Fetched ${label}: ${edgeArray.length} matching issues`);
 
         const issues = edgeArray.map((edge) => {
             return edge.node;
@@ -159,15 +153,15 @@ export class GitHubIssueFetcher {
             },
         };
         while (result.pageInfo.hasNextPage) {
-            this.logger.info(`Calling: ${queryId}`);
+            getLogger().info(`Calling: ${queryId}`);
             const response = (await graphqlWithAuth(query, variables)) as Response;
             const issueCountsAndIssues = response.search;
-            this.logger.info(
+            getLogger().info(
                 `Fetched: ${queryId} => ` +
                     `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
             );
             const rateLimit = response.rateLimit;
-            this.logger.info(`Rate limits: ${JSON.stringify(rateLimit)}`);
+            getLogger().info(`Rate limits: ${JSON.stringify(rateLimit)}`);
             variables.after = issueCountsAndIssues.pageInfo.endCursor;
             result.pageInfo.hasNextPage = issueCountsAndIssues.pageInfo.hasNextPage;
             result.edges.push(...issueCountsAndIssues.edges);
@@ -181,7 +175,7 @@ export class GitHubIssueFetcher {
         });
 
         result.issueCount = result.edges.length;
-        this.logger.info(`Returning: ${queryId} => ${result.issueCount}`);
+        getLogger().info(`Returning: ${queryId} => ${result.issueCount}`);
 
         return result.edges;
     }
