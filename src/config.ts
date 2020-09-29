@@ -1,5 +1,4 @@
 import fs from 'fs';
-import * as path from 'path';
 
 export interface Config {
     labelsToSearch: string[];
@@ -8,8 +7,8 @@ export interface Config {
     outputFilePath: string;
 }
 
-export function getConfig(): Config {
-    const configFilePath = path.join(__dirname, '..', '..', 'examples', 'config.json');
+export function readConfigFile(filePath: string): Config {
+    const configFilePath = `${__dirname}/../../${filePath}`;
     const configJSON = fs.readFileSync(configFilePath, {
         encoding: 'utf8',
     });

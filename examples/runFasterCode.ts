@@ -16,11 +16,8 @@ import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
 // import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
-import * as path from 'path';
 import { Issue, IssueFinder } from '../src/issueFinder';
-import { getConfig } from '../src/config';
-const config = getConfig();
-
+const config = mariner.readConfigFile('examples/config.json');
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
