@@ -1,6 +1,6 @@
 import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
-import { getLogger, Logger } from './tab-level-logger';
+import { getLogger } from './tab-level-logger';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {

@@ -1,5 +1,4 @@
 import { GitHubIssue, GitHubIssueFetcher } from './gitHubIssueFetcher';
-import { Logger } from './tab-level-logger';
 
 export interface Issue {
     title: string;
