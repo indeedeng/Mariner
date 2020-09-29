@@ -14,7 +14,7 @@
 
 import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
-// import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
+// import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
 
@@ -69,7 +69,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const labels = ['good first issue', 'help wanted', 'documentation'];
-const finder = new mariner.IssueFinder(logger);
+const finder = new mariner.IssueFinder();
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
     const record: Record<string, mariner.Issue[]> = {};
