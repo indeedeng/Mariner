@@ -14,7 +14,7 @@
 
 import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
-// import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
+// import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
 import * as path from 'path';
 
