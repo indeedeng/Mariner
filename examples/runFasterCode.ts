@@ -32,12 +32,8 @@ function getFromEnvOrThrow(configField: string): string {
 }
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
-const inputFilePath =
-    process.env.MARINER_INPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
-const outputFilePath =
-    process.env.MARINER_OUTPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'output.json');
+const inputFilePath = `${__dirname}/../../${config.inputFilePath}`;
+const outputFilePath = `${__dirname}/../../${config.outputFilePath}`;
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
@@ -73,7 +69,6 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     }
 });
 
-const labels = config.labelsToSearch;
 const finder = new IssueFinder(logger, config);
 
 function convertToRecord(issues: Map<string, Issue[]>): void {

@@ -4,5 +4,7 @@
         "good first issue",
         "help wanted",
         "documentation"
-    ]
+    ],
+    "inputFilePath": "examples/exampleData.json",
+    "outputFilePath": "examples/output.json"
 }

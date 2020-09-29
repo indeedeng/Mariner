@@ -4,6 +4,8 @@ import * as path from 'path';
 export interface Config {
     labelsToSearch: string[];
     numberOfReposPerCall: number;
+    inputFilePath: string;
+    outputFilePath: string;
 }
 
 export function getConfig(): Config {
