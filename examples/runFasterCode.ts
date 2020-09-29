@@ -14,9 +14,8 @@
 
 import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
-// import * as mariner from 'oss-mariner'    // This is how the npm package would normally be used
+// import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
-import { Issue, IssueFinder } from '../src/issueFinder';
 const config = mariner.readConfigFile('examples/config.json');
 
 function getFromEnvOrThrow(configField: string): string {
@@ -66,10 +65,10 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     }
 });
 
-const finder = new IssueFinder(logger, config);
+const finder = new mariner.IssueFinder(config);
 
-function convertToRecord(issues: Map<string, Issue[]>): void {
-    const record: Record<string, Issue[]> = {};
+function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
+    const record: Record<string, mariner.Issue[]> = {};
     issues.forEach((issuesForRepo: any, repo: any) => {
         record[repo] = issuesForRepo;
     });
@@ -78,7 +77,7 @@ function convertToRecord(issues: Map<string, Issue[]>): void {
     return jsonFile;
 }
 
-function outputToJson(record: Record<string, Issue[]>): void {
+function outputToJson(record: Record<string, mariner.Issue[]>): void {
     const noReplacer = undefined;
     const indent = 2;
     const jsonResults = JSON.stringify(record, noReplacer, indent);

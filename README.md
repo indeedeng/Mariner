@@ -2,6 +2,8 @@
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/indeedeng/Mariner.svg)
 
+## Introduction
+
 A node.js library for analyzing open source library dependencies.
 
 Mariner takes an input list of dependencies, fetches details about them from GitHub,
@@ -24,18 +26,37 @@ If you just want to USE Mariner, you don't need to do a git clone.
 Instead, create your own new node project, and install the oss-mariner package via npm:
 `npm install oss-mariner`
 
+### Step-by-step
+
+1. Create a new project folder and use `npm init` to make it a node project.
+1. Copy the contents of `runFasterCode.ts` into `index.js` in the new project.
+   1.1. <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+1. Comment out the existing line that imports mariner.
+1. Uncomment the line saying how mariner would normally be imported.
+1. Convert the TypeScript code to JavaScript by
+   1.1. Remove the `public` keywords from class members.
+   1.1. Remove the `implements Xxxx` from the FancyLogger class declaration.
+   1.1. Remove all the type declarations (like `: string`).
+1. Replace the path.join lines with simple hard-coded filenames: `exampleData.json` and `output.json`.
+1. Create an exampleData.json file or copy it in from Mariner.
+1. Run `npm install oss-mariner`
+1. Add `"type": "module"` to `package.json`.
+1. Run `node index.js`.
+
+### More details (possibly outdated)
+
 Mariner can be called from Javascript or from Typescript. You can see an example here:
-https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts
+<https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts>
 
 Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
 
 To invoke mariner using the new GraphQL code you can see an example here:
-https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts
+<https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
 
 If you are using mariner with the new GraphQL code, Invoke the finder(), passing the
 appropiate parameters in finder.findIssues(),
 
-````
+```
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');  // from an environment variable
 const inputFilePath = process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
 const outputFilePath = process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
@@ -57,13 +78,12 @@ finder.findIssues(token, labels, repositoryLookupName)
         console.log(err);
     });
 
-````
+```
 
 If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
 invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:
 
-
-````
+```
 const ddr = new DependencyDetailsRetriever();
 const githubToken = Process.env.GITHUB_TOKEN; // from an environment variable
 const inputFilePath = '<full path to your input file>';
@@ -71,7 +91,7 @@ const outputFilePath = '<full path to the file that ddr should create>';
 const abbreviated = false; // OPTIONAL; default is false; true will exclude some dependencies
 ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
 
-````
+```
 
 For both the runOldCode.ts and runFasterCode.ts files you must create a token.
 The GitHub token must be a valid personal access token. It does not require any permissions beyond
@@ -135,6 +155,8 @@ The [Open Source team at Indeed](https://opensource.indeedeng.io/), who can be r
 
 If you are a maintainer, you can follow these steps to publish a new version of the package:
 
+1. Create a branch named "publish-x.y.z (x.y.z will be the version number)
+1. Update the version number in package.json
 1. Be sure the version number in package.json is correct
 1. Run `npm install` to update package-lock.json
 1. Run `npm run build` and `npm run lint` to make sure there are no errors
@@ -142,7 +164,7 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 1. Login to npm if you haven’t already: `npm login`
 1. Do a dry run to make sure the package looks good: `npm publish --dry-run`
 1. Publish: `npm publish`
-1. Verify: https://www.npmjs.com/package/oss-mariner
+1. Verify: <https://www.npmjs.com/package/oss-mariner>
 
 ## Code of Conduct
 

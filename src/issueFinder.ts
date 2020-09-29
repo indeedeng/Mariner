@@ -1,5 +1,4 @@
 import { GitHubIssueFetcher, GitHubIssue } from './gitHubIssueFetcher';
-import * as mariner from './mariner/index'; // This is used during development
 import { Config } from './config';
 
 export interface Issue {
@@ -10,14 +9,12 @@ export interface Issue {
 }
 
 export class IssueFinder {
-    private readonly logger: mariner.Logger;
     private readonly config: Config;
     private readonly fetcher: GitHubIssueFetcher;
 
-    public constructor(logger: mariner.Logger, config: Config) {
-        this.logger = logger;
+    public constructor(config: Config) {
         this.config = config;
-        this.fetcher = new GitHubIssueFetcher(logger, this.config);
+        this.fetcher = new GitHubIssueFetcher(this.config);
     }
 
     public async findIssues(
@@ -70,6 +67,7 @@ export class IssueFinder {
             map.set(issue.url, issue);
         });
         const uniqueIssues: Issue[] = Array.from(map.values());
+
         return uniqueIssues;
     }
 }

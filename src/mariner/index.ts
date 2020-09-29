@@ -1,3 +1,4 @@
 export { DependencyDetailsRetriever } from '../dependency-details-retriever';
-export { Logger, setLogger } from '../tab-level-logger';
 export { readConfigFile, Config } from '../config';
+export { Issue, IssueFinder } from '../issueFinder';
+export { Logger, getLogger, setLogger } from '../tab-level-logger';
