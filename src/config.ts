@@ -8,7 +8,7 @@ export interface Config {
 }
 
 export function readConfigFile(filePath: string): Config {
-    const configFilePath = `${__dirname}/../../${filePath}`;
+    const configFilePath = `${__dirname}${filePath}`;
     const configJSON = fs.readFileSync(configFilePath, {
         encoding: 'utf8',
     });

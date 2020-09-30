@@ -5,6 +5,6 @@
         "help wanted",
         "documentation"
     ],
-    "inputFilePath": "examples/exampleData.json",
-    "outputFilePath": "examples/output.json"
+    "inputFilePath": "/../../examples/exampleData.json",
+    "outputFilePath": "/../../examples/output.json"
 }

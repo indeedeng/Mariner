@@ -16,7 +16,7 @@ import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
 // import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 
-const config = mariner.readConfigFile('examples/config.json');
+const config = mariner.readConfigFile('/../../examples/config.json');
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -28,8 +28,8 @@ function getFromEnvOrThrow(configField: string): string {
 }
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
-const inputFilePath = `${__dirname}/../../${config.inputFilePath}`;
-const outputFilePath = `${__dirname}/../../${config.outputFilePath}`;
+const inputFilePath = `${__dirname}${config.inputFilePath}`;
+const outputFilePath = `${__dirname}${config.outputFilePath}`;
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
