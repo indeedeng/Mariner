@@ -1,4 +1,5 @@
-import { GitHubIssue, GitHubIssueFetcher } from './gitHubIssueFetcher';
+import { GitHubIssueFetcher, GitHubIssue } from './gitHubIssueFetcher';
+import { Config } from './config';
 
 export interface Issue {
     title: string;
@@ -8,19 +9,20 @@ export interface Issue {
 }
 
 export class IssueFinder {
+    private readonly config: Config;
     private readonly fetcher: GitHubIssueFetcher;
 
-    public constructor() {
-        this.fetcher = new GitHubIssueFetcher();
+    public constructor(config: Config) {
+        this.config = config;
+        this.fetcher = new GitHubIssueFetcher(this.config);
     }
 
     public async findIssues(
         token: string,
-        labels: string[],
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Issue[]>> {
         const gitHubIssues: GitHubIssue[] = [];
-        for (const label of labels) {
+        for (const label of this.config.labelsToSearch) {
             const result = await this.fetcher.fetchMatchingIssues(
                 token,
                 label,

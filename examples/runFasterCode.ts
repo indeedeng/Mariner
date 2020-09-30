@@ -15,8 +15,8 @@
 import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
 // import mariner from 'oss-mariner'    // This is how the npm package would normally be used
-
 import * as path from 'path';
+const config = mariner.readConfigFile('examples/config.json');
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -28,12 +28,8 @@ function getFromEnvOrThrow(configField: string): string {
 }
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
-const inputFilePath =
-    process.env.MARINER_INPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
-const outputFilePath =
-    process.env.MARINER_OUTPUT_FILE_PATH ||
-    path.join(__dirname, '..', '..', 'examples', 'output.json');
+const inputFilePath = `${config.inputFilePath}`;
+const outputFilePath = `${config.outputFilePath}`;
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
@@ -51,12 +47,13 @@ class FancyLogger implements mariner.Logger {
 const logger = new FancyLogger();
 mariner.setLogger(logger);
 
-logger.info(`Input:  ${inputFilePath}`);
-logger.info(`Output: ${outputFilePath}`);
+logger.info(`Input:  ${path.resolve(inputFilePath)}`);
+logger.info(`Output: ${path.resolve(outputFilePath)}`);
 
 const contents = fs.readFileSync(inputFilePath, {
     encoding: 'utf8',
 });
+
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
 const prefix = 'https://api.github.com/repos/';
@@ -68,8 +65,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     }
 });
 
-const labels = ['good first issue', 'help wanted', 'documentation'];
-const finder = new mariner.IssueFinder();
+const finder = new mariner.IssueFinder(config);
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
     const record: Record<string, mariner.Issue[]> = {};
@@ -91,7 +87,7 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
 }
 
 finder
-    .findIssues(token, labels, repositoryLookupName)
+    .findIssues(token, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {

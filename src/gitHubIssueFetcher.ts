@@ -1,5 +1,6 @@
 import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { Config } from './config';
 import { getLogger } from './tab-level-logger';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
@@ -84,13 +85,19 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
 }`;
 
 export class GitHubIssueFetcher {
+    private readonly config: Config;
+
+    public constructor(config: Config) {
+        this.config = config;
+    }
+
     public async fetchMatchingIssues(
         token: string,
         label: string,
         repositoryIdentifiers: string[]
     ): Promise<GitHubIssue[]> {
         const pageSize = 100;
-        const numberOfReposPerCall = 1000;
+        const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
 
         const edgeArray: Edge[] = [];
@@ -158,7 +165,7 @@ export class GitHubIssueFetcher {
             const issueCountsAndIssues = response.search;
             getLogger().info(
                 `Fetched: ${queryId} => ` +
-                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
             );
             const rateLimit = response.rateLimit;
             getLogger().info(`Rate limits: ${JSON.stringify(rateLimit)}`);
