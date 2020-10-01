@@ -7,13 +7,19 @@
 A node.js library for analyzing open source library dependencies.
 
 Mariner takes an input list of dependencies, fetches details about them from GitHub,
-and outputs a file containing funding information for each project owner, and a list
-of issues for each project.
+and outputs a file containing a list of issues for each project.
 
 NOTE: This library is in the experimental stage, so expect breaking changes
 even if the version number does not indicate that.
 
-### Renaming the default branch from master
+### REST vs. GraphQL
+
+The first couple alpha versions of Mariner only supported calls via GitHub's REST API. More
+recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API is hundreds of
+times faster, so the REST-related calls are now deprecated, and will be removed "soon". The
+GraphQL approach is shown in the `runFasterCode.ts` example.
+
+### Plans to rename the default branch from master
 
 We anticipate renaming the default branch of this repository from `master` to `main`.
 GitHub is planning to have a smooth easy conversion process/tool for later this year.
@@ -29,75 +35,23 @@ Instead, create your own new node project, and install the oss-mariner package v
 ### Step-by-step
 
 1. Create a new project folder and use `npm init` to make it a node project.
-1. Copy the contents of `runFasterCode.ts` into `index.js` in the new project.
-   1.1. <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
-1. Comment out the existing line that imports mariner.
-1. Uncomment the line saying how mariner would normally be imported.
-1. Convert the TypeScript code to JavaScript by
-   1.1. Remove the `public` keywords from class members.
-   1.1. Remove the `implements Xxxx` from the FancyLogger class declaration.
-   1.1. Remove all the type declarations (like `: string`).
-1. Replace the path.join lines with simple hard-coded filenames: `exampleData.json` and `output.json`.
-1. Create an exampleData.json file or copy it in from Mariner.
+1. Copy the contents of `runFasterCode.ts` into `index.js` and copy `config.json`, `exampleData.json`
+   in the new project.
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json>
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
+1. In `index.js` comment out the existing line that imports mariner.
+1. Also in `index.js` uncomment the line saying how mariner would normally be imported.
+1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example.
+   For now, you can convert the runFasterCode.ts example code to JavaScript:
+    - Remove the `public` keywords from class members.
+    - Remove the `implements Xxxx` from the FancyLogger class declaration.
+    - Remove all the type declarations (like `: string`).
 1. Run `npm install oss-mariner`
-1. Add `"type": "module"` to `package.json`.
+1. Add `"type": "module"` to `package.json` to allow using "import" rather than "require".
 1. Run `node index.js`.
 
-### More details (possibly outdated)
-
-Mariner can be called from Javascript or from Typescript. You can see an example here:
-<https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts>
-
-Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
-
-To invoke mariner using the new GraphQL code you can see an example here:
-<https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
-
-If you are using mariner with the new GraphQL code, Invoke the finder(), passing the
-appropiate parameters in finder.findIssues(),
-
-```
-const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');  // from an environment variable
-const inputFilePath = process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
-const outputFilePath = process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
-
-const finder = new IssueFinder(logger);
-finder.findIssues(token, labels, repositoryLookupName)
-    .then((issues) => {
-        let issueCount = 0;
-        issues.forEach((issuesForRepo) => {
-            issueCount += issuesForRepo.length;
-        });
-
-        convertToRecord(issues);
-        logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
-        logger.info(`Saved issue results to: ${outputFilePath}`);
-    })
-.catch((err) => {
-        logger.error(err.message);
-        console.log(err);
-    });
-
-```
-
-If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
-invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:
-
-```
-const ddr = new DependencyDetailsRetriever();
-const githubToken = Process.env.GITHUB_TOKEN; // from an environment variable
-const inputFilePath = '<full path to your input file>';
-const outputFilePath = '<full path to the file that ddr should create>';
-const abbreviated = false; // OPTIONAL; default is false; true will exclude some dependencies
-ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
-
-```
-
-For both the runOldCode.ts and runFasterCode.ts files you must create a token.
-The GitHub token must be a valid personal access token. It does not require any permissions beyond
-the default, so when you create it you can leave all the boxes unchecked. Be careful not to
-share your token with anyone. If it gets exposed, revoke it and create a replacement.
-See https://github.com/settings/tokens/new for how to create a token.
+### Input File Format
 
 The input file is a JSON file in the format:
 
@@ -109,10 +63,36 @@ The input file is a JSON file in the format:
 -   The project count value is mostly ignored, but is used by the "abbreviated" feature.
 -   See examples/exampleData.json for a complete example.
 
+### Output File Format
+
 The output file is a JSON file in the format:
 
 -   (We'll add a definition of the format later.
     For now, you can look at examples/output.json after running the app)
+
+## Token
+
+To run Mariner, you must create a token. The GitHub token must be a valid personal access token.
+It does not require any permissions beyond the default, so when you create it you can leave all
+the boxes unchecked. Be careful not to share your token with anyone. If it gets exposed, revoke
+it and create a replacement.
+See <https://github.com/settings/tokens/new> for how to create a token.
+
+### More details (possibly outdated)
+
+Mariner can be called from Javascript or from Typescript. You can see an example here:
+<https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts>
+
+Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
+
+To invoke mariner using the new GraphQL code, Invoke the finder(), passing the
+appropiate parameters in finder.findIssues() you can see an example here:
+<https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+
+If you are using the `examples/runOldCode.ts file`, (using the old REST code that is very slow)
+invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please
+see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file
+for more information.
 
 We don't recommend using the `abbreviated` feature.
 It will omit entries that have fewer than a hard-coded number of projects that depend on them.
@@ -159,12 +139,13 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 1. Update the version number in package.json
 1. Be sure the version number in package.json is correct
 1. Run `npm install` to update package-lock.json
+    - Search package-lock.json to be sure there are no references to 'nexus'
 1. Run `npm run build` and `npm run lint` to make sure there are no errors
-1. Submit and merge a PR to bump the version number
+1. Commit and push the changes, create a PR, have it approved, and merge it into the main branch
 1. Login to npm if you haven’t already: `npm login`
 1. Do a dry run to make sure the package looks good: `npm publish --dry-run`
 1. Publish: `npm publish`
-1. Verify: <https://www.npmjs.com/package/oss-mariner>
+1. Verify that the new version appears at: <https://www.npmjs.com/package/oss-mariner>
 
 ## Code of Conduct
 
