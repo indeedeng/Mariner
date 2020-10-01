@@ -33,12 +33,27 @@ Instead, create your own new node project, and install the oss-mariner package v
    1.1. <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
 1. Comment out the existing line that imports mariner.
 1. Uncomment the line saying how mariner would normally be imported.
+1. Create a config.json file inside examples folder
+1. Include in the json file: 
+
+```
+{
+    "numberOfReposPerCall": 600, 
+    "labelsToSearch": [
+        "good first issue",
+        "help wanted"
+    ],
+    "inputFilePath": "examples/exampleData.json",
+    "outputFilePath": "examples/output.json"
+}
+
+```
+1. Create an exampleData.json file or copy it in from Mariner
+
 1. Convert the TypeScript code to JavaScript by
    1.1. Remove the `public` keywords from class members.
    1.1. Remove the `implements Xxxx` from the FancyLogger class declaration.
    1.1. Remove all the type declarations (like `: string`).
-1. Replace the path.join lines with simple hard-coded filenames: `exampleData.json` and `output.json`.
-1. Create an exampleData.json file or copy it in from Mariner.
 1. Run `npm install oss-mariner`
 1. Add `"type": "module"` to `package.json`.
 1. Run `node index.js`.
@@ -57,12 +72,16 @@ If you are using mariner with the new GraphQL code, Invoke the finder(), passing
 appropiate parameters in finder.findIssues(),
 
 ```
-const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');  // from an environment variable
-const inputFilePath = process.env.MARINER_INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'exampleData.json');
-const outputFilePath = process.env.MARINER_OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
+const config = mariner.readConfigFile('examples/config.json');
 
-const finder = new IssueFinder(logger);
-finder.findIssues(token, labels, repositoryLookupName)
+const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
+const inputFilePath = `${config.inputFilePath}`;
+const outputFilePath = `${config.outputFilePath}`;
+
+
+const finder = new mariner.IssueFinder(config);
+finder
+    .findIssues(token, repositoryLookupName)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {
@@ -73,7 +92,7 @@ finder.findIssues(token, labels, repositoryLookupName)
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
         logger.info(`Saved issue results to: ${outputFilePath}`);
     })
-.catch((err) => {
+    .catch((err) => {
         logger.error(err.message);
         console.log(err);
     });
