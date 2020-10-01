@@ -165,7 +165,7 @@ export class GitHubIssueFetcher {
             const issueCountsAndIssues = response.search;
             getLogger().info(
                 `Fetched: ${queryId} => ` +
-                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
             );
             const rateLimit = response.rateLimit;
             getLogger().info(`Rate limits: ${JSON.stringify(rateLimit)}`);
