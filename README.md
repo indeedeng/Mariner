@@ -7,13 +7,19 @@
 A node.js library for analyzing open source library dependencies.
 
 Mariner takes an input list of dependencies, fetches details about them from GitHub,
-and outputs a file containing funding information for each project owner, and a list
-of issues for each project.
+and outputs a file containing a list of issues for each project.
 
 NOTE: This library is in the experimental stage, so expect breaking changes
 even if the version number does not indicate that.
 
-### Renaming the default branch from master
+## REST vs. GRAPHQL
+
+The first couple alpha versions of Mariner only supported calls via GitHub's REST API. More
+recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API is hundreds of
+times faster, so the REST-related calls are now deprecated, and will be removed "soon". The
+GraphQL approach is shown in the `runFasterCode.ts` example.
+
+### Plans to rename the default branch from master
 
 We anticipate renaming the default branch of this repository from `master` to `main`.
 GitHub is planning to have a smooth easy conversion process/tool for later this year.
@@ -29,35 +35,40 @@ Instead, create your own new node project, and install the oss-mariner package v
 ### Step-by-step
 
 1. Create a new project folder and use `npm init` to make it a node project.
-1. Copy the contents of `runFasterCode.ts` into `index.js` in the new project.
-   1.1. <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+1. Copy the contents of `runFasterCode.ts` into `index.js` and copy `config.json`, `exampleData.json`
+   in the new project. - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts> - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json> - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
 1. Comment out the existing line that imports mariner.
 1. Uncomment the line saying how mariner would normally be imported.
-1. Create a config.json file inside examples folder with contents similar to this:
-
-```
-{
-    "numberOfReposPerCall": 1000,
-    "labelsToSearch": [
-        "good first issue",
-        "help wanted"
-    ],
-    "inputFilePath": "examples/exampleData.json",
-    "outputFilePath": "examples/output.json"
-}
-
-```
-
-1. Create an [exampleData.json](https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json) file or copy it in from [Mariner](https://github.com/indeedeng/Mariner)
-
-1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example. 
-For now, you can convert the runFasterCode.ts example file to JavaScript:
-   1.1. Remove the `public` keywords from class members.
-   1.1. Remove the `implements Xxxx` from the FancyLogger class declaration.
-   1.1. Remove all the type declarations (like `: string`).
+1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example.
+   For now, you can convert the runFasterCode.ts example file to JavaScript:
+    - Remove the `public` keywords from class members.
+    - Remove the `implements Xxxx` from the FancyLogger class declaration.
+    - Remove all the type declarations (like `: string`).
 1. Run `npm install oss-mariner`
-1. Add `"type": "module"` to `package.json`.
+1. Add `"type": "module"` to `package.json` to allow using "import" rather than "require".
 1. Run `node index.js`.
+
+### Input File Format
+
+The input file is a JSON file in the format:
+
+-   At the top level is a map/object, where each entry consists of a dependency as the key,
+    and the number of projects that depend on that library as the value.
+-   Each dependency can be identified by a complete URL or just the owner/repo string.
+-   Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
+-   Example owner/repo strings: "square/retrofit": 5023,
+-   The project count value is mostly ignored, but is used by the "abbreviated" feature.
+-   See examples/exampleData.json for a complete example.
+
+### Output File Format
+
+The output file is a JSON file in the format:
+
+-   (We'll add a definition of the format later.
+    For now, you can look at examples/output.json after running the app)
+
+We don't recommend using the `abbreviated` feature.
+It will omit entries that have fewer than a hard-coded number of projects that depend on them.
 
 ### More details (possibly outdated)
 
@@ -70,33 +81,15 @@ To invoke mariner using the new GraphQL code, Invoke the finder(), passing the
 appropiate parameters in finder.findIssues() you can see an example here:
 <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
 
-If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
-invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please 
+If you are using the `examples/runOldCode.ts file`, (using the old REST code that is very slow)
+invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please
 see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file for more information.
 
-For both the runOldCode.ts and runFasterCode.ts files you must create a token.
+For both the `runOldCode.ts` and `runFasterCode.ts` files you must create a token.
 The GitHub token must be a valid personal access token. It does not require any permissions beyond
 the default, so when you create it you can leave all the boxes unchecked. Be careful not to
 share your token with anyone. If it gets exposed, revoke it and create a replacement.
 See https://github.com/settings/tokens/new for how to create a token.
-
-The input file is a JSON file in the format:
-
--   At the top level is a map/object, where each entry consists of a dependency as the key,
-    and the number of projects that depend on that library as the value.
--   Each dependency can be identified by a complete URL or just the owner/repo string.
--   Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
--   Example owner/repo strings: "square/retrofit": 5023,
--   The project count value is mostly ignored, but is used by the "abbreviated" feature.
--   See examples/exampleData.json for a complete example.
-
-The output file is a JSON file in the format:
-
--   (We'll add a definition of the format later.
-    For now, you can look at examples/output.json after running the app)
-
-We don't recommend using the `abbreviated` feature.
-It will omit entries that have fewer than a hard-coded number of projects that depend on them.
 
 ## Getting Help
 
@@ -140,12 +133,13 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 1. Update the version number in package.json
 1. Be sure the version number in package.json is correct
 1. Run `npm install` to update package-lock.json
+    - Search package-lock.json to be sure there are no references to 'nexus'
 1. Run `npm run build` and `npm run lint` to make sure there are no errors
-1. Submit and merge a PR to bump the version number
+1. Commit and push the changes, create a PR, have it approved, and merge it into the main branch
 1. Login to npm if you haven’t already: `npm login`
 1. Do a dry run to make sure the package looks good: `npm publish --dry-run`
 1. Publish: `npm publish`
-1. Verify: <https://www.npmjs.com/package/oss-mariner>
+1. Verify that the new version appears at: <https://www.npmjs.com/package/oss-mariner>
 
 ## Code of Conduct
 
