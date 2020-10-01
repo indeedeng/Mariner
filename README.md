@@ -34,11 +34,11 @@ Instead, create your own new node project, and install the oss-mariner package v
 1. Comment out the existing line that imports mariner.
 1. Uncomment the line saying how mariner would normally be imported.
 1. Create a config.json file inside examples folder
-1. Include in the json file: 
+1. Include in the json file:
 
 ```
 {
-    "numberOfReposPerCall": 600, 
+    "numberOfReposPerCall": 600,
     "labelsToSearch": [
         "good first issue",
         "help wanted"
@@ -48,6 +48,7 @@ Instead, create your own new node project, and install the oss-mariner package v
 }
 
 ```
+
 1. Create an exampleData.json file or copy it in from Mariner
 
 1. Convert the TypeScript code to JavaScript by
@@ -104,11 +105,19 @@ invoke the DependencyDetailsRetriever.run() method, passing appropriate paramete
 
 ```
 const ddr = new DependencyDetailsRetriever();
-const githubToken = Process.env.GITHUB_TOKEN; // from an environment variable
-const inputFilePath = '<full path to your input file>';
-const outputFilePath = '<full path to the file that ddr should create>';
-const abbreviated = false; // OPTIONAL; default is false; true will exclude some dependencies
-ddr.run(githubToken, inputFilePath, outputFilePath, abbreviated);
+const githubToken = getFromEnvOrThrow('MARINER_GITHUB_TOKEN'); // from an environment variable
+
+const inputFilePath =
+process.env.INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'oldExampleData.json');
+
+const outputFilePath =
+process.env.OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
+
+
+const ddr = new mariner.DependencyDetailsRetriever();
+ddr.run(token, inputFilePath, outputFilePath)
+    .then(() => logger.info('Done!'))
+    .catch((err) => logger.error(err.message));
 
 ```
 
