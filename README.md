@@ -33,12 +33,11 @@ Instead, create your own new node project, and install the oss-mariner package v
    1.1. <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
 1. Comment out the existing line that imports mariner.
 1. Uncomment the line saying how mariner would normally be imported.
-1. Create a config.json file inside examples folder
-1. Include in the json file:
+1. Create a config.json file inside examples folder with contents similar to this:
 
 ```
 {
-    "numberOfReposPerCall": 600,
+    "numberOfReposPerCall": 1000,
     "labelsToSearch": [
         "good first issue",
         "help wanted"
@@ -49,9 +48,10 @@ Instead, create your own new node project, and install the oss-mariner package v
 
 ```
 
-1. Create an exampleData.json file or copy it in from Mariner
+1. Create an [exampleData.json](https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json) file or copy it in from [Mariner](https://github.com/indeedeng/Mariner)
 
-1. Convert the TypeScript code to JavaScript by
+1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example. 
+For now, you can convert the runFasterCode.ts example file to JavaScript:
    1.1. Remove the `public` keywords from class members.
    1.1. Remove the `implements Xxxx` from the FancyLogger class declaration.
    1.1. Remove all the type declarations (like `: string`).
@@ -66,60 +66,13 @@ Mariner can be called from Javascript or from Typescript. You can see an example
 
 Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
 
-To invoke mariner using the new GraphQL code you can see an example here:
+To invoke mariner using the new GraphQL code, Invoke the finder(), passing the
+appropiate parameters in finder.findIssues() you can see an example here:
 <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
 
-If you are using mariner with the new GraphQL code, Invoke the finder(), passing the
-appropiate parameters in finder.findIssues(),
-
-```
-const config = mariner.readConfigFile('examples/config.json');
-
-const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
-const inputFilePath = `${config.inputFilePath}`;
-const outputFilePath = `${config.outputFilePath}`;
-
-
-const finder = new mariner.IssueFinder(config);
-finder
-    .findIssues(token, repositoryLookupName)
-    .then((issues) => {
-        let issueCount = 0;
-        issues.forEach((issuesForRepo) => {
-            issueCount += issuesForRepo.length;
-        });
-
-        convertToRecord(issues);
-        logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
-        logger.info(`Saved issue results to: ${outputFilePath}`);
-    })
-    .catch((err) => {
-        logger.error(err.message);
-        console.log(err);
-    });
-
-```
-
 If you are using the examples/runOldCode.ts file, (using the old REST code that is very slow)
-invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters:
-
-```
-const ddr = new DependencyDetailsRetriever();
-const githubToken = getFromEnvOrThrow('MARINER_GITHUB_TOKEN'); // from an environment variable
-
-const inputFilePath =
-process.env.INPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'oldExampleData.json');
-
-const outputFilePath =
-process.env.OUTPUT_FILE_PATH || path.join(__dirname, '..', '..', 'examples', 'output.json');
-
-
-const ddr = new mariner.DependencyDetailsRetriever();
-ddr.run(token, inputFilePath, outputFilePath)
-    .then(() => logger.info('Done!'))
-    .catch((err) => logger.error(err.message));
-
-```
+invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please 
+see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file for more information.
 
 For both the runOldCode.ts and runFasterCode.ts files you must create a token.
 The GitHub token must be a valid personal access token. It does not require any permissions beyond
