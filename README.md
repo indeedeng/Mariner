@@ -12,7 +12,7 @@ and outputs a file containing a list of issues for each project.
 NOTE: This library is in the experimental stage, so expect breaking changes
 even if the version number does not indicate that.
 
-## REST vs. GRAPHQL
+### REST vs. GraphQL
 
 The first couple alpha versions of Mariner only supported calls via GitHub's REST API. More
 recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API is hundreds of
@@ -36,11 +36,14 @@ Instead, create your own new node project, and install the oss-mariner package v
 
 1. Create a new project folder and use `npm init` to make it a node project.
 1. Copy the contents of `runFasterCode.ts` into `index.js` and copy `config.json`, `exampleData.json`
-   in the new project. - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts> - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json> - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
-1. Comment out the existing line that imports mariner.
-1. Uncomment the line saying how mariner would normally be imported.
+   in the new project.
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json>
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
+1. In `index.js` comment out the existing line that imports mariner.
+1. Also in `index.js` uncomment the line saying how mariner would normally be imported.
 1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example.
-   For now, you can convert the runFasterCode.ts example file to JavaScript:
+   For now, you can convert the runFasterCode.ts example code to JavaScript:
     - Remove the `public` keywords from class members.
     - Remove the `implements Xxxx` from the FancyLogger class declaration.
     - Remove all the type declarations (like `: string`).
@@ -67,8 +70,13 @@ The output file is a JSON file in the format:
 -   (We'll add a definition of the format later.
     For now, you can look at examples/output.json after running the app)
 
-We don't recommend using the `abbreviated` feature.
-It will omit entries that have fewer than a hard-coded number of projects that depend on them.
+## Token
+
+To run Mariner, you must create a token. The GitHub token must be a valid personal access token.
+It does not require any permissions beyond the default, so when you create it you can leave all
+the boxes unchecked. Be careful not to share your token with anyone. If it gets exposed, revoke
+it and create a replacement.
+See <https://github.com/settings/tokens/new> for how to create a token.
 
 ### More details (possibly outdated)
 
@@ -83,13 +91,11 @@ appropiate parameters in finder.findIssues() you can see an example here:
 
 If you are using the `examples/runOldCode.ts file`, (using the old REST code that is very slow)
 invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please
-see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file for more information.
+see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file
+for more information.
 
-For both the `runOldCode.ts` and `runFasterCode.ts` files you must create a token.
-The GitHub token must be a valid personal access token. It does not require any permissions beyond
-the default, so when you create it you can leave all the boxes unchecked. Be careful not to
-share your token with anyone. If it gets exposed, revoke it and create a replacement.
-See https://github.com/settings/tokens/new for how to create a token.
+We don't recommend using the `abbreviated` feature.
+It will omit entries that have fewer than a hard-coded number of projects that depend on them.
 
 ## Getting Help
 
