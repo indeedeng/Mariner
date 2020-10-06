@@ -100,7 +100,7 @@ export class GitHubIssueFetcher {
         const pageSize = 100;
         const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
-        const daysAgoCreated = this.config.daysAgoCreated ? this.config.daysAgoCreated : 90;
+        const daysAgoCreated = this.config.daysAgoCreated != undefined ? this.config.daysAgoCreated : 90;
         const dateStringToQuery = DateTime.local().minus({ days: daysAgoCreated }).toISODate();
 
         const edgeArray: Edge[] = [];
