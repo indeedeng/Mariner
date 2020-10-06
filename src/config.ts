@@ -5,6 +5,7 @@ export interface Config {
     numberOfReposPerCall: number;
     inputFilePath: string;
     outputFilePath: string;
+    daysAgoCreated: number | undefined;
 }
 
 export function readConfigFile(filePath: string): Config {
