@@ -100,14 +100,14 @@ export class GitHubIssueFetcher {
         const pageSize = 100;
         const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
-        const daysAgoCreated = this.config.daysAgoCreated != undefined ? this.config.daysAgoCreated : 90;
-        const dateStringToQuery = DateTime.local().minus({ days: daysAgoCreated }).toISODate();
+        const daysAgoCreated = this.config.daysAgoCreated || 90;
+        const DateStringForQuery = DateTime.local().minus({ days: daysAgoCreated }).toISODate();
 
         const edgeArray: Edge[] = [];
         for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
-                queryString: `label:"${label}" state:open ${listOfRepos} created:>${dateStringToQuery}`,
+                queryString: `label:"${label}" state:open ${listOfRepos} created:>${DateStringForQuery}`,
                 pageSize,
             };
             const queryId = `${label}: ${chunk[0]}`;
