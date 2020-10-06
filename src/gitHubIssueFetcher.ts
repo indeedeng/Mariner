@@ -2,6 +2,7 @@ import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 import { Config } from './config';
 import { getLogger } from './tab-level-logger';
+import { DateTime } from 'luxon';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
@@ -99,12 +100,14 @@ export class GitHubIssueFetcher {
         const pageSize = 100;
         const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
+        const daysAgoCreated = this.config.daysAgoCreated || 90;
+        const DateStringForQuery = DateTime.local().minus({ days: daysAgoCreated }).toISODate();
 
         const edgeArray: Edge[] = [];
         for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
-                queryString: `label:"${label}" state:open ${listOfRepos}`,
+                queryString: `label:"${label}" state:open ${listOfRepos} created:>${DateStringForQuery}`,
                 pageSize,
             };
             const queryId = `${label}: ${chunk[0]}`;
@@ -165,7 +168,7 @@ export class GitHubIssueFetcher {
             const issueCountsAndIssues = response.search;
             getLogger().info(
                 `Fetched: ${queryId} => ` +
-                    `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+                `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
             );
             const rateLimit = response.rateLimit;
             getLogger().info(`Rate limits: ${JSON.stringify(rateLimit)}`);
