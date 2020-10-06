@@ -2,6 +2,7 @@ import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 import { Config } from './config';
 import { getLogger } from './tab-level-logger';
+import { DateTime } from 'luxon';
 
 // NOTE: See https://docs.github.com/en/graphql/reference/objects#searchresultitemconnection
 export interface Edge {
@@ -99,14 +100,14 @@ export class GitHubIssueFetcher {
         const pageSize = 100;
         const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
+        const daysAgoCreated = this.config.daysAgoCreated ? this.config.daysAgoCreated : 90;
+        const dateStringToQuery = DateTime.local().minus({ days: daysAgoCreated }).toISODate();
 
         const edgeArray: Edge[] = [];
-        const daysAgoCreated = this.config.daysAgoCreated ? this.config.daysAgoCreated : 90;
-        console.log(`The days are ${daysAgoCreated}`);
         for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
             const variables: Variables = {
-                queryString: `label:"${label}" state:open ${listOfRepos}`,
+                queryString: `label:"${label}" state:open ${listOfRepos} created:>${dateStringToQuery}`,
                 pageSize,
             };
             const queryId = `${label}: ${chunk[0]}`;
