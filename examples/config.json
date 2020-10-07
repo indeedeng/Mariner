@@ -7,5 +7,5 @@
     ],
     "inputFilePath": "examples/exampleData.json",
     "outputFilePath": "examples/output.json",
-    "daysAgoCreated": null
+    "daysAgoCreated": 90
 }

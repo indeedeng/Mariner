@@ -28,8 +28,6 @@ function getFromEnvOrThrow(configField: string): string {
 }
 
 const token = getFromEnvOrThrow('MARINER_GITHUB_TOKEN');
-const inputFilePath = `${config.inputFilePath}`;
-const outputFilePath = `${config.outputFilePath}`;
 
 /*  This demonstrates instructing mariner to use a custom logger.
     It is optional, and if you don't call setLogger,
@@ -47,10 +45,11 @@ class FancyLogger implements mariner.Logger {
 const logger = new FancyLogger();
 mariner.setLogger(logger);
 
-logger.info(`Input:  ${path.resolve(inputFilePath)}`);
-logger.info(`Output: ${path.resolve(outputFilePath)}`);
+logger.info(`Input:  ${path.resolve(config.inputFilePath)}`);
+logger.info(`Output: ${path.resolve(config.outputFilePath)}`);
+logger.info(`Fetching issues from the last ${config.daysAgoCreated} days`);
 
-const contents = fs.readFileSync(inputFilePath, {
+const contents = fs.readFileSync(config.inputFilePath, {
     encoding: 'utf8',
 });
 
@@ -81,7 +80,7 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     const noReplacer = undefined;
     const indent = 2;
     const jsonResults = JSON.stringify(record, noReplacer, indent);
-    const data = fs.writeFileSync(outputFilePath, jsonResults);
+    const data = fs.writeFileSync(config.outputFilePath, jsonResults);
 
     return data;
 }
@@ -96,7 +95,7 @@ finder
 
         convertToRecord(issues);
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
-        logger.info(`Saved issue results to: ${outputFilePath}`);
+        logger.info(`Saved issue results to: ${config.outputFilePath}`);
     })
     .catch((err) => {
         logger.error(err.message);
