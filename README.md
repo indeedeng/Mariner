@@ -6,7 +6,9 @@
 
 A node.js library for analyzing open source library dependencies.
 
-Mariner takes an input list of dependencies, fetches details about them from GitHub,
+Mariner's goal is to help you to support the open source projects you rely upon by making it easy to get a list of the open issues in your dependencies. 
+
+Mariner takes an input list of GitHub repos, fetches details about them from GitHub,
 and outputs a file containing a list of issues for each project.
 
 NOTE: This library is in the experimental stage, so expect breaking changes
@@ -29,19 +31,21 @@ When that tool is available, we plan to take full advantage of it.
 ## Getting Started Using Mariner
 
 If you just want to USE Mariner, you don't need to do a git clone.
-Instead, create your own new node project, and install the oss-mariner package via npm:
+Instead, you'll create your own new node project, and install the oss-mariner package via npm:
 `npm install oss-mariner`
+You'll also need a GitHub token and a config file. (Keep reading for more info on these.)
 
-### Step-by-step
+
+### Step-by-step instructions for creating a project that uses Mariner
 
 1. Create a new project folder and use `npm init` to make it a node project.
-1. Copy the contents of `runFasterCode.ts` into `index.js` and copy `config.json`, `exampleData.json`
-   in the new project.
+1. Copy the contents of `runFasterCode.ts` into `index.js`.
     - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
-    - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json>
-    - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
 1. In `index.js` comment out the existing line that imports mariner.
-1. Also in `index.js` uncomment the line saying how mariner would normally be imported.
+1. Also in `index.js`, uncomment the line saying how mariner would normally be imported.
+1. Next, create a folder named `examples` and create two new files inside of it: `exampleData.json` and `config.json`. You can copy the contents of our examples into those new files or you can use the examples as a template for your own data and config choices. The `exampleData.json` should contain the repos that you're interested in getting issues from. For more info on the format of this file, look at[the Input File Format section](https://github.com/indeedeng/Mariner#input-file-format). More info on config.json can also be found [below](https://github.com/indeedeng/Mariner/blob/master/README.md#config.json-format) and the example files can be found here:
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json>
 1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example.
    For now, you can convert the runFasterCode.ts example code to JavaScript:
     - Remove the `public` keywords from class members.
@@ -49,7 +53,18 @@ Instead, create your own new node project, and install the oss-mariner package v
     - Remove all the type declarations (like `: string`).
 1. Run `npm install oss-mariner`
 1. Add `"type": "module"` to `package.json` to allow using "import" rather than "require".
-1. Run `node index.js`.
+1. Get a GitHub token. [See instructions here](https://github.com/indeedeng/Mariner#token)
+1. Store your GitHub token in your system's environment by running `export MARINER_GITHUB_TOKEN={Insert your GitHub token here}`. You will either have to do this once each time you restart your system, or else configure your system to do so automatically.  
+1. Finally, run the application to find open issues in your dependencies, using the command `node index.js`.
+
+### Config.json Format
+
+You can use our example config options as written, or customize the fields if you choose.
+-  Every GitHub issue can have one or more labels attached to it. `labelsToSearch` is an array of the labels you'd like Mariner to search for in the issues it will return. The defaults in our example are ones that will make it easy for someone to make a first contribution to a repo. 
+-  Make sure that your `inputFilePath` is accurate. If you followed the steps above and put `exampleData.json` into a top-level folder called `examples`, you won't have to change the value of this variable.
+-  `outputFilePath` is the place you'd like the results written to
+-  `daysAgoCreated` is for deciding how fresh you want the issues to be. If you only want issues that were created in the last week, then choose 7, for example. 
+-  `numberOfReposPerCall`: we recommend not changing this number. Unless you're getting an error from GitHub that your query string is too long, in which case try a smaller number.
 
 ### Input File Format
 

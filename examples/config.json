@@ -1,5 +1,4 @@
 {
-    "numberOfReposPerCall": 1000,
     "labelsToSearch": [
         "good first issue",
         "help wanted",
@@ -7,5 +6,6 @@
     ],
     "inputFilePath": "examples/exampleData.json",
     "outputFilePath": "examples/output.json",
-    "daysAgoCreated": null
+    "daysAgoCreated": 90,
+    "numberOfReposPerCall": 1000
 }
