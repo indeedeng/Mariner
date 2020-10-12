@@ -82,7 +82,7 @@
         "no-unneeded-ternary": "error",
         "no-unused-expressions": "error",
         "no-unused-vars": "off",   // Needs to be disabled for @typescript/no-unused-vars to work
-        "no-use-before-define": "error",
+        "no-use-before-define": "off",
         "no-useless-call": "error",
         "no-useless-concat": "error",
         "no-with": "error",
