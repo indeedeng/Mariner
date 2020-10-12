@@ -190,9 +190,10 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
 
 class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<Record<string, unknown>[]> {
     public executeRequest(params: RequestParams): Promise<Record<string, unknown>[]> {
-        const requestUrl = `${this.getURL(params)}/issues?since=${MIN_ISSUE_DATE}&labels=${
-            params.label
-        }`;
+        const requestUrl =
+            `${this.getURL(params)}/issues?` +
+            `since=${MIN_ISSUE_DATE}&` +
+            `labels=${params.label}`;
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
 
         return this.httpClient
