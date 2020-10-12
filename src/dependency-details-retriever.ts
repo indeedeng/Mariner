@@ -75,7 +75,6 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string | nul
         ownerDataCollection: OwnerDataCollection
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
-            // eslint-disable-next-line @typescript-eslint/camelcase
             ownerData.funding_url = fundingUrl;
 
             return ownerData;
@@ -110,10 +109,8 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string
             const libraryUrl = this.getURL(params);
 
             return {
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 funding_url: fundingUrl,
                 // tslint:disable-next-line: no-null-keyword
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 html_url: this.getURL(params, null),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
@@ -155,7 +152,6 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     ): void {
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (repoData) => {
             repoData.language = languageAndOpenIssuesCount.language;
-            // eslint-disable-next-line @typescript-eslint/camelcase
             repoData.open_issues_count = languageAndOpenIssuesCount.openIssuesCount;
 
             return repoData;
@@ -233,7 +229,6 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<Record<string
                             return {
                                 title: issue.title,
                                 url: issue.html_url,
-                                // eslint-disable-next-line @typescript-eslint/camelcase
                                 created_at: issue.created_at,
                                 tagged: [(params.label as string).replace(/\+/g, ' ')],
                             };
