@@ -188,8 +188,8 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     }
 }
 
-class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
-    public executeRequest(params: RequestParams): Promise<object[]> {
+class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<Record<string, unknown>[]> {
+    public executeRequest(params: RequestParams): Promise<Record<string, unknown>[]> {
         const requestUrl = `${this.getURL(params)}/issues?since=${MIN_ISSUE_DATE}&labels=${
             params.label
         }`;
