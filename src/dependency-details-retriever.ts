@@ -18,7 +18,6 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
         this.httpClient = httpClient;
     }
 
-    // tslint:disable-next-line: no-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected extractFundingUrl(responseJson: any, requestUrl: string): string | null {
         if (Array.isArray(responseJson)) {
@@ -33,7 +32,6 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
             TabDepthLogger.error(0, errorMessage);
         }
 
-        // tslint:disable-next-line: no-null-keyword
         return null;
     }
     protected createErrorMessage(err: Error, requestUrl: string): string {
@@ -75,7 +73,6 @@ class RestfulOwnersDataFetcher extends BaseRestfulGithubDataFetcher<string | nul
         ownerDataCollection: OwnerDataCollection
     ): void {
         ownerDataCollection.updateOwnerData(params.owner, (ownerData) => {
-            // eslint-disable-next-line @typescript-eslint/camelcase
             ownerData.funding_url = fundingUrl;
 
             return ownerData;
@@ -110,10 +107,7 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string
             const libraryUrl = this.getURL(params);
 
             return {
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 funding_url: fundingUrl,
-                // tslint:disable-next-line: no-null-keyword
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 html_url: this.getURL(params, null),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
@@ -155,7 +149,6 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     ): void {
         ownerDataCollection.updateRepoData(params.owner, params.repo as string, (repoData) => {
             repoData.language = languageAndOpenIssuesCount.language;
-            // eslint-disable-next-line @typescript-eslint/camelcase
             repoData.open_issues_count = languageAndOpenIssuesCount.openIssuesCount;
 
             return repoData;
@@ -188,11 +181,12 @@ class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
     }
 }
 
-class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
-    public executeRequest(params: RequestParams): Promise<object[]> {
-        const requestUrl = `${this.getURL(params)}/issues?since=${MIN_ISSUE_DATE}&labels=${
-            params.label
-        }`;
+class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<Record<string, unknown>[]> {
+    public executeRequest(params: RequestParams): Promise<Record<string, unknown>[]> {
+        const requestUrl =
+            `${this.getURL(params)}/issues?` +
+            `since=${MIN_ISSUE_DATE}&` +
+            `labels=${params.label}`;
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
 
         return this.httpClient
@@ -210,7 +204,6 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
 
     public updateOwnerDataCollection(
         params: RequestParams,
-        // tslint:disable-next-line: no-any
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listOfIssues: any[],
         ownerDataCollection: OwnerDataCollection
@@ -232,7 +225,6 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<object[]> {
                             return {
                                 title: issue.title,
                                 url: issue.html_url,
-                                // eslint-disable-next-line @typescript-eslint/camelcase
                                 created_at: issue.created_at,
                                 tagged: [(params.label as string).replace(/\+/g, ' ')],
                             };
