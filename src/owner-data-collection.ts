@@ -121,14 +121,12 @@ export class OwnerDataCollection {
                 } else {
                     this.ownersArray.push(owner);
                     this.ownerDataMap[owner] = {
-                        // tslint:disable-next-line: no-null-keyword
                         funding_url: null,
                         html_url: 'https://github.com/' + owner,
                         dependent_count: dependentCount,
                         dependency_count: 1,
                         repos: {
                             [repo]: {
-                                // tslint:disable-next-line: no-null-keyword
                                 funding_url: null,
                                 count: dependentCount,
                                 issues: {},

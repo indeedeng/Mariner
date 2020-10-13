@@ -18,7 +18,6 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
         this.httpClient = httpClient;
     }
 
-    // tslint:disable-next-line: no-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected extractFundingUrl(responseJson: any, requestUrl: string): string | null {
         if (Array.isArray(responseJson)) {
@@ -33,7 +32,6 @@ abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
             TabDepthLogger.error(0, errorMessage);
         }
 
-        // tslint:disable-next-line: no-null-keyword
         return null;
     }
     protected createErrorMessage(err: Error, requestUrl: string): string {
@@ -110,7 +108,6 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string
 
             return {
                 funding_url: fundingUrl,
-                // tslint:disable-next-line: no-null-keyword
                 html_url: this.getURL(params, null),
                 count: ownerDataCollection.getDependentCountForLibrary(libraryUrl),
                 issues: {},
@@ -207,7 +204,6 @@ class RestfulLabelDataFetcher extends BaseRestfulGithubDataFetcher<Record<string
 
     public updateOwnerDataCollection(
         params: RequestParams,
-        // tslint:disable-next-line: no-any
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         listOfIssues: any[],
         ownerDataCollection: OwnerDataCollection
