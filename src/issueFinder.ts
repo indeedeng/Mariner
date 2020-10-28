@@ -6,6 +6,8 @@ export interface Issue {
     createdAt: string;
     repositoryNameWithOwner: string;
     url: string;
+    updatedAt: string;
+    labels: string[];
 }
 
 export class IssueFinder {
@@ -56,9 +58,18 @@ export class IssueFinder {
             createdAt: node.createdAt,
             repositoryNameWithOwner: node.repository.nameWithOwner,
             url: node.url,
+            updatedAt: node.createdAt,
+            labels: this.convertFromGitHubLabels(node.labels.edges)
         };
 
         return issue;
+    }
+
+    private convertFromGitHubLabels(edges: Array<{ node: { name: string}}>) {
+        const labels = edges.reduce((labels: string[], edge) => {
+            return[...labels, edge.node.name]
+        }, [])
+        return labels;
     }
 
     private omitDuplicates(issues: Issue[]): Issue[] {

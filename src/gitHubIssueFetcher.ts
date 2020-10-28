@@ -37,6 +37,8 @@ export interface GitHubIssue {
     createdAt: string;
     repository: GitHubRepository;
     url: string;
+    updatedAt: string;
+    labels: { edges: Array<{ node: { name: string}}> };
 }
 
 interface GitHubRepository {
@@ -68,6 +70,14 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
                         nameWithOwner
                     }
                     url
+                    updatedAt
+                    labels(first: $pageSize) {
+                        edges{
+                            node{
+                                name
+                            }
+                        }
+                    }
     	        }
             }
         }
