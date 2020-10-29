@@ -59,7 +59,7 @@ export class IssueFinder {
             repositoryNameWithOwner: node.repository.nameWithOwner,
             url: node.url,
             updatedAt: node.updatedAt,
-            labels: this.convertFromGitHubLabels(node.labels.edges)
+            labels: this.convertFromGitHubLabels(node.labels.edges),
         };
 
         return issue;
@@ -68,7 +68,8 @@ export class IssueFinder {
     private convertFromGitHubLabels(edges: GitHubLabelEdge[]) {
         const labels = edges.map((edge) => {
             return edge.node.name;
-        })
+        });
+
         return labels;
     }
 

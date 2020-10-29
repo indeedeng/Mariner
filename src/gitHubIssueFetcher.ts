@@ -45,10 +45,10 @@ interface GitHubRepository {
     nameWithOwner: string;
 }
 
-export interface GitHubLabelEdge { 
+export interface GitHubLabelEdge {
     node: {
-        name: string
-    }
+        name: string;
+    };
 }
 
 interface Variables extends RequestParameters {

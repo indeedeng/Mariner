@@ -176,6 +176,8 @@ Run `npm run build` to compile the code to Javascript.
 
 Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
 
+Ensure to lint your code by running `npm run lint` before submitting any code for review. `npm run lint:fix` will automatically fix any errors.
+
 ## Local testing of the npm packaging
 
 You should have local copies of both the oss-mariner project and the project that will include it.
