@@ -1,4 +1,4 @@
-import { GitHubIssueFetcher, GitHubIssue } from './gitHubIssueFetcher';
+import { GitHubIssueFetcher, GitHubIssue, GitHubLabelEdge } from './gitHubIssueFetcher';
 import { Config } from './config';
 
 export interface Issue {
@@ -58,17 +58,17 @@ export class IssueFinder {
             createdAt: node.createdAt,
             repositoryNameWithOwner: node.repository.nameWithOwner,
             url: node.url,
-            updatedAt: node.createdAt,
+            updatedAt: node.updatedAt,
             labels: this.convertFromGitHubLabels(node.labels.edges)
         };
 
         return issue;
     }
 
-    private convertFromGitHubLabels(edges: Array<{ node: { name: string}}>) {
-        const labels = edges.reduce((labels: string[], edge) => {
-            return[...labels, edge.node.name]
-        }, [])
+    private convertFromGitHubLabels(edges: GitHubLabelEdge[]) {
+        const labels = edges.map((edge) => {
+            return edge.node.name;
+        })
         return labels;
     }
 
