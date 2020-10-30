@@ -8,7 +8,7 @@ A node.js library for analyzing open source library dependencies.
 
 Mariner's goal is to help you to support the open source projects you rely upon by making it easy to get a list of the open issues in your dependencies. 
 
-Mariner takes an input list of GitHub repos, fetches details about them from GitHub,
+Mariner takes an input list of GitHub repositories, fetches details about them from GitHub,
 and outputs a file containing a list of issues for each project.
 
 NOTE: This library is in the experimental stage, so expect breaking changes
@@ -19,7 +19,7 @@ even if the version number does not indicate that.
 The first couple alpha versions of Mariner only supported calls via GitHub's REST API. More
 recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API is hundreds of
 times faster, so the REST-related calls are now deprecated, and will be removed "soon". The
-GraphQL approach is shown in the `runFasterCode.ts` example.
+GraphQL approach is shown in the `runFasterCode.ts` examples.
 
 ### Plans to rename the default branch from master
 
