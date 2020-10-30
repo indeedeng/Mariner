@@ -176,7 +176,9 @@ Run `npm run build` to compile the code to Javascript.
 
 Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
 
-Ensure to lint your code by running `npm run lint` before submitting any code for review. `npm run lint:fix` will automatically fix any errors.
+Ensure to lint your code by running `npm run lint` before submitting any code for review. Either manually fix the errors or run `npm run lint:fix` to automatically fix any errors.
+
+Husky is set up to run linting checks pre-commit which should prevent being able to commit linting errors; however, There is a [bug](https://github.com/typicode/husky/issues/639) in husky where occasionally the hooks won't run in an IDE.
 
 ## Local testing of the npm packaging
 
