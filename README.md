@@ -81,9 +81,50 @@ The input file is a JSON file in the format:
 ### Output File Format
 
 The output file is a JSON file in the format:
+```javascript
+{
+  "repository/name": [
+    {
+      "title": "Issue Title 1",
+      "createdAt": "2020-10-16T01:07:36Z",
+      "repositoryNameWithOwner": "repository/name",
+      "url": "https://github.com/repository/name/issues/65",
+      "updatedAt": "2020-10-16T01:07:36Z",
+      "labels": [
+        "Hacktoberfest",
+        "good first issue"
+      ]
+    },
+    {
+      "title": "Issue Title 2",
+      "createdAt": "2020-10-12T22:37:17Z",
+      "repositoryNameWithOwner": "repository/name",
+      "url": "https://github.com/repository/name/issues/58",
+      "updatedAt": "2020-10-12T22:37:17Z",
+      "labels": [
+        "Hacktoberfest",
+        "good first issue"
+      ]
+    }
+  ],
+  "respository/second_name": [
+    {
+      "title": "Issue 102",
+      "createdAt": "2020-10-03T13:16:58Z",
+      "repositoryNameWithOwner": "respository/second_name",
+      "url": "https://github.com/respository/second_name/issues/12137",
+      "updatedAt": "2020-10-03T13:16:58Z",
+      "labels": [
+        "claimed",
+        "good first issue",
+        "i: enhancement"
+      ]
+    }
+  ],
+}
+```
 
--   (We'll add a definition of the format later.
-    For now, you can look at examples/output.json after running the app)
+Please note that only the first 100 labels per issue will be fetched. If a single issue has over 100 labels, these will be excluded without any errors or warnings.
 
 ## Token
 
@@ -134,6 +175,8 @@ Follow the instructions in examples/runFasterCode.ts or examples/runOldCode.ts t
 Run `npm run build` to compile the code to Javascript.
 
 Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
+
+Ensure to lint your code by running `npm run lint` before submitting any code for review. `npm run lint:fix` will automatically fix any errors.
 
 ## Local testing of the npm packaging
 

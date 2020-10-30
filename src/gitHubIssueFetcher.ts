@@ -37,20 +37,29 @@ export interface GitHubIssue {
     createdAt: string;
     repository: GitHubRepository;
     url: string;
+    updatedAt: string;
+    labels: { edges: GitHubLabelEdge[] };
 }
 
 interface GitHubRepository {
     nameWithOwner: string;
 }
 
+export interface GitHubLabelEdge {
+    node: {
+        name: string;
+    };
+}
+
 interface Variables extends RequestParameters {
     queryString: string;
     pageSize: number;
+    maxLabelsToRetrieve: number;
     after?: string;
 }
 
 const queryTemplate = `
-query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
+query findByLabel($queryString:String!, $pageSize:Int, $maxLabelsToRetrieve:Int, $after:String) {
     search(
         type: ISSUE, 
         query: $queryString
@@ -68,6 +77,14 @@ query findByLabel($queryString:String!, $pageSize:Int, $after:String) {
                         nameWithOwner
                     }
                     url
+                    updatedAt
+                    labels(first: $maxLabelsToRetrieve) {
+                        edges{
+                            node{
+                                name
+                            }
+                        }
+                    }
     	        }
             }
         }
@@ -98,6 +115,7 @@ export class GitHubIssueFetcher {
         repositoryIdentifiers: string[]
     ): Promise<GitHubIssue[]> {
         const pageSize = 100;
+        const maxLabelsToRetrieve = 100;
         const numberOfReposPerCall = this.config.numberOfReposPerCall;
         const reposForEachCall = this.splitArray(repositoryIdentifiers, numberOfReposPerCall);
         const daysAgoCreated = this.config.daysAgoCreated;
@@ -109,6 +127,7 @@ export class GitHubIssueFetcher {
             const variables: Variables = {
                 queryString: `label:"${label}" state:open ${listOfRepos} created:>${dateTimeStringForQuery}`,
                 pageSize,
+                maxLabelsToRetrieve,
             };
             const queryId = `${label}: ${chunk[0]}`;
             const issue = await this.fetchAllPages(token, queryTemplate, variables, queryId);
