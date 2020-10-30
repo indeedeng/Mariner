@@ -6,6 +6,11 @@
     "types": "dist/src/mariner/index.d.ts",
     "author": "",
     "license": "Apache-2.0",
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm run lint"
+        }
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
@@ -39,6 +44,7 @@
         "eslint": "^7.10.0",
         "eslint-config-prettier": "^6.12.0",
         "eslint-plugin-prettier": "^3.1.4",
+        "husky": "^4.3.0",
         "prettier": "^2.1.2",
         "typescript": "^4.0.3"
     },
