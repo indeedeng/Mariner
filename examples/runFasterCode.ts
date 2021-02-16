@@ -68,7 +68,7 @@ const finder = new mariner.IssueFinder(config);
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
     const record: Record<string, mariner.Issue[]> = {};
-    issues.forEach((issuesForRepo: any, repo: any) => {
+    issues.forEach((issuesForRepo: mariner.Issue[], repo: string) => {
         record[repo] = issuesForRepo;
     });
     const jsonFile = outputToJson(record);
