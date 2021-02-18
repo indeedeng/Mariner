@@ -10,17 +10,19 @@ export function generateConfluenceMarkdown(
     const markdownArray: string[] = [];
 
     markdownArray.push(`## Updated: ${now.toLocaleString(DateTime.DATETIME_FULL)}`);
-    for (const dependency in issuesByDependency) {
-        const issues = issuesByDependency.get(dependency);
+
+    for (const [dependency, issues] of issuesByDependency) {
+        // console.log(
+        //     `${dependency} and the ${JSON.stringify(issues)} have the max age of: ${maxIssuesAge}` //logging for test purposes
+        // );
         if (!issues || !issues.length) {
             continue;
         }
-
         markdownArray.push('\n');
         markdownArray.push(`h3. ${dependency}`);
         markdownArray.push('||*Title*||*Age*||');
 
-        issues?.forEach((issue) => {
+        issues.forEach((issue) => {
             const createdAt = DateTime.fromISO(issue.createdAt);
             const ageInDays = now.diff(createdAt, 'days').days;
             const ageInWholeDays = Math.round(ageInDays);
