@@ -89,20 +89,26 @@ describe('generateConfluenceMarkdown function', () => {
 
         const results = generateConfluenceMarkdown(mockDependencyMap);
 
+        expect(results).toContain(dependency);
         expect(results).toContain(fakeIssues2[0].title);
         expect(results).toContain('8&nbsp;days'); // keep getting errors   fakeIssues2[0].createdAt
         expect(results).toContain(fakeIssues2[0].repositoryNameWithOwner);
         expect(results).toContain(fakeIssues2[0].url);
     });
-    // WIP
-    // it('should pass in an issue that is too old', () => {
-    //     const mockDependencyMap: Map<string, Issue[]> = new Map();
-    //     const dependency = 'Badges/shields';
+    // WIP - failing test
+    it('should pass in an issue that is too old', () => {
+        const mockDependencyMap: Map<string, Issue[]> = new Map();
+        const now = DateTime.local();
+        const dependency = 'Badges/shields';
 
-    //     fakeIssues2[0].createdAt = '2020-11-26T11:52:41Z';
+        fakeIssues2[0].createdAt = '2021-01-02T11:52:41Z'; // old issue
 
-    //     mockDependencyMap.set(dependency, fakeIssues2);
-    //     const results = generateConfluenceMarkdown(mockDependencyMap, 30);
+        mockDependencyMap.set(dependency, fakeIssues2);
+        const results = generateConfluenceMarkdown(mockDependencyMap);
 
-    // });
+        const date = `${now.toLocaleString(DateTime.DATETIME_FULL)}`;
+
+        expect(results).toContain(dependency);
+        expect(results).toContain(`## Updated:${date}··\nh3. ${dependency}\n||*Title*||*Age*||`);
+    });
 });
