@@ -24,7 +24,7 @@ const fakeIssues: Issue[] = [
     },
 ];
 
-const fakeIssues2: Issue[] = [
+const singleIssue: Issue[] = [
     {
         title: 'ToC: links to markdown headings',
         createdAt: eightDaysAgo,
@@ -36,79 +36,86 @@ const fakeIssues2: Issue[] = [
 ];
 
 describe('generateConfluenceMarkdown function', () => {
-    it('should pass in a dependency with no issues', () => {
+    it('should not return a dependency with issue information', () => {
         const mapWithoutIssues: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
-        const oneDependency = mapWithoutIssues.set(dependency, noIssues);
-        const results = generateConfluenceMarkdown(oneDependency, 30);
 
-        expect(results).toContain(noIssues);
+        const now = DateTime.local();
+        const createdAt = DateTime.fromISO(singleIssue[0].createdAt);
+        const ageInDays = now.diff(createdAt, 'days').days;
+        const ageInWholeDays = Math.round(ageInDays);
+
+        const oneDependency = mapWithoutIssues.set(dependency, noIssues);
+        const results = generateConfluenceMarkdown(oneDependency);
+        expect(results).not.toContain(`h3. ${dependency}`);
+        expect(results).not.toContain('\n ||*Title*||*Age*||');
+        expect(results).not.toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
+        expect(results).not.toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
+        expect(results).not.toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
 
-    it('should return 2 issues for a single dependency', () => {
+    it('should return two issues for a single dependency with correct markdown', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'NodeJsDependency';
-        const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
 
+        const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
         const results = generateConfluenceMarkdown(twoIssues);
-        expect(results).toContain(fakeIssues[0].title);
-        expect(results).toContain(fakeIssues[0].title);
+        expect(results).toContain(`h3. ${dependency}`);
+        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
+        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
     });
-    it('should return two dependencies, each with their issue', () => {
+    it('should return two dependencies, with correct markdown for their issues', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency1 = 'Graphql';
         const dependency2 = 'TypeStrong';
 
         mockDependencyMap.set(dependency1, fakeIssues);
-        mockDependencyMap.set(dependency2, fakeIssues2);
+        mockDependencyMap.set(dependency2, singleIssue);
 
         const results = generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).toContain(dependency1);
-        expect(results).toContain(fakeIssues[0].title);
-        expect(results).toContain(fakeIssues[1].title);
-        expect(results).toContain(dependency2);
-        expect(results).toContain(fakeIssues2[0].title);
+        expect(results).toContain(`h3. ${dependency1}`);
+        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
+        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
+
+        expect(results).toContain(`h3. ${dependency2}`);
+        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
     });
     it('should return an issue that has square brackets and curly braces in its title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'React';
+        singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
 
-        fakeIssues2[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
-        mockDependencyMap.set(dependency, fakeIssues2);
-
+        mockDependencyMap.set(dependency, singleIssue);
         const results = generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).toContain(fakeIssues2[0].title);
+        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        // array.replace(/{|}/g, ''); // TODO..
     });
-    it('should pass in a dependency with one issue and make sure the all fields for that issue are correct', () => {
+    it('should return a dependency with one issue with all the correct fields and markdown', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
+        singleIssue[0].title = 'Added more info to readme.md';
 
-        fakeIssues2[0].title = 'Added more info to readme.md';
-        mockDependencyMap.set(dependency, fakeIssues2);
-
-        const results = generateConfluenceMarkdown(mockDependencyMap);
-
-        expect(results).toContain(dependency);
-        expect(results).toContain(fakeIssues2[0].title);
-        expect(results).toContain('8&nbsp;days'); // keep getting errors   fakeIssues2[0].createdAt
-        expect(results).toContain(fakeIssues2[0].repositoryNameWithOwner);
-        expect(results).toContain(fakeIssues2[0].url);
-    });
-    // WIP - failing test
-    it('should pass in an issue that is too old', () => {
-        const mockDependencyMap: Map<string, Issue[]> = new Map();
         const now = DateTime.local();
-        const dependency = 'Badges/shields';
+        const createdAt = DateTime.fromISO(singleIssue[0].createdAt);
+        const ageInDays = now.diff(createdAt, 'days').days;
+        const ageInWholeDays = Math.round(ageInDays);
 
-        fakeIssues2[0].createdAt = '2021-01-02T11:52:41Z'; // old issue
-
-        mockDependencyMap.set(dependency, fakeIssues2);
+        mockDependencyMap.set(dependency, singleIssue);
         const results = generateConfluenceMarkdown(mockDependencyMap);
+        expect(results).toContain(`h3. ${dependency}`);
+        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
+    });
+    it('should pass in an old issue and not display issue information in markdown', () => {
+        const mockDependencyMap: Map<string, Issue[]> = new Map();
+        const dependency = 'Badges/shields';
+        singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
-        const date = `${now.toLocaleString(DateTime.DATETIME_FULL)}`;
-
-        expect(results).toContain(dependency);
-        expect(results).toContain(`## Updated:${date}··\nh3. ${dependency}\n||*Title*||*Age*||`);
+        mockDependencyMap.set(dependency, singleIssue);
+        const results = generateConfluenceMarkdown(mockDependencyMap);
+        expect(results).toContain(`h3. ${dependency}`);
+        expect(results).toContain('\n||*Title*||*Age*||');
+        expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
     });
 });
