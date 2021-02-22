@@ -35,24 +35,27 @@ const singleIssue: Issue[] = [
     },
 ];
 
+function roundToWholeDays(IsoString: string): number {
+    const now = DateTime.local();
+    const createdAt = DateTime.fromISO(IsoString);
+    const ageInDays = now.diff(createdAt, 'days').days;
+    const ageInWholeDays = Math.round(ageInDays);
+
+    return ageInWholeDays;
+}
+
 describe('generateConfluenceMarkdown function', () => {
     it('should not list a dependency that has no issue', () => {
-        const mapWithoutIssues: Map<string, Issue[]> = new Map();
+        const issuesByDependency: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
 
-        const now = DateTime.local();
-        const createdAt = DateTime.fromISO(singleIssue[0].createdAt);
-        const ageInDays = now.diff(createdAt, 'days').days;
-        const ageInWholeDays = Math.round(ageInDays);
+        const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
+        const results = generateConfluenceMarkdown(oneDependencyNoIssue);
 
-        const oneDependency = mapWithoutIssues.set(dependency, noIssues);
-        const results = generateConfluenceMarkdown(oneDependency);
         expect(results).not.toContain(`h3. ${dependency}`);
         expect(results).not.toContain('\n ||*Title*||*Age*||');
-        expect(results).not.toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
-        expect(results).not.toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
-        expect(results).not.toContain(`|${ageInWholeDays}&nbsp;days|`);
+        expect(results).not.toContain('|days|');
     });
 
     it('should include both issues for dependency', () => {
@@ -94,13 +97,8 @@ describe('generateConfluenceMarkdown function', () => {
     it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
-        singleIssue[0].title = 'Added more info to readme.md';
 
-        const now = DateTime.local();
-        const createdAt = DateTime.fromISO(singleIssue[0].createdAt);
-        const ageInDays = now.diff(createdAt, 'days').days;
-        const ageInWholeDays = Math.round(ageInDays);
-
+        const ageInWholeDays = roundToWholeDays(singleIssue[0].createdAt);
         mockDependencyMap.set(dependency, singleIssue);
         const results = generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
