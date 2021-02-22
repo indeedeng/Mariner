@@ -12,9 +12,6 @@ export function generateConfluenceMarkdown(
     markdownArray.push(`## Updated: ${now.toLocaleString(DateTime.DATETIME_FULL)}`);
 
     for (const [dependency, issues] of issuesByDependency) {
-        // console.log(
-        //     `${dependency} and the ${JSON.stringify(issues)} have the max age of: ${maxIssuesAge}` //logging for test purposes
-        // );
         if (!issues || !issues.length) {
             continue;
         }
