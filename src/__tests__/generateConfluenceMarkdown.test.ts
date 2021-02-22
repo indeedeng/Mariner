@@ -36,7 +36,7 @@ const singleIssue: Issue[] = [
 ];
 
 describe('generateConfluenceMarkdown function', () => {
-    it('should not return a dependency with issue information', () => {
+    it('should not list a dependency that has no issue', () => {
         const mapWithoutIssues: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
@@ -55,7 +55,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).not.toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
 
-    it('should return two issues for a single dependency with correct markdown', () => {
+    it('should include both issues for dependency', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'NodeJsDependency';
 
@@ -65,7 +65,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
     });
-    it('should return two dependencies, with correct markdown for their issues', () => {
+    it('should include both dependencies that have issues', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency1 = 'Graphql';
         const dependency2 = 'TypeStrong';
@@ -81,7 +81,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`h3. ${dependency2}`);
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
     });
-    it('should return an issue that has square brackets and curly braces in its title', () => {
+    it('should remove square brackets and curly braces from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'React';
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
@@ -91,7 +91,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         // array.replace(/{|}/g, ''); // TODO..
     });
-    it('should return a dependency with one issue with all the correct fields and markdown', () => {
+    it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
         singleIssue[0].title = 'Added more info to readme.md';
@@ -107,7 +107,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
-    it('should pass in an old issue and not display issue information in markdown', () => {
+    it('should list a dependency but no issues if its issue is too old', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'Badges/shields';
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
