@@ -35,7 +35,7 @@ const singleIssue: Issue[] = [
     },
 ];
 
-function roundToWholeDays(IsoString: string): number {
+function calculateAgeInWholeDays(IsoString: string): number {
     const now = DateTime.local();
     const createdAt = DateTime.fromISO(IsoString);
     const ageInDays = now.diff(createdAt, 'days').days;
@@ -98,7 +98,7 @@ describe('generateConfluenceMarkdown function', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
 
-        const ageInWholeDays = roundToWholeDays(singleIssue[0].createdAt);
+        const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt);
         mockDependencyMap.set(dependency, singleIssue);
         const results = generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);

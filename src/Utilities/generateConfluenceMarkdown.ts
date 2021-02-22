@@ -32,5 +32,3 @@ export function generateConfluenceMarkdown(
 
     return markdownArray.join('\n');
 }
-
-// cleanMarkdown = markdownArray.replace(/{|}/g, ''); // TODO: this will be done somewhere else...
