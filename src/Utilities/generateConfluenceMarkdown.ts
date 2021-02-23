@@ -25,9 +25,9 @@ export function generateConfluenceMarkdown(
             const ageInWholeDays = Math.round(ageInDays);
 
             if (ageInWholeDays < maxIssuesAge) {
-                const cleanedTitleMarkup = removeBracketsAndParenthesis(issue.title);
+                const cleanedTitleMarkdown = cleanMarkdown(issue.title);
                 markdownArray.push(
-                    `|[${cleanedTitleMarkup}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
+                    `|[${cleanedTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
                 );
             }
         });
@@ -36,8 +36,9 @@ export function generateConfluenceMarkdown(
     return markdownArray.join('\n');
 }
 
-function removeBracketsAndParenthesis(issueTitle: string): string {
+function cleanMarkdown(issueTitle: string): string {
     const removedParenthesis = issueTitle.replace(/{|}/g, '');
+    //To-do - remove extra brackets in title
 
     return removedParenthesis;
 }
