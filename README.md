@@ -57,6 +57,31 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 1. Store your GitHub token in your system's environment by running `export MARINER_GITHUB_TOKEN={Insert your GitHub token here}`. You will either have to do this once each time you restart your system, or else configure your system to do so automatically.  
 1. Finally, run the application to find open issues in your dependencies, using the command `node index.js`.
 
+### Optional: Generating Markdown
+- You can generate markdown for use in Confluence/jira
+- The generateConfluenceMarkdown.ts file is inside the `src/Utilities` folder
+  - <https://github.com/indeedeng/Mariner/blob/master/src/Utilities/generateConfluenceMarkdown.ts>
+- The generateConfluenceMarkdown() creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
+- `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+- The `confluenceMarkdownPath` is set inside the config.json file: "examples/confluenceMarkdown.md"
+
+Example of confluenceMarkdown.md output:
+```md
+## Updated: February 22, 2021, 5:38 PM PST
+
+
+h3. babel/babel
+||*Title*||*Age*||
+|[all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|62&nbsp;days|
+
+
+h3. facebook/jest
+||*Title*||*Age*||
+|[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
+```
+- The feature is included in the `runFasterCode.ts`
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+
 ### Config.json Format
 
 You can use our example config options as written, or customize the fields if you choose.
@@ -65,6 +90,8 @@ You can use our example config options as written, or customize the fields if yo
 -  `outputFilePath` is the place you'd like the results written to
 -  `daysAgoCreated` is for deciding how fresh you want the issues to be. If you only want issues that were created in the last week, then choose 7, for example. 
 -  `numberOfReposPerCall`: we recommend not changing this number. Unless you're getting an error from GitHub that your query string is too long, in which case try a smaller number.
+Optional 
+- `confluenceMarkdownPath` is the place you'd see the markdown results
 
 ### Input File Format
 
