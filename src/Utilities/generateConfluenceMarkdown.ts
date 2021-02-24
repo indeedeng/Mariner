@@ -38,7 +38,7 @@ export function generateConfluenceMarkdown(
 
 function cleanMarkdown(issueTitle: string): string {
     const removedParenthesis = issueTitle.replace(/{|}/g, '');
-    //To-do - remove extra brackets in title
+    const cleanedMarkdown = removedParenthesis.replace(/\[?\]/, '').replace(/\[?\[/, ''); //Brute force to clean extra brackets
 
-    return removedParenthesis;
+    return cleanedMarkdown;
 }

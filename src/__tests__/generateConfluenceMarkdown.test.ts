@@ -91,12 +91,15 @@ describe('generateConfluenceMarkdown function', () => {
 
         mockDependencyMap.set(dependency, singleIssue);
         const results = generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
-        // array.replace(/{|}/g, ''); // TODO..
+        expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).toMatch(
+            `|[Navigation Editor Dropdown menus too narrow |${singleIssue[0].url}]|`
+        );
     });
     it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
+        singleIssue[0].title = 'Fixed interface';
 
         const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt);
         mockDependencyMap.set(dependency, singleIssue);
