@@ -16,7 +16,6 @@ import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
 // import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 import * as path from 'path';
-import { generateConfluenceMarkdown } from '../src/Utilities/generateConfluenceMarkdown';
 const config = mariner.readConfigFile('examples/config.json');
 
 function getFromEnvOrThrow(configField: string): string {
@@ -98,8 +97,8 @@ finder
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
         logger.info(`Saved issue results to: ${config.outputFilePath}`);
 
-        const confluenceMd = generateConfluenceMarkdown(issues);
-        fs.writeFileSync(config.confluenceMarkdownPath, confluenceMd);
+        const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
+        fs.writeFileSync(config.confluenceMarkdownPath, confluenceMarkdown);
         logger.info(`Saved Confluence Markdown to: ${config.confluenceMarkdownPath}`);
     })
     .catch((err) => {
