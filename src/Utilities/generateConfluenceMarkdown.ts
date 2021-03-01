@@ -36,9 +36,8 @@ export function generateConfluenceMarkdown(
     return markdownArray.join('\n');
 }
 
-function cleanMarkdown(issueTitle: string): string {
+export function cleanMarkdown(issueTitle: string): string {
     const removedCurlyBraces = issueTitle.replace(/{|}/g, '');
-    const cleanedMarkdown = removedCurlyBraces.replace(/\[?\]/, '').replace(/\[?\[/, ''); //Brute force to clean extra brackets
 
-    return cleanedMarkdown;
+    return removedCurlyBraces;
 }

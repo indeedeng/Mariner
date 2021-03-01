@@ -1,4 +1,4 @@
-import { generateConfluenceMarkdown } from '../Utilities/generateConfluenceMarkdown';
+import { generateConfluenceMarkdown, cleanMarkdown } from '../Utilities/generateConfluenceMarkdown';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -84,7 +84,7 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`h3. ${dependency2}`);
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
     });
-    it('should remove square brackets and curly braces from an issue title', () => {
+    it('should remove curly braces from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'React';
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
@@ -93,7 +93,7 @@ describe('generateConfluenceMarkdown function', () => {
         const results = generateConfluenceMarkdown(mockDependencyMap);
         expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toMatch(
-            `|[Navigation Editor Dropdown menus too narrow |${singleIssue[0].url}]|`
+            `|[[Navigation Editor] Dropdown menus too narrow |${singleIssue[0].url}]|`
         );
     });
     it('should return correct markdown for a dependency and an issue', () => {
@@ -118,5 +118,48 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`h3. ${dependency}`);
         expect(results).toContain('\n||*Title*||*Age*||');
         expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+    });
+});
+
+describe('cleanMarkdown function', () => {
+    it('should return string without altering it', () => {
+        const title1 =
+            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|';
+        const cleanedMarkdown = cleanMarkdown(title1);
+        expect(cleanedMarkdown).toMatch(
+            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|'
+        );
+    });
+    it('should remove a set of curly braces', () => {
+        const title = '|[{WIP} updating frontend components';
+        const url = 'https://github.com/marmelab/react-admin/issues/3450]';
+        const days = '8&nbsp;days';
+        const markdown = `${title}|${url}|${days}|`;
+        const cleanedMarkdown = cleanMarkdown(markdown);
+        expect(cleanedMarkdown).not.toContain(`${title}|${url}|${days}|`);
+        expect(cleanedMarkdown).toContain(`|[WIP updating frontend components|${url}|${days}|`);
+    });
+    it('should remove all curly braces', () => {
+        const title =
+            '|[{new babel} teardown do not fail tests in non-watch mode - {imports are removed}';
+        const url = 'https://github.com/babel/babel/issues/1254]';
+        const days = '8&nbsp;days';
+        const markdown = `${title}|${url}|${days}|`;
+        const cleanedMarkdown = cleanMarkdown(markdown);
+        expect(cleanedMarkdown).not.toContain(`${title}|${url}|${days}|`);
+        expect(cleanedMarkdown).toContain(
+            `|[new babel teardown do not fail tests in non-watch mode - imports are removed|${url}|${days}|`
+        );
+    });
+    it('should not remove brackets', () => {
+        const title = '|[[es-lint] resolves deprecated code {updates}';
+        const url = 'https://github.com/es-lint/es-lint/issues/2345]';
+        const days = '8&nbsp;days';
+        const markdown = `${title}|${url}|${days}|`;
+        const cleanedMarkdown = cleanMarkdown(markdown);
+        expect(cleanedMarkdown).not.toContain(`${title}|${url}|${days}|`);
+        expect(cleanedMarkdown).toContain(
+            `|[[es-lint] resolves deprecated code updates|${url}|${days}|`
+        );
     });
 });
