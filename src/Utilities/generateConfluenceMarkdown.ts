@@ -25,10 +25,19 @@ export function generateConfluenceMarkdown(
             const ageInWholeDays = Math.round(ageInDays);
 
             if (ageInWholeDays < maxIssuesAge) {
-                markdownArray.push(`|[${issue.title}|${issue.url}]|${ageInWholeDays}&nbsp;days|`);
+                const cleanedTitleMarkdown = cleanMarkdown(issue.title);
+                markdownArray.push(
+                    `|[${cleanedTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
+                );
             }
         });
     }
 
     return markdownArray.join('\n');
+}
+
+export function cleanMarkdown(issueTitle: string): string {
+    const removedCurlyBraces = issueTitle.replace(/{|}/g, '');
+
+    return removedCurlyBraces;
 }

@@ -6,6 +6,7 @@ export interface Config {
     inputFilePath: string;
     outputFilePath: string;
     daysAgoCreated: number;
+    confluenceMarkdownPath: string;
 }
 
 export function readConfigFile(configFilePath: string): Config {
@@ -22,6 +23,7 @@ export function readConfigFile(configFilePath: string): Config {
         inputFilePath: rawConfig.inputFilePath,
         outputFilePath: rawConfig.outputFilePath,
         daysAgoCreated: daysAgoCreated,
+        confluenceMarkdownPath: rawConfig.confluenceMarkdownPath,
     };
 
     return entireConfig;

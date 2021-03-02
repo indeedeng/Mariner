@@ -96,6 +96,10 @@ finder
         convertToRecord(issues);
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
         logger.info(`Saved issue results to: ${config.outputFilePath}`);
+
+        const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
+        fs.writeFileSync(config.confluenceMarkdownPath, confluenceMarkdown);
+        logger.info(`Saved Confluence Markdown to: ${config.confluenceMarkdownPath}`);
     })
     .catch((err) => {
         logger.error(err.message);

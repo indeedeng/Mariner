@@ -1,4 +1,5 @@
-import { generateConfluenceMarkdown } from '../Utilities/generateConfluenceMarkdown';
+import * as mariner from '../mariner/index';
+import { cleanMarkdown } from '../Utilities/generateConfluenceMarkdown';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -51,7 +52,7 @@ describe('generateConfluenceMarkdown function', () => {
         const dependency = 'TestDependency';
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
-        const results = generateConfluenceMarkdown(oneDependencyNoIssue);
+        const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
 
         expect(results).not.toContain(`h3. ${dependency}`);
         expect(results).not.toContain('\n ||*Title*||*Age*||');
@@ -63,7 +64,7 @@ describe('generateConfluenceMarkdown function', () => {
         const dependency = 'NodeJsDependency';
 
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
-        const results = generateConfluenceMarkdown(twoIssues);
+        const results = mariner.generateConfluenceMarkdown(twoIssues);
         expect(results).toContain(`h3. ${dependency}`);
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
@@ -76,7 +77,7 @@ describe('generateConfluenceMarkdown function', () => {
         mockDependencyMap.set(dependency1, fakeIssues);
         mockDependencyMap.set(dependency2, singleIssue);
 
-        const results = generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency1}`);
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
@@ -84,23 +85,26 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`h3. ${dependency2}`);
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
     });
-    it('should remove square brackets and curly braces from an issue title', () => {
+    it('should remove curly braces from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'React';
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
 
         mockDependencyMap.set(dependency, singleIssue);
-        const results = generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
-        // array.replace(/{|}/g, ''); // TODO..
+        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+        expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).toMatch(
+            `|[[Navigation Editor] Dropdown menus too narrow |${singleIssue[0].url}]|`
+        );
     });
     it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
+        singleIssue[0].title = 'Fixed interface';
 
         const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt);
         mockDependencyMap.set(dependency, singleIssue);
-        const results = generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
@@ -111,9 +115,38 @@ describe('generateConfluenceMarkdown function', () => {
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
         mockDependencyMap.set(dependency, singleIssue);
-        const results = generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
         expect(results).toContain('\n||*Title*||*Age*||');
         expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+    });
+});
+
+describe('cleanMarkdown function', () => {
+    it('should return string without altering it', () => {
+        const title1 =
+            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|';
+        const cleanedMarkdown = cleanMarkdown(title1);
+        expect(cleanedMarkdown).toEqual(
+            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|'
+        );
+    });
+    it('should remove a set of curly braces', () => {
+        const title = '|[{WIP} updating frontend components|';
+        const cleanedMarkdown = cleanMarkdown(title);
+        expect(cleanedMarkdown).toEqual('|[WIP updating frontend components|');
+    });
+    it('should remove all curly braces', () => {
+        const title =
+            '|[{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
+        const cleanedMarkdown = cleanMarkdown(title);
+        expect(cleanedMarkdown).toEqual(
+            '|[new babel teardown do not fail tests in non-watch mode - imports are removed|'
+        );
+    });
+    it('should not remove square brackets', () => {
+        const title = '|[[es-lint] resolves deprecated code {updates}|';
+        const cleanedMarkdown = cleanMarkdown(title);
+        expect(cleanedMarkdown).toEqual('|[[es-lint] resolves deprecated code updates|');
     });
 });

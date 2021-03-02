@@ -2,6 +2,7 @@
 
 dist
 examples/output.json
+examples/confluenceMarkdown.md
 
 # Dependency directories
 node_modules/
