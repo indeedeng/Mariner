@@ -1,4 +1,5 @@
 import * as mariner from '../mariner/index';
+import { cleanMarkdown } from '../Utilities/generateConfluenceMarkdown';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -125,27 +126,27 @@ describe('cleanMarkdown function', () => {
     it('should return string without altering it', () => {
         const title1 =
             '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|';
-        const cleanedMarkdown = mariner.cleanMarkdown(title1);
+        const cleanedMarkdown = cleanMarkdown(title1);
         expect(cleanedMarkdown).toEqual(
             '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|'
         );
     });
     it('should remove a set of curly braces', () => {
         const title = '|[{WIP} updating frontend components|';
-        const cleanedMarkdown = mariner.cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkdown(title);
         expect(cleanedMarkdown).toEqual('|[WIP updating frontend components|');
     });
     it('should remove all curly braces', () => {
         const title =
             '|[{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
-        const cleanedMarkdown = mariner.cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkdown(title);
         expect(cleanedMarkdown).toEqual(
             '|[new babel teardown do not fail tests in non-watch mode - imports are removed|'
         );
     });
     it('should not remove square brackets', () => {
         const title = '|[[es-lint] resolves deprecated code {updates}|';
-        const cleanedMarkdown = mariner.cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkdown(title);
         expect(cleanedMarkdown).toEqual('|[[es-lint] resolves deprecated code updates|');
     });
 });
