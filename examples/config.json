@@ -6,7 +6,6 @@
     ],
     "inputFilePath": "examples/exampleData.json",
     "outputFilePath": "examples/output.json",
-    "confluenceMarkdownPath": "examples/confluenceMarkdown.md",
     "daysAgoCreated": 90,
     "numberOfReposPerCall": 1000
 }
