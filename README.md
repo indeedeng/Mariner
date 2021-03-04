@@ -61,8 +61,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 - You can generate markdown for use in Confluence/jira
 - The generateConfluenceMarkdown() creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
-- The `confluenceMarkdownPath` is set inside the config.json file: "examples/confluenceMarkdown.md"
-
+- You can see an example of how to use in the `runFasterCode.ts` file.
 Example of confluenceMarkdown.md output:
 ```md
 ## Updated: February 22, 2021, 5:38 PM PST
@@ -88,8 +87,6 @@ You can use our example config options as written, or customize the fields if yo
 -  `outputFilePath` is the place you'd like the results written to
 -  `daysAgoCreated` is for deciding how fresh you want the issues to be. If you only want issues that were created in the last week, then choose 7, for example. 
 -  `numberOfReposPerCall`: we recommend not changing this number. Unless you're getting an error from GitHub that your query string is too long, in which case try a smaller number.
-Optional 
-- `confluenceMarkdownPath` is the place you'd see the markdown results if generateConfluenceMarkdown() is called
 
 ### Input File Format
 
