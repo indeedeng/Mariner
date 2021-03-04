@@ -18,6 +18,8 @@ import * as mariner from '../src/mariner/index'; // This is used during developm
 import * as path from 'path';
 const config = mariner.readConfigFile('examples/config.json');
 
+const confluenceMarkdownPath = 'examples/confluenceMarkdown.md';
+
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
     if (!value) {
@@ -98,8 +100,8 @@ finder
         logger.info(`Saved issue results to: ${config.outputFilePath}`);
 
         const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
-        fs.writeFileSync(config.confluenceMarkdownPath, confluenceMarkdown);
-        logger.info(`Saved Confluence Markdown to: ${config.confluenceMarkdownPath}`);
+        fs.writeFileSync(confluenceMarkdownPath, confluenceMarkdown);
+        logger.info(`Saved Confluence Markdown to: ${confluenceMarkdownPath}`);
     })
     .catch((err) => {
         logger.error(err.message);
