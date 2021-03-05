@@ -15,19 +15,18 @@ export function generateConfluenceMarkdown(
         if (!issues || !issues.length) {
             continue;
         }
-        markdownArray.push('\n');
-        markdownArray.push(`h3. ${dependency}`);
-        markdownArray.push('||*Title*||*Age*||');
-
         issues.forEach((issue) => {
             const createdAt = DateTime.fromISO(issue.createdAt);
             const ageInDays = now.diff(createdAt, 'days').days;
             const ageInWholeDays = Math.round(ageInDays);
 
             if (ageInWholeDays < maxIssuesAge) {
+                markdownArray.push('\n');
+                markdownArray.push(`h3. ${dependency}`);
+                markdownArray.push('||*Title*||*Age*||');
                 const cleanedTitleMarkdown = cleanMarkdown(issue.title);
                 markdownArray.push(
-                    `|[${cleanedTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
+                    `|[${cleanedTitleMarkdown}|${issue.url} ]|${ageInWholeDays}&nbsp;days|`
                 );
             }
         });
