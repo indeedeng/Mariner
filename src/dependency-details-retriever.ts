@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { RequestQueue, RequesteQueueEntry } from './request-queue';
 import { OwnerDataCollection } from './owner-data-collection';
 import { sleep } from './utils';
@@ -8,7 +8,7 @@ import { FetchHttpClient, HttpClient } from './http';
 
 const REQUEST_DELAY_MS = 1400;
 const RELEVANT_LABELS = ['good+first+issue', 'help+wanted', 'documentation'];
-const MIN_ISSUE_DATE = moment().subtract(365, 'days').format('YYYY-MM-DD');
+const MIN_ISSUE_DATE = DateTime.local().minus({ days: 365 }).toISO();
 
 abstract class BaseRestfulGithubDataFetcher<T> extends DataFetcher<T> {
     protected httpClient: HttpClient;
