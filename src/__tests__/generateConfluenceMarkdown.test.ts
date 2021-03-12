@@ -41,10 +41,12 @@ describe('generateConfluenceMarkdown function', () => {
         const issuesByDependency: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
+        const now = DateTime.utc();
+        const header = `## Updated: ${now.toLocaleString(DateTime.DATETIME_FULL)}`;
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
-
+        expect(results).toContain(`${header}`);
         expect(results).not.toContain(`h3. ${dependency}`);
         expect(results).not.toContain('\n ||*Title*||*Age*||');
         expect(results).not.toContain('|days|');
@@ -103,7 +105,6 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
-    // description of test needs to change
     it('should not list a dependency with no issues if its issue is too old', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'Badges/shields';
