@@ -41,12 +41,9 @@ describe('generateConfluenceMarkdown function', () => {
         const issuesByDependency: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
-        const now = DateTime.utc();
-        const header = `## Updated: ${now.toLocaleString(DateTime.DATETIME_FULL)}`;
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
-        expect(results).toContain(`${header}`);
         expect(results).not.toContain(`h3. ${dependency}`);
         expect(results).not.toContain('\n ||*Title*||*Age*||');
         expect(results).not.toContain('|days|');
@@ -71,11 +68,14 @@ describe('generateConfluenceMarkdown function', () => {
         mockDependencyMap.set(dependency2, singleIssue);
 
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+
         expect(results).toContain(`h3. ${dependency1}`);
+        expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
 
         expect(results).toContain(`h3. ${dependency2}`);
+        expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
     });
     it('should remove curly braces from an issue title', () => {
@@ -102,6 +102,7 @@ describe('generateConfluenceMarkdown function', () => {
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
+        expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
