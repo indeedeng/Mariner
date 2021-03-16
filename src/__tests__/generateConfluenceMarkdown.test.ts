@@ -46,7 +46,7 @@ describe('generateConfluenceMarkdown function', () => {
         const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
         expect(results).not.toContain(dependency);
         expect(results).not.toContain('||*Title*||*Age*||');
-        expect(results).not.toContain('|days|');
+        expect(results).not.toContain('days');
     });
 
     it('should include both issues for dependency', () => {
@@ -120,10 +120,10 @@ describe('generateConfluenceMarkdown function', () => {
 describe('cleanMarkdown function', () => {
     it('should return string without altering it', () => {
         const title1 =
-            '|2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520|8&nbsp;days|';
+            '|[Docs: Improve mocks section for promise-based fs/promises | update docs & jest|';
         const cleanedMarkdown = cleanMarkdown(title1);
         expect(cleanedMarkdown).toEqual(
-            '|2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520|8&nbsp;days|'
+            '|(Docs: Improve mocks section for promise-based fs/promises | update docs & jest|'
         );
     });
     it('should remove a set of curly braces', () => {
