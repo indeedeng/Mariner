@@ -52,7 +52,11 @@ export function calculateAgeInWholeDays(isoDateString: string, now: DateTime): n
 }
 
 export function cleanMarkdown(issueTitle: string): string {
-    const removedCurlyBraces = issueTitle.replace(/{|}/g, '');
+    const withoutBracesOrBrackets = issueTitle
+        .replace(/{/g, '(')
+        .replace(/}/g, ')')
+        .replace(/\[/g, '(')
+        .replace(/\]/g, ')');
 
-    return removedCurlyBraces;
+    return withoutBracesOrBrackets;
 }

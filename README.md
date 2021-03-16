@@ -61,6 +61,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 - You can generate markdown for use in Confluence/jira
 - The generateConfluenceMarkdown() creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+- Square brackets and curly braces in issue titles will be replaced by parentheses.
 - You can see an example of how to use in the `runFasterCode.ts` file.
 Example of confluenceMarkdown.md output:
 ```md

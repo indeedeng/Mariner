@@ -44,9 +44,9 @@ describe('generateConfluenceMarkdown function', () => {
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
-        expect(results).not.toContain(`h3. ${dependency}`);
-        expect(results).not.toContain('\n ||*Title*||*Age*||');
-        expect(results).not.toContain('|days|');
+        expect(results).not.toContain(dependency);
+        expect(results).not.toContain('||*Title*||*Age*||');
+        expect(results).not.toContain('days');
     });
 
     it('should include both issues for dependency', () => {
@@ -78,18 +78,16 @@ describe('generateConfluenceMarkdown function', () => {
         expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
     });
-    it('should remove curly braces from an issue title', () => {
+    it('should remove curly braces and square brackets from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'React';
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
 
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).not.toContain(
-            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`
-        );
+        expect(results).not.toContain(singleIssue[0].title);
         expect(results).toMatch(
-            `|[[Navigation Editor] Dropdown menus too narrow |${singleIssue[0].url}]|8&nbsp;days|`
+            `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|`
         );
     });
     it('should return correct markdown for a dependency and an issue', () => {
@@ -113,39 +111,38 @@ describe('generateConfluenceMarkdown function', () => {
 
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).not.toContain(`h3. ${dependency}`);
+        expect(results).not.toContain(dependency);
         expect(results).not.toContain('\n||*Title*||*Age*||');
-        expect(results).not.toContain(
-            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`
-        );
+        expect(results).not.toContain(singleIssue[0].title);
     });
 });
 
 describe('cleanMarkdown function', () => {
     it('should return string without altering it', () => {
         const title1 =
-            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|';
+            '|[Docs: Improve mocks section for promise-based fs/promises | update docs & jest|';
         const cleanedMarkdown = cleanMarkdown(title1);
         expect(cleanedMarkdown).toEqual(
-            '|[2020 upgrade edition menus too narrow|https://github.com/marmelab/react-admin/issues/7520]|8&nbsp;days|'
+            '|(Docs: Improve mocks section for promise-based fs/promises | update docs & jest|'
         );
     });
     it('should remove a set of curly braces', () => {
-        const title = '|[{WIP} updating frontend components|';
+        const title = '|{WIP} updating frontend components|';
         const cleanedMarkdown = cleanMarkdown(title);
-        expect(cleanedMarkdown).toEqual('|[WIP updating frontend components|');
+        expect(cleanedMarkdown).toEqual('|(WIP) updating frontend components|');
     });
     it('should remove all curly braces', () => {
         const title =
-            '|[{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
+            '|{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
         const cleanedMarkdown = cleanMarkdown(title);
         expect(cleanedMarkdown).toEqual(
-            '|[new babel teardown do not fail tests in non-watch mode - imports are removed|'
+            '|(new babel) teardown do not fail tests in non-watch mode - (imports are removed)|'
         );
     });
-    it('should not remove square brackets', () => {
+    it('should remove square brackets', () => {
         const title = '|[[es-lint] resolves deprecated code {updates}|';
         const cleanedMarkdown = cleanMarkdown(title);
-        expect(cleanedMarkdown).toEqual('|[[es-lint] resolves deprecated code updates|');
+        console.log(cleanMarkdown);
+        expect(cleanedMarkdown).toEqual('|((es-lint) resolves deprecated code (updates)|');
     });
 });
