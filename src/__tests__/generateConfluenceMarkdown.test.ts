@@ -1,5 +1,5 @@
 import * as mariner from '../mariner/index';
-import { cleanMarkdown } from '../Utilities/generateConfluenceMarkdown';
+import { cleanMarkdown, calculateAgeInWholeDays } from '../Utilities/generateConfluenceMarkdown';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -36,15 +36,6 @@ const singleIssue: Issue[] = [
     },
 ];
 
-function calculateAgeInWholeDays(IsoString: string): number {
-    const now = DateTime.local();
-    const createdAt = DateTime.fromISO(IsoString);
-    const ageInDays = now.diff(createdAt, 'days').days;
-    const ageInWholeDays = Math.round(ageInDays);
-
-    return ageInWholeDays;
-}
-
 describe('generateConfluenceMarkdown function', () => {
     it('should not list a dependency that has no issue', () => {
         const issuesByDependency: Map<string, Issue[]> = new Map();
@@ -53,7 +44,6 @@ describe('generateConfluenceMarkdown function', () => {
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
-
         expect(results).not.toContain(`h3. ${dependency}`);
         expect(results).not.toContain('\n ||*Title*||*Age*||');
         expect(results).not.toContain('|days|');
@@ -65,9 +55,9 @@ describe('generateConfluenceMarkdown function', () => {
 
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
         const results = mariner.generateConfluenceMarkdown(twoIssues);
-        expect(results).toContain(`h3. ${dependency}`);
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
+
+        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
+        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
     });
     it('should include both dependencies that have issues', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -78,12 +68,15 @@ describe('generateConfluenceMarkdown function', () => {
         mockDependencyMap.set(dependency2, singleIssue);
 
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+
         expect(results).toContain(`h3. ${dependency1}`);
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|`);
+        expect(results).toContain('||*Title*||*Age*||');
+        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
+        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
 
         expect(results).toContain(`h3. ${dependency2}`);
-        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).toContain('||*Title*||*Age*||');
+        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
     });
     it('should remove curly braces from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -92,33 +85,39 @@ describe('generateConfluenceMarkdown function', () => {
 
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).not.toContain(
+            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`
+        );
         expect(results).toMatch(
-            `|[[Navigation Editor] Dropdown menus too narrow |${singleIssue[0].url}]|`
+            `|[[Navigation Editor] Dropdown menus too narrow |${singleIssue[0].url}]|8&nbsp;days|`
         );
     });
     it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
         singleIssue[0].title = 'Fixed interface';
+        const now = DateTime.utc();
 
-        const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt);
+        const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt, now);
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
+        expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
-    it('should list a dependency but no issues if its issue is too old', () => {
+    it('should not list a dependency with no issues if its issue is too old', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'Badges/shields';
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
-        expect(results).toContain(`h3. ${dependency}`);
-        expect(results).toContain('\n||*Title*||*Age*||');
-        expect(results).not.toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
+        expect(results).not.toContain(`h3. ${dependency}`);
+        expect(results).not.toContain('\n||*Title*||*Age*||');
+        expect(results).not.toContain(
+            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`
+        );
     });
 });
 
