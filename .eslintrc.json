@@ -12,7 +12,6 @@
     "extends": [
         "plugin:@typescript-eslint/recommended",
         "eslint:recommended",
-        "prettier/@typescript-eslint",
         "plugin:prettier/recommended"
     ],
     "globals": {
