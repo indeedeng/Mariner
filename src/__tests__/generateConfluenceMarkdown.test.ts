@@ -142,7 +142,6 @@ describe('cleanMarkdown function', () => {
     it('should remove square brackets', () => {
         const title = '|[[es-lint] resolves deprecated code {updates}|';
         const cleanedMarkdown = cleanMarkdown(title);
-        console.log(cleanMarkdown);
         expect(cleanedMarkdown).toEqual('|((es-lint) resolves deprecated code (updates)|');
     });
 });
