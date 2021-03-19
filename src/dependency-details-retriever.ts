@@ -118,9 +118,7 @@ class RestfulDependenciesDataFetcher extends BaseRestfulGithubDataFetcher<string
 
 type LanguageAndOpenIssuesCount = { language: string; openIssuesCount: number; archived: boolean };
 
-class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<
-    LanguageAndOpenIssuesCount
-> {
+class RestfulLanguageAndIssuesDataFetcher extends BaseRestfulGithubDataFetcher<LanguageAndOpenIssuesCount> {
     public executeRequest(params: RequestParams): Promise<LanguageAndOpenIssuesCount> {
         const requestUrl = this.getURL(params);
         TabDepthLogger.info(2, `Querying: ${requestUrl}`);
