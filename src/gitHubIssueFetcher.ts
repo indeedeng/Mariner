@@ -197,7 +197,7 @@ export class GitHubIssueFetcher {
         }
         result.edges = result.edges.filter((edge) => {
             if (!edge.node.repository) {
-                getLogger().info(`No repository for ${edge.node.title}`);
+                getLogger().info(`\nNo repository for ${Object.values(variables)}`);
             }
 
             return edge.node.repository;
