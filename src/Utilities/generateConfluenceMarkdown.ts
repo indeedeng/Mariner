@@ -9,7 +9,7 @@ export function generateConfluenceMarkdown(
 
     const markdownArray: string[] = [];
 
-    markdownArray.push(`## Updated: ${now.toLocaleString(DateTime.DATETIME_FULL)}`);
+    markdownArray.push(`## Updated: ${now.toISO()}`);
 
     for (const [dependency, issues] of issuesByDependency) {
         if (!issues || !issues.length) {
