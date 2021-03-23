@@ -195,6 +195,8 @@ Run `npm ci` to install the libraries used in the project. Read more about [npm 
 
 Follow the instructions in examples/runFasterCode.ts or examples/runOldCode.ts to configure the input and output files. NOTE: An example input file is included, in the examples directory.
 
+Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file.
+
 Run `npm run build` to compile the code to Javascript.
 
 Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
@@ -223,14 +225,21 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 1. Create a branch named "publish-x.y.z (x.y.z will be the version number)
 1. Update the version number in package.json
 1. Be sure the version number in package.json is correct
+1. Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file
 1. Run `npm install` to update package-lock.json
     - Search package-lock.json to be sure there are no references to 'nexus'
-1. Run `npm run build` and `npm run lint` to make sure there are no errors
+1. Run `npm run lint`, then run `npm test`, then run `npm run build` to make sure there are no errors
 1. Commit and push the changes, create a PR, have it approved, and merge it into the main branch
 1. Login to npm if you haven’t already: `npm login`
 1. Do a dry run to make sure the package looks good: `npm publish --dry-run`
 1. Publish: `npm publish`
 1. Verify that the new version appears at: <https://www.npmjs.com/package/oss-mariner>
+1. Create a new GitHub release:
+    1. On the project homepage, click on `Releases`
+    1. Click the `Draft a new release` button
+    1. Enter a release title like `v2.1.3`
+    1. In the description list the major changes
+    1. Click the `Publish release` button
 
 ## Code of Conduct
 
