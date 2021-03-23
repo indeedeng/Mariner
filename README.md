@@ -224,10 +224,10 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 
 1. Create a branch named "publish-x.y.z (x.y.z will be the version number)
 1. Update the version number in package.json
-1. Be sure the version number in package.json is correct
 1. Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file
 1. Run `npm install` to update package-lock.json
     - Search package-lock.json to be sure there are no references to 'nexus'
+    - Make sure package-lock.json has the new version number
 1. Run `npm run lint`, then run `npm test`, then run `npm run build` to make sure there are no errors
 1. Commit and push the changes, create a PR, have it approved, and merge it into the main branch
 1. Login to npm if you haven’t already: `npm login`
