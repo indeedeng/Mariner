@@ -24,9 +24,6 @@ GraphQL approach is shown in the `runFasterCode.ts` example.
 ### Plans to rename the default branch from master
 
 We anticipate renaming the default branch of this repository from `master` to `main`.
-GitHub is planning to have a smooth easy conversion process/tool for later this year.
-When that tool is available, we plan to take full advantage of it.
-[Read more about it here](https://github.com/github/renaming/blob/main/README.md).
 
 ## Getting Started Using Mariner
 
