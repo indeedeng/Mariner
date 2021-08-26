@@ -26,6 +26,7 @@
         "@octokit/graphql": "^4.6.1",
         "@types/luxon": "^1.26.2",
         "@types/node-fetch": "^2.5.8",
+        "html-entities": "^2.3.2",
         "luxon": "^1.26.0",
         "node-fetch": "^2.6.1"
     },

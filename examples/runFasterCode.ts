@@ -18,7 +18,9 @@ import * as mariner from '../src/mariner/index'; // This is used during developm
 import * as path from 'path';
 const config = mariner.readConfigFile('examples/config.json');
 
-const confluenceMarkdownPath = 'examples/confluenceMarkdown.md';
+const htmlPath = 'examples/output.html';
+// NOTE: Confluence output is disabled here by default, because HTML is usually preferred
+// const confluenceMarkdownPath = 'examples/confluenceMarkdown.md';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -68,23 +70,20 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 
 const finder = new mariner.IssueFinder(config);
 
-function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
+function convertToRecord(issues: Map<string, mariner.Issue[]>): Record<string, mariner.Issue[]> {
     const record: Record<string, mariner.Issue[]> = {};
     issues.forEach((issuesForRepo: mariner.Issue[], repo: string) => {
         record[repo] = issuesForRepo;
     });
-    const jsonFile = outputToJson(record);
 
-    return jsonFile;
+    return record;
 }
 
 function outputToJson(record: Record<string, mariner.Issue[]>): void {
     const noReplacer = undefined;
     const indent = 2;
     const jsonResults = JSON.stringify(record, noReplacer, indent);
-    const data = fs.writeFileSync(config.outputFilePath, jsonResults);
-
-    return data;
+    fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
 finder
@@ -95,13 +94,19 @@ finder
             issueCount += issuesForRepo.length;
         });
 
-        convertToRecord(issues);
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
+        outputToJson(convertToRecord(issues));
         logger.info(`Saved issue results to: ${config.outputFilePath}`);
 
-        const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
-        fs.writeFileSync(confluenceMarkdownPath, confluenceMarkdown);
-        logger.info(`Saved Confluence Markdown to: ${confluenceMarkdownPath}`);
+        const html = mariner.generateHtml(issues, 90);
+        fs.writeFileSync(htmlPath, html);
+        logger.info(`Saved HTML to: ${htmlPath}`);
+
+        // NOTE: Confluence output is disabled here by default, because HTML is usually preferred
+        // const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
+        // console.log(confluenceMarkdown);
+        // fs.writeFileSync(confluenceMarkdownPath, confluenceMarkdown);
+        // logger.info(`Saved Confluence Markdown to: ${confluenceMarkdownPath}`);
     })
     .catch((err) => {
         logger.error(err.message);

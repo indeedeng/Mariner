@@ -3,3 +3,4 @@ export { readConfigFile, Config } from '../config';
 export { Issue, IssueFinder } from '../issueFinder';
 export { Logger, getLogger, setLogger } from '../tab-level-logger';
 export { generateConfluenceMarkdown } from '../Utilities/generateConfluenceMarkdown';
+export { generateHtml } from '../Utilities/generateHtml';
