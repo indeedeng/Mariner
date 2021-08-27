@@ -23,22 +23,41 @@ export function generateHtml(issuesByDependency: Map<string, Issue[]>, maxIssues
             continue;
         }
 
-        const dependencyName = encode(dependency);
-        arrayOfHtmlFragments.push(`<h3>${dependencyName}</h3>`);
-        arrayOfHtmlFragments.push('<table><tr><th>Title</th><th>Age</th></tr>');
-
-        relevantIssues.forEach((issue) => {
-            const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
-
-            const title = encode(issue.title);
-            const url = encode(issue.url);
-            arrayOfHtmlFragments.push(
-                `<tr><td><a href="${url}">${title}</a></td><td>${ageInWholeDays}&nbsp;days</td></tr>`
-            );
-        });
-
-        arrayOfHtmlFragments.push('</table>');
+        const fragmentsForDependency = generateHtmlFragmentsForDependency(
+            dependency,
+            relevantIssues,
+            now
+        );
+        arrayOfHtmlFragments.push(...fragmentsForDependency);
     }
 
     return arrayOfHtmlFragments.join('\n');
+}
+
+function generateHtmlFragmentsForDependency(
+    dependencyName: string,
+    relevantIssues: Issue[],
+    now: DateTime
+): string[] {
+    const arrayOfHtmlFragments: string[] = [];
+
+    const encodedDependencyName = encode(dependencyName);
+    arrayOfHtmlFragments.push(`<h3 class="dependency-name">${encodedDependencyName}</h3>`);
+    arrayOfHtmlFragments.push('<table class="issue-list">');
+    arrayOfHtmlFragments.push('<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>');
+
+    relevantIssues.forEach((issue) => {
+        const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
+
+        const title = encode(issue.title);
+        const url = encode(issue.url);
+        arrayOfHtmlFragments.push('<tr class="issue-row">');
+        arrayOfHtmlFragments.push(`<td class="issue-title"><a href="${url}">${title}</a></td>`);
+        arrayOfHtmlFragments.push(`<td class="issue-age">${ageInWholeDays}&nbsp;days</td>`);
+        arrayOfHtmlFragments.push('</tr>');
+    });
+
+    arrayOfHtmlFragments.push('</table>');
+
+    return arrayOfHtmlFragments;
 }

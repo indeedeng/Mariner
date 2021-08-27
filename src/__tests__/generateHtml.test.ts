@@ -46,13 +46,14 @@ describe('generateHtml function', () => {
         mockDependencyMap.set(dependency, singleIssue);
 
         const results = mariner.generateHtml(mockDependencyMap, maxAgeInDays);
-        expect(results).toContain(`<h3>${dependency}</h3>`);
-        expect(results).toContain('<table><tr><th>Title</th><th>Age</th></tr>');
+        expect(results).toContain(`<h3 class="dependency-name">${dependency}</h3>\n`);
+        expect(results).toContain('<table class="issue-list">\n');
+        expect(results).toContain('<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>\n');
         const issue = singleIssue[0];
         const titleCellContents = `<a href="${encode(issue.url)}">${encode(issue.title)}</a>`;
         const ageCellContents = '8&nbsp;days';
         expect(results).toContain(
-            `<tr><td>${titleCellContents}</td><td>${ageCellContents}</td></tr>`
+            `<tr class="issue-row">\n<td class="issue-title">${titleCellContents}</td>\n<td class="issue-age">${ageCellContents}</td>\n</tr>`
         );
         expect(results).toContain('</table>');
     });
