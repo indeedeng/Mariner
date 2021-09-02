@@ -6,7 +6,7 @@
 
 A node.js library for analyzing open source library dependencies.
 
-Mariner's goal is to help you to support the open source projects you rely upon by making it easy to get a list of the open issues in your dependencies. 
+Mariner's goal is to help you to support the open source projects you rely upon by making it easy to get a list of the open issues in your dependencies.
 
 Mariner takes an input list of GitHub repos, fetches details about them from GitHub,
 and outputs a file containing a list of issues for each project.
@@ -32,7 +32,6 @@ Instead, you'll create your own new node project, and install the oss-mariner pa
 `npm install oss-mariner`
 You'll also need a GitHub token and a config file. (Keep reading for more info on these.)
 
-
 ### Step-by-step instructions for creating a project that uses Mariner
 
 1. Create a new project folder and use `npm init` to make it a node project.
@@ -55,12 +54,14 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 1. Finally, run the application to find open issues in your dependencies, using the command `node index.js`.
 
 ### Optional: Generating Markdown
+
 - You can generate markdown for use in Confluence/jira
 - The generateConfluenceMarkdown() creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
 - Square brackets and curly braces in issue titles will be replaced by parentheses.
 - You can see an example of how to use in the `runExample.ts` file.
 Example of confluenceMarkdown.md output:
+
 ```md
 ## Updated: February 22, 2021, 5:38 PM PST
 
@@ -74,33 +75,36 @@ h3. facebook/jest
 ||*Title*||*Age*||
 |[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
 ```
+
 - The `runExample.ts` example now demonstrates how to call this new function
-    - <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
+  - <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 
 ### Config.json Format
 
 You can use our example config options as written, or customize the fields if you choose.
--  Every GitHub issue can have one or more labels attached to it. `labelsToSearch` is an array of the labels you'd like Mariner to search for in the issues it will return. The defaults in our example are ones that will make it easy for someone to make a first contribution to a repo. 
--  Make sure that your `inputFilePath` is accurate. If you followed the steps above and put `exampleData.json` into a top-level folder called `examples`, you won't have to change the value of this variable.
--  `outputFilePath` is the place you'd like the results written to
--  `daysAgoCreated` is for deciding how fresh you want the issues to be. If you only want issues that were created in the last week, then choose 7, for example. 
--  `numberOfReposPerCall`: we recommend not changing this number. Unless you're getting an error from GitHub that your query string is too long, in which case try a smaller number.
+
+- Every GitHub issue can have one or more labels attached to it. `labelsToSearch` is an array of the labels you'd like Mariner to search for in the issues it will return. The defaults in our example are ones that will make it easy for someone to make a first contribution to a repo.
+- Make sure that your `inputFilePath` is accurate. If you followed the steps above and put `exampleData.json` into a top-level folder called `examples`, you won't have to change the value of this variable.
+- `outputFilePath` is the place you'd like the results written to
+- `daysAgoCreated` is for deciding how fresh you want the issues to be. If you only want issues that were created in the last week, then choose 7, for example.
+- `numberOfReposPerCall`: we recommend not changing this number. Unless you're getting an error from GitHub that your query string is too long, in which case try a smaller number.
 
 ### Input File Format
 
 The input file is a JSON file in the format:
 
--   At the top level is a map/object, where each entry consists of a dependency as the key,
+- At the top level is a map/object, where each entry consists of a dependency as the key,
     and the number of projects that depend on that library as the value.
--   Each dependency can be identified by a complete URL or just the owner/repo string.
--   Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
--   Example owner/repo strings: "square/retrofit": 5023,
--   The project count value is mostly ignored, but is used by the "abbreviated" feature.
--   See examples/exampleData.json for a complete example.
+- Each dependency can be identified by a complete URL or just the owner/repo string.
+- Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
+- Example owner/repo strings: "square/retrofit": 5023,
+- The project count value is mostly ignored, but is used by the "abbreviated" feature.
+- See examples/exampleData.json for a complete example.
 
 ### Output File Format
 
 The output file is a JSON file in the format:
+
 ```javascript
 {
   "repository/name": [
