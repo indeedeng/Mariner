@@ -19,8 +19,6 @@ import * as path from 'path';
 const config = mariner.readConfigFile('examples/config.json');
 
 const htmlPath = 'examples/output.html';
-// NOTE: Confluence output is disabled here by default, because HTML is usually preferred
-// const confluenceMarkdownPath = 'examples/confluenceMarkdown.md';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -101,12 +99,6 @@ finder
         const html = mariner.generateHtml(issues, 90);
         fs.writeFileSync(htmlPath, html);
         logger.info(`Saved HTML to: ${htmlPath}`);
-
-        // NOTE: Confluence output is disabled here by default, because HTML is usually preferred
-        // const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
-        // console.log(confluenceMarkdown);
-        // fs.writeFileSync(confluenceMarkdownPath, confluenceMarkdown);
-        // logger.info(`Saved Confluence Markdown to: ${confluenceMarkdownPath}`);
     })
     .catch((err) => {
         logger.error(err.message);
