@@ -19,7 +19,7 @@ even if the version number does not indicate that.
 The first couple alpha versions of Mariner only supported calls via GitHub's REST API. More
 recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API is hundreds of
 times faster, so the REST-related calls are now deprecated, and will be removed "soon". The
-GraphQL approach is shown in the `runFasterCode.ts` example.
+GraphQL approach is shown in the `runExample.ts` example.
 
 ### Plans to rename the default branch from master
 
@@ -36,15 +36,15 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 ### Step-by-step instructions for creating a project that uses Mariner
 
 1. Create a new project folder and use `npm init` to make it a node project.
-1. Copy the contents of `runFasterCode.ts` into `index.js`.
-    - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+1. Copy the contents of `runExample.ts` into `index.js`.
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 1. In `index.js` comment out the existing line that imports mariner.
 1. Also in `index.js`, uncomment the line saying how mariner would normally be imported.
 1. Next, create a folder named `examples` and create two new files inside of it: `exampleData.json` and `config.json`. You can copy the contents of our examples into those new files or you can use the examples as a template for your own data and config choices. The `exampleData.json` should contain the repos that you're interested in getting issues from. For more info on the format of this file, look at[the Input File Format section](https://github.com/indeedeng/Mariner#input-file-format). More info on config.json can also be found [below](https://github.com/indeedeng/Mariner/blob/master/README.md#config.json-format) and the example files can be found here:
     - <https://github.com/indeedeng/Mariner/blob/master/examples/exampleData.json>
     - <https://github.com/indeedeng/Mariner/blob/master/examples/config.json>
 1. Mariner supports TypeScript, but we don't have step-by-step instructions for the TypeScript example.
-   For now, you can convert the runFasterCode.ts example code to JavaScript:
+   For now, you can convert the runExample.ts example code to JavaScript:
     - Remove the `public` keywords from class members.
     - Remove the `implements Xxxx` from the FancyLogger class declaration.
     - Remove all the type declarations (like `: string`).
@@ -59,7 +59,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 - The generateConfluenceMarkdown() creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
 - Square brackets and curly braces in issue titles will be replaced by parentheses.
-- You can see an example of how to use in the `runFasterCode.ts` file.
+- You can see an example of how to use in the `runExample.ts` file.
 Example of confluenceMarkdown.md output:
 ```md
 ## Updated: February 22, 2021, 5:38 PM PST
@@ -74,8 +74,8 @@ h3. facebook/jest
 ||*Title*||*Age*||
 |[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
 ```
-- The `runFasterCode.ts` example now demonstrates how to call this new function
-    - <https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+- The `runExample.ts` example now demonstrates how to call this new function
+    - <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 
 ### Config.json Format
 
@@ -163,7 +163,7 @@ Mariner is in transition from the old way of accessing GitHub data (REST) to the
 
 To invoke mariner using the new GraphQL code, Invoke the finder(), passing the
 appropiate parameters in finder.findIssues() you can see an example here:
-<https://github.com/indeedeng/Mariner/blob/master/examples/runFasterCode.ts>
+<https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 
 If you are using the `examples/runOldCode.ts file`, (using the old REST code that is very slow)
 invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please
@@ -190,13 +190,13 @@ Clone the repository from GitHub.
 
 Run `npm ci` to install the libraries used in the project. Read more about [npm ci here.](https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable)
 
-Follow the instructions in examples/runFasterCode.ts or examples/runOldCode.ts to configure the input and output files. NOTE: An example input file is included, in the examples directory.
+Follow the instructions in examples/runExample.ts or examples/runOldCode.ts to configure the input and output files. NOTE: An example input file is included, in the examples directory.
 
 Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file.
 
 Run `npm run build` to compile the code to Javascript.
 
-Run `node dist/examples/runFasterCode.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
+Run `node dist/examples/runExample.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
 
 Ensure to lint your code by running `npm run lint` before submitting any code for review. Either manually fix the errors or run `npm run lint:fix` to automatically fix any errors.
 
