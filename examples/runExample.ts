@@ -6,7 +6,7 @@
     Optionally, you can have environment variables for INPUT_FILE_PATH and OUTPUT_FILE_PATH,
         but they have defaults that will work with the standard development environment.
     Then, run `npm run build`
-    Finally, run `node dist/examples/runFasterCode.js`
+    Finally, run `node dist/examples/runExample.js`
 
     You'll know it's run correctly if you have a new file
         examples/output.json with some GitHub issues in it.
@@ -18,7 +18,7 @@ import * as mariner from '../src/mariner/index'; // This is used during developm
 import * as path from 'path';
 const config = mariner.readConfigFile('examples/config.json');
 
-const confluenceMarkdownPath = 'examples/confluenceMarkdown.md';
+const htmlPath = 'examples/output.html';
 
 function getFromEnvOrThrow(configField: string): string {
     const value = process.env[configField];
@@ -68,23 +68,20 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 
 const finder = new mariner.IssueFinder(config);
 
-function convertToRecord(issues: Map<string, mariner.Issue[]>): void {
+function convertToRecord(issues: Map<string, mariner.Issue[]>): Record<string, mariner.Issue[]> {
     const record: Record<string, mariner.Issue[]> = {};
     issues.forEach((issuesForRepo: mariner.Issue[], repo: string) => {
         record[repo] = issuesForRepo;
     });
-    const jsonFile = outputToJson(record);
 
-    return jsonFile;
+    return record;
 }
 
 function outputToJson(record: Record<string, mariner.Issue[]>): void {
     const noReplacer = undefined;
     const indent = 2;
     const jsonResults = JSON.stringify(record, noReplacer, indent);
-    const data = fs.writeFileSync(config.outputFilePath, jsonResults);
-
-    return data;
+    fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
 finder
@@ -95,13 +92,13 @@ finder
             issueCount += issuesForRepo.length;
         });
 
-        convertToRecord(issues);
         logger.info(`Found ${issueCount} issues in ${issues.size} projects\n`);
+        outputToJson(convertToRecord(issues));
         logger.info(`Saved issue results to: ${config.outputFilePath}`);
 
-        const confluenceMarkdown = mariner.generateConfluenceMarkdown(issues);
-        fs.writeFileSync(confluenceMarkdownPath, confluenceMarkdown);
-        logger.info(`Saved Confluence Markdown to: ${confluenceMarkdownPath}`);
+        const html = mariner.generateHtml(issues, 90);
+        fs.writeFileSync(htmlPath, html);
+        logger.info(`Saved HTML to: ${htmlPath}`);
     })
     .catch((err) => {
         logger.error(err.message);
