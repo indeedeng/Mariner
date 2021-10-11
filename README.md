@@ -1,6 +1,7 @@
 # Mariner
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/indeedeng/Mariner.svg)
+![GitHub version](https://img.shields.io/github/v/release/indeedeng/Mariner?color=informational)
 
 ## Introduction
 
