@@ -22,10 +22,6 @@ recently, we added the ability to invoke GitHub's GraphQL API. The GraphQL API i
 times faster, so the REST-related calls are now deprecated, and will be removed "soon". The
 GraphQL approach is shown in the `runExample.ts` example.
 
-### Plans to rename the default branch from master
-
-We anticipate renaming the default branch of this repository from `master` to `main`.
-
 ## Getting Started Using Mariner
 
 If you just want to USE Mariner, you don't need to do a git clone.
