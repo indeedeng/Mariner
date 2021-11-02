@@ -85,7 +85,7 @@ query findByLabel($queryString:String!, $pageSize:Int, $maxLabelsToRetrieve:Int,
                             }
                         }
                     }
-    	        }
+                }
             }
         }
         pageInfo {
