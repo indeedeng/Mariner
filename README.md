@@ -2,6 +2,10 @@
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/indeedeng/Mariner.svg)
 ![GitHub version](https://img.shields.io/github/v/release/indeedeng/Mariner?color=informational)
+![License](https://img.shields.io/github/license/indeedeng/Mariner)
+![Project language](https://img.shields.io/badge/project%20language-TypeScript-blue)
+![Issues](https://img.shields.io/github/issues/indeedeng/Mariner)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 
 ## Introduction
 
