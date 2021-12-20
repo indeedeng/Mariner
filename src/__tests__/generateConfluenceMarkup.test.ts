@@ -1,5 +1,5 @@
 import * as mariner from '../mariner/index';
-import { cleanMarkdown, calculateAgeInWholeDays } from '../Utilities/generateConfluenceMarkdown';
+import { cleanMarkup, calculateAgeInWholeDays } from '../Utilities/generateConfluenceMarkup';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -121,27 +121,27 @@ describe('cleanMarkdown function', () => {
     it('should return string without altering it', () => {
         const title1 =
             '|[Docs: Improve mocks section for promise-based fs/promises | update docs & jest|';
-        const cleanedMarkdown = cleanMarkdown(title1);
+        const cleanedMarkdown = cleanMarkup(title1);
         expect(cleanedMarkdown).toEqual(
             '|(Docs: Improve mocks section for promise-based fs/promises | update docs & jest|'
         );
     });
     it('should remove a set of curly braces', () => {
         const title = '|{WIP} updating frontend components|';
-        const cleanedMarkdown = cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkup(title);
         expect(cleanedMarkdown).toEqual('|(WIP) updating frontend components|');
     });
     it('should remove all curly braces', () => {
         const title =
             '|{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
-        const cleanedMarkdown = cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkup(title);
         expect(cleanedMarkdown).toEqual(
             '|(new babel) teardown do not fail tests in non-watch mode - (imports are removed)|'
         );
     });
     it('should remove square brackets', () => {
         const title = '|[[es-lint] resolves deprecated code {updates}|';
-        const cleanedMarkdown = cleanMarkdown(title);
+        const cleanedMarkdown = cleanMarkup(title);
         expect(cleanedMarkdown).toEqual('|((es-lint) resolves deprecated code (updates)|');
     });
 });

@@ -1,15 +1,15 @@
 import { DateTime } from 'luxon';
 import { Issue } from '../mariner';
 
-export function generateConfluenceMarkdown(
+export function generateConfluenceMarkup(
     issuesByDependency: Map<string, Issue[]>,
     maxIssuesAge = 30
 ): string {
     const now = DateTime.utc();
 
-    const markdownArray: string[] = [];
+    const markupArray: string[] = [];
 
-    markdownArray.push(`## Updated: ${now.toISO()}`);
+    markupArray.push(`## Updated: ${now.toISO()}`);
 
     for (const [dependency, issues] of issuesByDependency) {
         if (!issues || !issues.length) {
@@ -26,21 +26,19 @@ export function generateConfluenceMarkdown(
             continue;
         }
 
-        markdownArray.push('\n');
-        markdownArray.push(`h3. ${dependency}`);
-        markdownArray.push('||*Title*||*Age*||');
+        markupArray.push('\n');
+        markupArray.push(`h3. ${dependency}`);
+        markupArray.push('||*Title*||*Age*||');
 
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
 
-            const cleanedTitleMarkdown = cleanMarkdown(issue.title);
-            markdownArray.push(
-                `|[${cleanedTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
-            );
+            const cleanedTitleMarkup = cleanMarkup(issue.title);
+            markupArray.push(`|[${cleanedTitleMarkup}|${issue.url}]|${ageInWholeDays}&nbsp;days|`);
         });
     }
 
-    return markdownArray.join('\n');
+    return markupArray.join('\n');
 }
 
 export function calculateAgeInWholeDays(isoDateString: string, now: DateTime): number {
@@ -51,7 +49,7 @@ export function calculateAgeInWholeDays(isoDateString: string, now: DateTime): n
     return ageInWholeDays;
 }
 
-export function cleanMarkdown(issueTitle: string): string {
+export function cleanMarkup(issueTitle: string): string {
     const withoutBracesOrBrackets = issueTitle
         .replace(/{/g, '(')
         .replace(/}/g, ')')
