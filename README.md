@@ -60,8 +60,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 - The generateConfluenceMarkup() creates the markup based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
 - Square brackets and curly braces in issue titles will be replaced by parentheses.
-- You can see an example of how to use in the `runExample.ts` file.
-Example of confluenceMarkup.md output:
+- Example of confluenceMarkup output:
 
 ```md
 ## Updated: February 22, 2021, 5:38 PM PST
@@ -76,9 +75,6 @@ h3. facebook/jest
 ||*Title*||*Age*||
 |[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
 ```
-
-- The `runExample.ts` example now demonstrates how to call this new function
-  - <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 
 ### Config.json Format
 
