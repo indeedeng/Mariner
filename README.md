@@ -229,13 +229,14 @@ If you are a maintainer, you can follow these steps to publish a new version of 
 1. Run `npm run lint`, then run `npm test`, then run `npm run build` to make sure there are no errors
 1. Commit and push the changes, create a PR, have it approved, and merge it into the main branch
 1. Switch to main branch and pull the new changes
-1. Login to npm if you haven’t already: `npm login`
 1. Do a dry run to make sure the package looks good: `npm publish --dry-run`
+1. Login to npm if you haven’t already: `npm login`
 1. Publish: `npm publish`
 1. Verify that the new version appears at: <https://www.npmjs.com/package/oss-mariner>
 1. Create a new GitHub release:
     1. On the project homepage, click on `Releases`
     1. Click the `Draft a new release` button
+    1. Enter the version number in the "tag version" field
     1. Enter a release title like `v2.1.3`
     1. In the description list the major changes
     1. Click the `Publish release` button
