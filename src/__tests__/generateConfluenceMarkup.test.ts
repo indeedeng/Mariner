@@ -27,7 +27,7 @@ const fakeIssues: Issue[] = [
 
 const singleIssue: Issue[] = [
     {
-        title: 'ToC: links to markdown headings',
+        title: 'ToC: links to markup headings',
         createdAt: eightDaysAgo,
         repositoryNameWithOwner: 'marmelab/react-admin',
         url: 'https://github.com/marmelab/react-admin/issues/5620',
@@ -36,14 +36,14 @@ const singleIssue: Issue[] = [
     },
 ];
 
-describe('generateConfluenceMarkdown function', () => {
+describe('generateConfluenceMarkup function', () => {
     it('should not list a dependency that has no issue', () => {
         const issuesByDependency: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
-        const results = mariner.generateConfluenceMarkdown(oneDependencyNoIssue);
+        const results = mariner.generateConfluenceMarkup(oneDependencyNoIssue);
         expect(results).not.toContain(dependency);
         expect(results).not.toContain('||*Title*||*Age*||');
         expect(results).not.toContain('days');
@@ -54,7 +54,7 @@ describe('generateConfluenceMarkdown function', () => {
         const dependency = 'NodeJsDependency';
 
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
-        const results = mariner.generateConfluenceMarkdown(twoIssues);
+        const results = mariner.generateConfluenceMarkup(twoIssues);
 
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
@@ -67,7 +67,7 @@ describe('generateConfluenceMarkdown function', () => {
         mockDependencyMap.set(dependency1, fakeIssues);
         mockDependencyMap.set(dependency2, singleIssue);
 
-        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
 
         expect(results).toContain(`h3. ${dependency1}`);
         expect(results).toContain('||*Title*||*Age*||');
@@ -84,13 +84,13 @@ describe('generateConfluenceMarkdown function', () => {
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
 
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
         expect(results).not.toContain(singleIssue[0].title);
         expect(results).toMatch(
             `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|`
         );
     });
-    it('should return correct markdown for a dependency and an issue', () => {
+    it('should return correct markup for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
         singleIssue[0].title = 'Fixed interface';
@@ -98,7 +98,7 @@ describe('generateConfluenceMarkdown function', () => {
 
         const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt, now);
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
         expect(results).toContain('||*Title*||*Age*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
@@ -110,14 +110,14 @@ describe('generateConfluenceMarkdown function', () => {
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkdown(mockDependencyMap);
+        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
         expect(results).not.toContain(dependency);
         expect(results).not.toContain('\n||*Title*||*Age*||');
         expect(results).not.toContain(singleIssue[0].title);
     });
 });
 
-describe('cleanMarkdown function', () => {
+describe('cleanMarkup function', () => {
     it('should return string without altering it', () => {
         const title1 =
             '|[Docs: Improve mocks section for promise-based fs/promises | update docs & jest|';
