@@ -3,7 +3,7 @@ import { Issue } from '../mariner';
 
 export function generateGitHubMarkdown(
     issuesByDependency: Map<string, Issue[]>,
-    maxIssuesAge = 530
+    maxIssuesAge = 30
 ): string {
     const now = DateTime.utc();
     const markdownArray: string[] = [];
