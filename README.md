@@ -63,7 +63,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 - Example of confluenceMarkup output:
 
 ```md
-## Updated: February 22, 2021, 5:38 PM PST
+h2. Updated: February 22, 2021, 5:38 PM PST
 
 
 h3. babel/babel
@@ -74,6 +74,23 @@ h3. babel/babel
 h3. facebook/jest
 ||*Title*||*Age*||
 |[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
+```
+
+### Optional: Generating Markdown
+- You can generate markdown for use in GitHub markdown
+- The `generateGitHubMarkdown()` creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
+- `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+- Example of GitHub markown output:
+
+```md
+## Updated: 2022-01-18T22:53:35.522Z
+
+### babel/babel
+|**Title**|**Age**|
+|:----|:----|
+|[[Bug]: Typescript plugin fails on named tuple positions where the name is a reserved word in JS|https://github.com/babel/babel/issues/13702]|147&nbsp;days|
+|[[preset-env] all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|392&nbsp;days|
+|[[Bug]: TypeError: Error while loading config - yield* (intermediate value) is not iterable|https://github.com/babel/babel/issues/13462]|218&nbsp;days|
 ```
 
 ### Config.json Format
