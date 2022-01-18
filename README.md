@@ -57,7 +57,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 ### Optional: Generating Markup
 
 - You can generate markup for use in Confluence/jira
-- The generateConfluenceMarkup() creates the markup based on two parameters: `maxIssuesAge` and `issuesByDependency`
+- The `generateConfluenceMarkup()` creates the markup based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
 - Square brackets and curly braces in issue titles will be replaced by parentheses.
 - Example of confluenceMarkup output:
@@ -96,7 +96,7 @@ The input file is a JSON file in the format:
 - Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
 - Example owner/repo strings: "square/retrofit": 5023,
 - The project count value is mostly ignored, but is used by the "abbreviated" feature.
-- See examples/exampleData.json for a complete example.
+- See `examples/exampleData.json` for a complete example.
 
 ### Output File Format
 
@@ -162,12 +162,12 @@ Mariner can be called from Javascript or from Typescript. You can see an example
 
 Mariner is in transition from the old way of accessing GitHub data (REST) to the new way (GraphQL)
 
-To invoke mariner using the new GraphQL code, Invoke the finder(), passing the
-appropiate parameters in finder.findIssues() you can see an example here:
+To invoke mariner using the new GraphQL code, Invoke the `finder()`, passing the
+appropiate parameters in `finder.findIssues()` you can see an example here:
 <https://github.com/indeedeng/Mariner/blob/master/examples/runExample.ts>
 
 If you are using the `examples/runOldCode.ts file`, (using the old REST code that is very slow)
-invoke the DependencyDetailsRetriever.run() method, passing appropriate parameters. Please
+invoke the `DependencyDetailsRetriever.run()` method, passing appropriate parameters. Please
 see the [examples/runOldCode.ts](https://github.com/indeedeng/Mariner/blob/master/examples/runOldCode.ts) file
 for more information.
 
@@ -191,7 +191,7 @@ Clone the repository from GitHub.
 
 Run `npm ci` to install the libraries used in the project. Read more about [npm ci here.](https://blog.npmjs.org/post/171556855892/introducing-npm-ci-for-faster-more-reliable)
 
-Follow the instructions in examples/runExample.ts or examples/runOldCode.ts to configure the input and output files. NOTE: An example input file is included, in the examples directory.
+Follow the instructions in `examples/runExample.ts` or `examples/runOldCode.ts` to configure the input and output files. NOTE: An example input file is included, in the examples directory.
 
 Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file.
 
