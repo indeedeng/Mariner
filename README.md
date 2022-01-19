@@ -65,7 +65,6 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 ```md
 h2. Updated: February 22, 2021, 5:38 PM PST
 
-
 h3. babel/babel
 ||*Title*||*Age*||
 |[all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|62&nbsp;days|
@@ -77,10 +76,10 @@ h3. facebook/jest
 ```
 
 ### Optional: Generating Markdown
-- You can generate markdown for use in GitHub markdown
+- You can generate markdown for use in GitHub
 - The `generateGitHubMarkdown()` creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
 - `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
-- Example of GitHub markown output:
+- Example of GitHub markdown output:
 
 ```md
 ## Updated: 2022-01-18T22:53:35.522Z
