@@ -109,11 +109,15 @@ describe('generateConfluenceMarkup function', () => {
         const dependency = 'Badges/shields';
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
+        const now = DateTime.utc();
+        const date = now.toISO();
+
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkup(mockDependencyMap);
-        expect(results).not.toContain(dependency);
-        expect(results).not.toContain('\n||*Title*||*Age*||');
-        expect(results).not.toContain(singleIssue[0].title);
+        expect(results).toContain(`h2. Updated: ${date}`);
+        expect(results).not.toContainEqual(`h3. ${dependency}`);
+        expect(results).not.toContainEqual('\n||*Title*||*Age*||');
+        expect(results).not.toContainEqual(singleIssue[0].title);
     });
 });
 
