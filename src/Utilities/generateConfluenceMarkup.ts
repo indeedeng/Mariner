@@ -9,7 +9,7 @@ export function generateConfluenceMarkup(
 
     const markupArray: string[] = [];
 
-    markupArray.push(`## Updated: ${now.toISO()}`);
+    markupArray.push(`h2. Updated: ${now.toISO()}`);
 
     for (const [dependency, issues] of issuesByDependency) {
         if (!issues || !issues.length) {
