@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
 import { Issue } from '../mariner';
+import { calculateAgeInWholeDays, removeBracesAndBrackets } from '../Utilities/outputHelpers';
 
 export function generateConfluenceMarkup(
     issuesByDependency: Map<string, Issue[]>,
-    maxIssuesAge = 30
+    maxIssuesAge = 430
 ): string {
     const now = DateTime.utc();
 
@@ -33,28 +34,10 @@ export function generateConfluenceMarkup(
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
 
-            const cleanedTitleMarkup = cleanMarkup(issue.title);
+            const cleanedTitleMarkup = removeBracesAndBrackets(issue.title);
             markupArray.push(`|[${cleanedTitleMarkup}|${issue.url}]|${ageInWholeDays}&nbsp;days|`);
         });
     }
 
     return markupArray.join('\n');
-}
-
-export function calculateAgeInWholeDays(isoDateString: string, now: DateTime): number {
-    const createdAt = DateTime.fromISO(isoDateString);
-    const ageInDays = now.diff(createdAt, 'days').days;
-    const ageInWholeDays = Math.round(ageInDays);
-
-    return ageInWholeDays;
-}
-
-export function cleanMarkup(issueTitle: string): string {
-    const withoutBracesOrBrackets = issueTitle
-        .replace(/{/g, '(')
-        .replace(/}/g, ')')
-        .replace(/\[/g, '(')
-        .replace(/\]/g, ')');
-
-    return withoutBracesOrBrackets;
 }
