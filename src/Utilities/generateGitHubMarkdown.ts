@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { Issue } from '../mariner';
+import { removeBracesAndBrackets, calculateAgeInWholeDays } from '../Utilities/outputHelpers';
 
 export function generateGitHubMarkdown(
     issuesByDependency: Map<string, Issue[]>,
@@ -31,17 +32,12 @@ export function generateGitHubMarkdown(
 
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
-            markdownArray.push(`|[${issue.title}|${issue.url}]|${ageInWholeDays}&nbsp;days|`);
+            const cleanTitleMarkdown = removeBracesAndBrackets(issue.title);
+            markdownArray.push(
+                `|[${cleanTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
+            );
         });
     }
 
     return markdownArray.join('\n');
-}
-
-export function calculateAgeInWholeDays(isoDateString: string, now: DateTime): number {
-    const createdAt = DateTime.fromISO(isoDateString);
-    const ageInDays = now.diff(createdAt, 'days').days;
-    const ageInWholeDays = Math.round(ageInDays);
-
-    return ageInWholeDays;
 }
