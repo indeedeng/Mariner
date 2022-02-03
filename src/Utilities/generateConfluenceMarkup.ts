@@ -4,7 +4,7 @@ import { calculateAgeInWholeDays, removeBracesAndBrackets } from '../Utilities/o
 
 export function generateConfluenceMarkup(
     issuesByDependency: Map<string, Issue[]>,
-    maxIssuesAge = 430
+    maxIssuesAge = 30
 ): string {
     const now = DateTime.utc();
 

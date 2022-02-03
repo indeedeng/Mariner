@@ -109,8 +109,8 @@ The input file is a JSON file in the format:
 - At the top level is a map/object, where each entry consists of a dependency as the key,
     and the number of projects that depend on that library as the value.
 - Each dependency can be identified by a complete URL or just the owner/repo string.
-- Example complete url: "https://api.github.com/repos/spring-projects/spring-framework": 19805,
-- Example owner/repo strings: "square/retrofit": 5023,
+- Example complete url: `"https://api.github.com/repos/spring-projects/spring-framework"`: 19805,
+- Example owner/repo strings: `"square/retrofit": 5023`,
 - The project count value is mostly ignored, but is used by the "abbreviated" feature.
 - See `examples/exampleData.json` for a complete example.
 
