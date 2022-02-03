@@ -27,7 +27,7 @@ const fakeIssues: Issue[] = [
 
 const singleIssue: Issue[] = [
     {
-        title: 'ToC: links to markup headings',
+        title: 'ToC: links to headings',
         createdAt: eightDaysAgo,
         repositoryNameWithOwner: 'marmelab/react-admin',
         url: 'https://github.com/marmelab/react-admin/issues/5620',
