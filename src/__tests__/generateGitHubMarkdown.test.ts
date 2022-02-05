@@ -1,5 +1,5 @@
 import * as mariner from '../mariner/index';
-import { removeBracesAndBrackets, calculateAgeInWholeDays } from '../Utilities/outputHelpers';
+import { calculateAgeInWholeDays } from '../Utilities/outputHelpers';
 import { Issue } from '../issueFinder';
 import { DateTime, Duration } from 'luxon';
 
@@ -7,43 +7,43 @@ const eightDaysAgo = DateTime.utc().minus(Duration.fromISO('P8D')).toISO();
 const twoDaysAgo = DateTime.utc().minus(Duration.fromISO('P2D')).toISO();
 const fakeIssues: Issue[] = [
     {
-        title: 'Formatting seems to use Prettier options by default',
+        title: 'Sort Local Times',
         createdAt: eightDaysAgo,
-        repositoryNameWithOwner: 'bc/typescript',
-        url: 'https://github.com/bc/typescript/issues/30',
+        repositoryNameWithOwner: 'moment/luxon',
+        url: 'https://github.com/moment/luxon/issues/1107',
         updatedAt: '',
-        labels: ['help wanted', 'documentation'],
+        labels: ['help wanted', 'enhancement'],
     },
 
     {
-        title: 'style config',
+        title: 'Run a function inside Express route and still render page in sendFile',
         createdAt: eightDaysAgo,
-        repositoryNameWithOwner: 'material-ui/mui',
-        url: 'https://github.com/material-ui/issues/24',
+        repositoryNameWithOwner: 'expressjs/express',
+        url: 'https://github.com/expressjs/express/issues/4769',
         updatedAt: '',
-        labels: ['good first issue', 'help wanted', 'documentation'],
+        labels: ['good first issue', 'help wanted', 'question'],
     },
 ];
 
 const singleIssue: Issue[] = [
     {
-        title: 'ToC: links to headings',
+        title: 'Document how we can control Promises',
         createdAt: eightDaysAgo,
-        repositoryNameWithOwner: 'marmelab/react-admin',
-        url: 'https://github.com/marmelab/react-admin/issues/5620',
+        repositoryNameWithOwner: 'sinonjs/sinon',
+        url: 'https://github.com/sinonjs/sinon/issues/1898',
         updatedAt: twoDaysAgo,
-        labels: ['good first issue', 'documentation'],
+        labels: ['good first issue', 'documentation', 'help wanted'],
     },
 ];
 
-describe('generateConfluenceMarkup function', () => {
+describe('generateGithubMarkdown function', () => {
     it('should not list a dependency that has no issue', () => {
         const issuesByDependency: Map<string, Issue[]> = new Map();
         const noIssues: Issue[] = [];
         const dependency = 'TestDependency';
 
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
-        const results = mariner.generateConfluenceMarkup(oneDependencyNoIssue);
+        const results = mariner.generateGitHubMarkdown(oneDependencyNoIssue);
         expect(results).not.toContain(dependency);
         expect(results).not.toContain('||*Title*||*Age*||');
         expect(results).not.toContain('days');
@@ -54,7 +54,7 @@ describe('generateConfluenceMarkup function', () => {
         const dependency = 'NodeJsDependency';
 
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
-        const results = mariner.generateConfluenceMarkup(twoIssues);
+        const results = mariner.generateGitHubMarkdown(twoIssues);
 
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
@@ -67,15 +67,15 @@ describe('generateConfluenceMarkup function', () => {
         mockDependencyMap.set(dependency1, fakeIssues);
         mockDependencyMap.set(dependency2, singleIssue);
 
-        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
+        const results = mariner.generateGitHubMarkdown(mockDependencyMap);
 
-        expect(results).toContain(`h3. ${dependency1}`);
-        expect(results).toContain('||*Title*||*Age*||');
+        expect(results).toContain(`### ${dependency1}`);
+        expect(results).toContain('|**Title**|**Age**|');
         expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
         expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
 
-        expect(results).toContain(`h3. ${dependency2}`);
-        expect(results).toContain('||*Title*||*Age*||');
+        expect(results).toContain(`### ${dependency2}`);
+        expect(results).toContain('|**Title**|**Age**|');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
     });
     it('should remove curly braces and square brackets from an issue title', () => {
@@ -84,7 +84,7 @@ describe('generateConfluenceMarkup function', () => {
         singleIssue[0].title = '[Navigation Editor] Dropdown menus too narrow {}';
 
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
+        const results = mariner.generateGitHubMarkdown(mockDependencyMap);
         expect(results).not.toContain(singleIssue[0].title);
         expect(results).toMatch(
             `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|`
@@ -98,9 +98,9 @@ describe('generateConfluenceMarkup function', () => {
 
         const ageInWholeDays = calculateAgeInWholeDays(singleIssue[0].createdAt, now);
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
-        expect(results).toContain(`h3. ${dependency}`);
-        expect(results).toContain('||*Title*||*Age*||');
+        const results = mariner.generateGitHubMarkdown(mockDependencyMap);
+        expect(results).toContain(`### ${dependency}`);
+        expect(results).toContain('|**Title**|**Age**|');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
@@ -109,40 +109,14 @@ describe('generateConfluenceMarkup function', () => {
         const dependency = 'Badges/shields';
         singleIssue[0].createdAt = '2021-01-02T10:22:41Z'; // old issue
 
+        const now = DateTime.utc();
+        const date = now.toISO();
+
         mockDependencyMap.set(dependency, singleIssue);
-        const results = mariner.generateConfluenceMarkup(mockDependencyMap);
-
-        expect(results).not.toContainEqual(`h3. ${dependency}`);
-        expect(results).not.toContainEqual('\n||*Title*||*Age*||');
+        const results = mariner.generateGitHubMarkdown(mockDependencyMap);
+        expect(results).toContain(`## Updated: ${date}`);
+        expect(results).not.toContainEqual(`### ${dependency}`);
+        expect(results).not.toContainEqual('\n|**Title**|**Age**|');
         expect(results).not.toContainEqual(singleIssue[0].title);
-    });
-});
-
-describe('cleanMarkup function', () => {
-    it('should return string without altering it', () => {
-        const title1 =
-            '|[Docs: Improve mocks section for promise-based fs/promises | update docs & jest|';
-        const cleanedMarkdown = removeBracesAndBrackets(title1);
-        expect(cleanedMarkdown).toEqual(
-            '|(Docs: Improve mocks section for promise-based fs/promises | update docs & jest|'
-        );
-    });
-    it('should remove a set of curly braces', () => {
-        const title = '|{WIP} updating frontend components|';
-        const cleanedMarkdown = removeBracesAndBrackets(title);
-        expect(cleanedMarkdown).toEqual('|(WIP) updating frontend components|');
-    });
-    it('should remove all curly braces', () => {
-        const title =
-            '|{new babel} teardown do not fail tests in non-watch mode - {imports are removed}|';
-        const cleanedMarkdown = removeBracesAndBrackets(title);
-        expect(cleanedMarkdown).toEqual(
-            '|(new babel) teardown do not fail tests in non-watch mode - (imports are removed)|'
-        );
-    });
-    it('should remove square brackets', () => {
-        const title = '|[[es-lint] resolves deprecated code {updates}|';
-        const cleanedMarkdown = removeBracesAndBrackets(title);
-        expect(cleanedMarkdown).toEqual('|((es-lint) resolves deprecated code (updates)|');
     });
 });

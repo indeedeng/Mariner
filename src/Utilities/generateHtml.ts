@@ -1,7 +1,7 @@
 import { encode } from 'html-entities';
 import { DateTime } from 'luxon';
 import { Issue } from '../issueFinder';
-import { calculateAgeInWholeDays } from './generateConfluenceMarkup';
+import { calculateAgeInWholeDays } from '../Utilities/outputHelpers';
 
 export function generateHtml(issuesByDependency: Map<string, Issue[]>, maxIssuesAge = 30): string {
     const now = DateTime.utc();
