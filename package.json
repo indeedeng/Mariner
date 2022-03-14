@@ -8,9 +8,9 @@
     "license": "Apache-2.0",
     "scripts": {
         "test": "jest",
-        "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
-        "lint": "npx eslint src/ --ext .js,.ts && echo 'Lint complete'",
-        "lint:fix": "npx eslint src/ --fix --ext .js,.ts && echo 'Fixed errors'",
+        "check": "tsc -noEmit true --project tsconfig.json",
+        "lint": "eslint src/ --ext .js,.ts",
+        "lint:fix": "eslint src/ --fix --ext .js,.ts",
         "build": "tsc",
         "prepublish": "tsc",
         "NOTYET-prepublishOnly": "npm test && npm run lint",
