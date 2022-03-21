@@ -8,9 +8,9 @@
     "license": "Apache-2.0",
     "scripts": {
         "test": "jest",
-        "check": "npx eslint --print-config src/* | npx eslint-config-prettier-check",
-        "lint": "npx eslint src/ --ext .js,.ts && echo 'Lint complete'",
-        "lint:fix": "npx eslint src/ --fix --ext .js,.ts && echo 'Fixed errors'",
+        "check": "tsc -noEmit true --project tsconfig.json",
+        "lint": "eslint src/ --ext .js,.ts",
+        "lint:fix": "eslint src/ --fix --ext .js,.ts",
         "build": "tsc",
         "prepublish": "tsc",
         "NOTYET-prepublishOnly": "npm test && npm run lint",
@@ -25,10 +25,9 @@
     "dependencies": {
         "@octokit/graphql": "^4.8.0",
         "@types/luxon": "^1.27.1",
-        "@types/node-fetch": "^2.5.12",
+        "axios": "^0.25.0",
         "html-entities": "^2.3.2",
-        "luxon": "^1.28.0",
-        "node-fetch": "^2.6.7"
+        "luxon": "^1.28.0"
     },
     "publishConfig": {
         "registry": "https://registry.npmjs.org "

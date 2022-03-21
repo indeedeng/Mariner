@@ -1,4 +1,4 @@
-import fetch, { Response } from 'node-fetch';
+import axios, { AxiosResponse } from 'axios';
 import { TabDepthLogger } from './tab-level-logger';
 
 export interface HttpClient {
@@ -18,14 +18,14 @@ export class FetchHttpClient {
     }
 
     public get(url: string): Promise<string> {
-        return fetch(url, { headers: this.headers }).then((resp) => {
+        return axios(url, { headers: this.headers }).then((resp) => {
             this.checkForRateLimiting(resp);
 
-            return resp.text();
+            return resp.data();
         });
     }
 
-    private checkForRateLimiting(response: Response): void {
+    private checkForRateLimiting(response: AxiosResponse): void {
         if (response.status === 403) {
             TabDepthLogger.error(0, 'RATE LIMITED');
         }
