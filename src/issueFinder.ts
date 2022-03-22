@@ -10,6 +10,10 @@ export interface Issue {
     labels: string[];
 }
 
+export type RepoName = string;
+
+export type IssuesByRepoName = Map<RepoName, Issue[]>;
+
 export class IssueFinder {
     private readonly config: Config;
     private readonly fetcher: GitHubIssueFetcher;
@@ -22,7 +26,7 @@ export class IssueFinder {
     public async findIssues(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<Map<string, Issue[]>> {
+    ): Promise<IssuesByRepoName> {
         const gitHubIssues: GitHubIssue[] = [];
         for (const label of this.config.labelsToSearch) {
             const result = await this.fetcher.fetchMatchingIssues(
@@ -41,7 +45,7 @@ export class IssueFinder {
 
         const uniqueIssues = this.omitDuplicates(arrayOfIssues);
 
-        const issuesByRepo = new Map<string, Issue[]>();
+        const issuesByRepo = new Map<RepoName, Issue[]>();
         uniqueIssues.forEach((issue) => {
             const repo = issue.repositoryNameWithOwner;
             const existing = issuesByRepo.get(repo) || [];
@@ -74,7 +78,7 @@ export class IssueFinder {
     }
 
     private omitDuplicates(issues: Issue[]): Issue[] {
-        const map = new Map<string, Issue>();
+        const map = new Map<RepoName, Issue>();
         issues.forEach((issue) => {
             map.set(issue.url, issue);
         });
