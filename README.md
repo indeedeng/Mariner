@@ -54,6 +54,32 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 1. Store your GitHub token in your system's environment by running `export MARINER_GITHUB_TOKEN={Insert your GitHub token here}`. You will either have to do this once each time you restart your system, or else configure your system to do so automatically.  
 1. Finally, run the application to find open issues in your dependencies, using the command `node index.js`.
 
+### Optional: Generating HTML
+
+- You can generate HTML
+- The `generateHtml()` creates the html based on two parameters: `maxIssuesAge` and `issuesByDependency`
+- `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+- Example of HTML output:
+
+```html
+<h3 class="dependency-name">facebook/jest</h3>
+<table class="issue-list">
+<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>
+<tr class="issue-row">
+<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12522">Rework asynchronous tests documentation</a></td>
+<td class="issue-age">15&nbsp;days</td>
+</tr>
+<tr class="issue-row">
+<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12495">Use Admonitions on website</a></td>
+<td class="issue-age">22&nbsp;days</td>
+</tr>
+<tr class="issue-row">
+<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12592">[Bug]: test `notify › does not report --notify flag` is flaky</a></td>
+<td class="issue-age">17&nbsp;days</td>
+</tr>
+</table>
+```
+
 ### Optional: Generating Markup
 
 - You can generate markup for use in Confluence/jira
