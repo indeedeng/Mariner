@@ -1,10 +1,11 @@
-import { GitHubIssueFetcher, GitHubIssue, GitHubLabelEdge } from './gitHubIssueFetcher';
+import { GitHubIssueFetcher, GitHubIssue, GitHubLabelEdge, Languages } from './gitHubIssueFetcher';
 import { Config } from './config';
 
 export interface Issue {
     title: string;
     createdAt: string;
     repositoryNameWithOwner: string;
+    languages: string[];
     url: string;
     updatedAt: string;
     labels: string[];
@@ -61,12 +62,21 @@ export class IssueFinder {
             title: node.title,
             createdAt: node.createdAt,
             repositoryNameWithOwner: node.repository.nameWithOwner,
+            languages: this.convertFromGitHubLanguages(node.repository.languages.edges),
             url: node.url,
             updatedAt: node.updatedAt,
             labels: this.convertFromGitHubLabels(node.labels.edges),
         };
 
         return issue;
+    }
+
+    private convertFromGitHubLanguages(edges: Languages[]) {
+        const languages = edges.map((edge) => {
+            return edge.node.name;
+        });
+
+        return languages;
     }
 
     private convertFromGitHubLabels(edges: GitHubLabelEdge[]) {
