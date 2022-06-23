@@ -44,7 +44,9 @@ function generateHtmlFragmentsForDependency(
     const encodedDependencyName = encode(dependencyName);
     arrayOfHtmlFragments.push(`<h3 class="dependency-name">${encodedDependencyName}</h3>`);
     arrayOfHtmlFragments.push('<table class="issue-list">');
-    arrayOfHtmlFragments.push('<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>');
+    arrayOfHtmlFragments.push(
+        '<tr class="issue-header-row"><th>Title</th><th>Age</th><th>Languages</th></tr>'
+    );
 
     relevantIssues.forEach((issue) => {
         const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
@@ -54,6 +56,7 @@ function generateHtmlFragmentsForDependency(
         arrayOfHtmlFragments.push('<tr class="issue-row">');
         arrayOfHtmlFragments.push(`<td class="issue-title"><a href="${url}">${title}</a></td>`);
         arrayOfHtmlFragments.push(`<td class="issue-age">${ageInWholeDays}&nbsp;days</td>`);
+        arrayOfHtmlFragments.push(`<td class="issue-languages">${issue.languages}</td>`);
         arrayOfHtmlFragments.push('</tr>');
     });
 
