@@ -27,14 +27,14 @@ export function generateGitHubMarkdown(
 
         markdownArray.push('\n');
         markdownArray.push(`### ${dependency}`);
-        markdownArray.push('|**Title**|**Age**|');
+        markdownArray.push('|**Title**|**Age**|**Languages**|');
         markdownArray.push('|:----|:----|');
 
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
             const cleanTitleMarkdown = removeBracesAndBrackets(issue.title);
             markdownArray.push(
-                `|[${cleanTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|`
+                `|[${cleanTitleMarkdown}|${issue.url}]|${ageInWholeDays}&nbsp;days|${issue.languages}|`
             );
         });
     }

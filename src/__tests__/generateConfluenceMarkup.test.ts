@@ -13,6 +13,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/bc/typescript/issues/30',
         updatedAt: '',
         labels: ['help wanted', 'documentation'],
+        languages: ['JavaScript', 'Typescript', 'Python'],
     },
 
     {
@@ -22,6 +23,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/material-ui/issues/24',
         updatedAt: '',
         labels: ['good first issue', 'help wanted', 'documentation'],
+        languages: ['JavaScript', 'CSS', 'Shell'],
     },
 ];
 
@@ -33,6 +35,7 @@ const singleIssue: Issue[] = [
         url: 'https://github.com/marmelab/react-admin/issues/5620',
         updatedAt: twoDaysAgo,
         labels: ['good first issue', 'documentation'],
+        languages: ['Typescript', 'JavaScript'],
     },
 ];
 

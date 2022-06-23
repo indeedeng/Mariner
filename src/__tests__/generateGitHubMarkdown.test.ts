@@ -13,6 +13,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/moment/luxon/issues/1107',
         updatedAt: '',
         labels: ['help wanted', 'enhancement'],
+        languages: ['Javascript', 'Typescript'],
     },
 
     {
@@ -22,6 +23,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/expressjs/express/issues/4769',
         updatedAt: '',
         labels: ['good first issue', 'help wanted', 'question'],
+        languages: ['Javascript', 'Python'],
     },
 ];
 
@@ -33,6 +35,7 @@ const singleIssue: Issue[] = [
         url: 'https://github.com/sinonjs/sinon/issues/1898',
         updatedAt: twoDaysAgo,
         labels: ['good first issue', 'documentation', 'help wanted'],
+        languages: ['Javascript'],
     },
 ];
 
@@ -45,7 +48,7 @@ describe('generateGithubMarkdown function', () => {
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateGitHubMarkdown(oneDependencyNoIssue);
         expect(results).not.toContain(dependency);
-        expect(results).not.toContain('||*Title*||*Age*||');
+        expect(results).not.toContain('||*Title*||*Age*||*Languages*||');
         expect(results).not.toContain('days');
     });
 
@@ -56,8 +59,12 @@ describe('generateGithubMarkdown function', () => {
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
         const results = mariner.generateGitHubMarkdown(twoIssues);
 
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
+        expect(results).toContain(
+            `|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|${fakeIssues[0].languages}|`
+        );
+        expect(results).toContain(
+            `|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|${fakeIssues[1].languages}|`
+        );
     });
     it('should include both dependencies that have issues', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -70,13 +77,19 @@ describe('generateGithubMarkdown function', () => {
         const results = mariner.generateGitHubMarkdown(mockDependencyMap);
 
         expect(results).toContain(`### ${dependency1}`);
-        expect(results).toContain('|**Title**|**Age**|');
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
+        expect(results).toContain('|**Title**|**Age**|**Languages**|');
+        expect(results).toContain(
+            `|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|${fakeIssues[0].languages}|`
+        );
+        expect(results).toContain(
+            `|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|${fakeIssues[1].languages}|`
+        );
 
         expect(results).toContain(`### ${dependency2}`);
-        expect(results).toContain('|**Title**|**Age**|');
-        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
+        expect(results).toContain('|**Title**|**Age**|**Languages**');
+        expect(results).toContain(
+            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|${singleIssue[0].languages}|`
+        );
     });
     it('should remove curly braces and square brackets from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -90,7 +103,7 @@ describe('generateGithubMarkdown function', () => {
             `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|`
         );
     });
-    it('should return correct markup for a dependency and an issue', () => {
+    it('should return correct markdown for a dependency and an issue', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
         const dependency = 'OSS';
         singleIssue[0].title = 'Fixed interface';
@@ -100,9 +113,10 @@ describe('generateGithubMarkdown function', () => {
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateGitHubMarkdown(mockDependencyMap);
         expect(results).toContain(`### ${dependency}`);
-        expect(results).toContain('|**Title**|**Age**|');
+        expect(results).toContain('|**Title**|**Age**|**Languages**|');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
+        expect(results).toContain(`|${singleIssue[0].languages}|`);
     });
     it('should not list a dependency with no issues if its issue is too old', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -116,7 +130,8 @@ describe('generateGithubMarkdown function', () => {
         const results = mariner.generateGitHubMarkdown(mockDependencyMap);
         expect(results).toContain(`## Updated: ${date}`);
         expect(results).not.toContainEqual(`### ${dependency}`);
-        expect(results).not.toContainEqual('\n|**Title**|**Age**|');
+        expect(results).not.toContainEqual('\n|**Title**|**Age**|**Languages**|');
         expect(results).not.toContainEqual(singleIssue[0].title);
+        expect(results).not.toContainEqual(singleIssue[0].languages);
     });
 });
