@@ -29,7 +29,7 @@ export function generateConfluenceMarkup(
 
         markupArray.push('\n');
         markupArray.push(`h3. ${dependency}`);
-        markupArray.push('||*Title*||*Age*||Languages*||');
+        markupArray.push('||*Title*||*Age*||*Languages*||');
 
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);

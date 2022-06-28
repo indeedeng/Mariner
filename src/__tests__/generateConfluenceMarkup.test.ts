@@ -48,7 +48,7 @@ describe('generateConfluenceMarkup function', () => {
         const oneDependencyNoIssue = issuesByDependency.set(dependency, noIssues);
         const results = mariner.generateConfluenceMarkup(oneDependencyNoIssue);
         expect(results).not.toContain(dependency);
-        expect(results).not.toContain('||*Title*||*Age*||');
+        expect(results).not.toContain('||*Title*||*Age*||*Languages*||');
         expect(results).not.toContain('days');
     });
 
@@ -59,8 +59,12 @@ describe('generateConfluenceMarkup function', () => {
         const twoIssues = mockDependencyMap.set(dependency, fakeIssues);
         const results = mariner.generateConfluenceMarkup(twoIssues);
 
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
+        expect(results).toContain(
+            `|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|${fakeIssues[0].languages}|`
+        );
+        expect(results).toContain(
+            `|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|${fakeIssues[1].languages}`
+        );
     });
     it('should include both dependencies that have issues', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -73,13 +77,19 @@ describe('generateConfluenceMarkup function', () => {
         const results = mariner.generateConfluenceMarkup(mockDependencyMap);
 
         expect(results).toContain(`h3. ${dependency1}`);
-        expect(results).toContain('||*Title*||*Age*||');
-        expect(results).toContain(`|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|`);
-        expect(results).toContain(`|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|`);
+        expect(results).toContain('||*Title*||*Age*||*Languages*||');
+        expect(results).toContain(
+            `|[${fakeIssues[0].title}|${fakeIssues[0].url}]|8&nbsp;days|${fakeIssues[0].languages}|`
+        );
+        expect(results).toContain(
+            `|[${fakeIssues[1].title}|${fakeIssues[1].url}]|8&nbsp;days|${fakeIssues[1].languages}|`
+        );
 
         expect(results).toContain(`h3. ${dependency2}`);
-        expect(results).toContain('||*Title*||*Age*||');
-        expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|`);
+        expect(results).toContain('||*Title*||*Age*||*Languages*||');
+        expect(results).toContain(
+            `|[${singleIssue[0].title}|${singleIssue[0].url}]|8&nbsp;days|${singleIssue[0].languages}`
+        );
     });
     it('should remove curly braces and square brackets from an issue title', () => {
         const mockDependencyMap: Map<string, Issue[]> = new Map();
@@ -90,7 +100,7 @@ describe('generateConfluenceMarkup function', () => {
         const results = mariner.generateConfluenceMarkup(mockDependencyMap);
         expect(results).not.toContain(singleIssue[0].title);
         expect(results).toMatch(
-            `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|`
+            `|[(Navigation Editor) Dropdown menus too narrow ()|${singleIssue[0].url}]|8&nbsp;days|${singleIssue[0].languages}`
         );
     });
     it('should return correct markup for a dependency and an issue', () => {
@@ -103,7 +113,7 @@ describe('generateConfluenceMarkup function', () => {
         mockDependencyMap.set(dependency, singleIssue);
         const results = mariner.generateConfluenceMarkup(mockDependencyMap);
         expect(results).toContain(`h3. ${dependency}`);
-        expect(results).toContain('||*Title*||*Age*||');
+        expect(results).toContain('||*Title*||*Age*||*Languages*||');
         expect(results).toContain(`|[${singleIssue[0].title}|${singleIssue[0].url}]|`);
         expect(results).toContain(`|${ageInWholeDays}&nbsp;days|`);
     });
@@ -116,7 +126,7 @@ describe('generateConfluenceMarkup function', () => {
         const results = mariner.generateConfluenceMarkup(mockDependencyMap);
 
         expect(results).not.toContainEqual(`h3. ${dependency}`);
-        expect(results).not.toContainEqual('\n||*Title*||*Age*||');
+        expect(results).not.toContainEqual('\n||*Title*||*Age*||*Languages*||');
         expect(results).not.toContainEqual(singleIssue[0].title);
     });
 });
