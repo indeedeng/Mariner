@@ -32,8 +32,13 @@ interface RateLimit {
     resetAt: number;
 }
 
+interface Assignees {
+    totalCount: number;
+}
+
 export interface GitHubIssue {
     title: string;
+    assignees: Assignees;
     createdAt: string;
     repository: GitHubRepository;
     url: string;
@@ -72,6 +77,9 @@ query findByLabel($queryString:String!, $pageSize:Int, $maxLabelsToRetrieve:Int,
             node{
                 ... on Issue{
                     title
+                    assignees {
+                        totalCount
+                    }
                     createdAt
                         repository {
                         nameWithOwner
