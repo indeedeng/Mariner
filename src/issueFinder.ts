@@ -37,7 +37,7 @@ export class IssueFinder {
             gitHubIssues.push(...result);
         }
 
-        const unassignedIssues = gitHubIssues.filter(this.checkIfAssigned);
+        const unassignedIssues = gitHubIssues.filter(this.isUnassigned);
 
         const arrayOfIssues = unassignedIssues.map((gitHubIssue) => {
             const issue = this.convertFromGitHubIssue(gitHubIssue);
@@ -58,7 +58,7 @@ export class IssueFinder {
         return issuesByRepo;
     }
 
-    private checkIfAssigned(gitHubIssue: GitHubIssue): boolean {
+    private isUnassigned(gitHubIssue: GitHubIssue): boolean {
         return gitHubIssue.assignees.totalCount < 1;
     }
 
