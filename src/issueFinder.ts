@@ -37,7 +37,9 @@ export class IssueFinder {
             gitHubIssues.push(...result);
         }
 
-        const arrayOfIssues = gitHubIssues.map((gitHubIssue) => {
+        const unassignedIssues = gitHubIssues.filter(this.isUnassigned);
+
+        const arrayOfIssues = unassignedIssues.map((gitHubIssue) => {
             const issue = this.convertFromGitHubIssue(gitHubIssue);
 
             return issue;
@@ -54,6 +56,10 @@ export class IssueFinder {
         });
 
         return issuesByRepo;
+    }
+
+    private isUnassigned(gitHubIssue: GitHubIssue): boolean {
+        return gitHubIssue.assignees.totalCount < 1;
     }
 
     private convertFromGitHubIssue(node: GitHubIssue): Issue {
