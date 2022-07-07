@@ -15,6 +15,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/bc/typescript/issues/30',
         updatedAt: '',
         labels: ['help wanted', 'documentation'],
+        languages: ['JavaScript', 'CSS', 'Shell'],
     },
 
     {
@@ -24,6 +25,7 @@ const fakeIssues: Issue[] = [
         url: 'https://github.com/material-ui/issues/24',
         updatedAt: '',
         labels: ['good first issue', 'help wanted', 'documentation'],
+        languages: ['JavaScript', 'CSS', 'Shell'],
     },
 ];
 
@@ -35,6 +37,7 @@ const singleIssue: Issue[] = [
         url: 'https://github.com/marmelab/react-admin/issues/5620',
         updatedAt: twoDaysAgo,
         labels: ['good first issue', 'documentation'],
+        languages: ['JavaScript', 'CSS', 'Shell'],
     },
 ];
 
@@ -48,12 +51,14 @@ describe('generateHtml function', () => {
         const results = mariner.generateHtml(mockDependencyMap, maxAgeInDays);
         expect(results).toContain(`<h3 class="dependency-name">${dependency}</h3>\n`);
         expect(results).toContain('<table class="issue-list">\n');
-        expect(results).toContain('<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>\n');
+        expect(results).toContain(
+            '<tr class="issue-header-row"><th>Title</th><th>Age</th><th>Languages</th></tr>\n'
+        );
         const issue = singleIssue[0];
         const titleCellContents = `<a href="${encode(issue.url)}">${encode(issue.title)}</a>`;
         const ageCellContents = '8&nbsp;days';
         expect(results).toContain(
-            `<tr class="issue-row">\n<td class="issue-title">${titleCellContents}</td>\n<td class="issue-age">${ageCellContents}</td>\n</tr>`
+            `<tr class="issue-row">\n<td class="issue-title">${titleCellContents}</td>\n<td class="issue-age">${ageCellContents}</td>\n<td class="issue-languages">${issue.languages}</td>\n</tr>`
         );
         expect(results).toContain('</table>');
     });
@@ -103,6 +108,7 @@ describe('generateHtml function', () => {
         expect(results).not.toContain(dependency);
         expect(results).not.toContain('Title');
         expect(results).not.toContain('Age');
+        expect(results).not.toContain('Languages');
         expect(results).not.toContain('days');
     });
 

@@ -48,8 +48,14 @@ export interface GitHubIssue {
 
 interface GitHubRepository {
     nameWithOwner: string;
+    languages: { edges: Languages[] };
 }
 
+export interface Languages {
+    node: {
+        name: string;
+    };
+}
 export interface GitHubLabelEdge {
     node: {
         name: string;
@@ -83,6 +89,13 @@ query findByLabel($queryString:String!, $pageSize:Int, $maxLabelsToRetrieve:Int,
                     createdAt
                         repository {
                         nameWithOwner
+                        languages(first: 10) {
+                            edges {
+                                node {
+                                name
+                                }
+                            }
+                        }
                     }
                     url
                     updatedAt

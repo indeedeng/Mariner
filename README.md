@@ -51,7 +51,7 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 1. Run `npm install oss-mariner`
 1. Add `"type": "module"` to `package.json` to allow using "import" rather than "require".
 1. Get a GitHub token. [See instructions here](https://github.com/indeedeng/Mariner#token)
-1. Store your GitHub token in your system's environment by running `export MARINER_GITHUB_TOKEN={Insert your GitHub token here}`. You will either have to do this once each time you restart your system, or else configure your system to do so automatically.  
+1. Store your GitHub token in your system's environment by running `export MARINER_GITHUB_TOKEN={Insert your GitHub token here}`. You will either have to do this once each time you restart your system, or else configure your system to do so automatically.
 1. Finally, run the application to find open issues in your dependencies, using the command `node index.js`.
 
 ### Optional: Generating HTML
@@ -64,58 +64,74 @@ You'll also need a GitHub token and a config file. (Keep reading for more info o
 ```html
 <h3 class="dependency-name">facebook/jest</h3>
 <table class="issue-list">
-<tr class="issue-header-row"><th>Title</th><th>Age</th></tr>
-<tr class="issue-row">
-<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12522">Rework asynchronous tests documentation</a></td>
-<td class="issue-age">15&nbsp;days</td>
-</tr>
-<tr class="issue-row">
-<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12495">Use Admonitions on website</a></td>
-<td class="issue-age">22&nbsp;days</td>
-</tr>
-<tr class="issue-row">
-<td class="issue-title"><a href="https://github.com/facebook/jest/issues/12592">[Bug]: test `notify › does not report --notify flag` is flaky</a></td>
-<td class="issue-age">17&nbsp;days</td>
-</tr>
+    <tr class="issue-header-row">
+        <th>Title</th>
+        <th>Age</th>
+    </tr>
+    <tr class="issue-row">
+        <td class="issue-title">
+            <a href="https://github.com/facebook/jest/issues/12522"
+                >Rework asynchronous tests documentation</a>
+        </td>
+        <td class="issue-age">15&nbsp;days</td>
+        <td class="issue-languages">JavaScript,CSS,Shell,Handlebars,Prolog</td>
+    </tr>
+    <tr class="issue-row">
+        <td class="issue-title">
+            <a href="https://github.com/facebook/jest/issues/12495">Use Admonitions on website</a>
+        </td>
+        <td class="issue-age">22&nbsp;days</td>
+        <td class="issue-languages">JavaScript,CSS,TypeScript,Shell,Handlebars,Prolog</td>
+    </tr>
+    <tr class="issue-row">
+        <td class="issue-title">
+            <a href="https://github.com/facebook/jest/issues/12592"
+                >[Bug]: test `notify › does not report --notify flag` is flaky</a
+            >
+        </td>
+        <td class="issue-age">17&nbsp;days</td>
+        <td class="issue-languages">JavaScript,CSS,TypeScript,Shell,Handlebars,Prolog</td>
+    </tr>
 </table>
 ```
 
 ### Optional: Generating Markup
 
-- You can generate markup for use in Confluence/jira
-- The `generateConfluenceMarkup()` creates the markup based on two parameters: `maxIssuesAge` and `issuesByDependency`
-- `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
-- Square brackets and curly braces in issue titles will be replaced by parentheses.
-- Example of confluenceMarkup output:
+-   You can generate markup for use in Confluence/jira
+-   The `generateConfluenceMarkup()` creates the markup based on two parameters: `maxIssuesAge` and `issuesByDependency`
+-   `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+-   Square brackets and curly braces in issue titles will be replaced by parentheses.
+-   Example of confluenceMarkup output:
 
 ```md
 h2. Updated: February 22, 2021, 5:38 PM PST
 
 h3. babel/babel
-||*Title*||*Age*||
-|[all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|62&nbsp;days|
-
+||_Title_||_Age_||_Languages_||
+|[all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|62&nbsp;days|Javascript|
 
 h3. facebook/jest
-||*Title*||*Age*||
-|[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|
+||_Title_||_Age_||_Languages_||
+|[Lost of context between tests when using dynamic ESM import|https://github.com/facebook/jest/issues/10944]|72&nbsp;days|Typescript, Javascript|
 ```
 
 ### Optional: Generating Markdown
-- You can generate markdown for use in GitHub
-- The `generateGitHubMarkdown()` creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
-- `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
-- Example of GitHub markdown output:
+
+-   You can generate markdown for use in GitHub
+-   The `generateGitHubMarkdown()` creates the markdown based on two parameters: `maxIssuesAge` and `issuesByDependency`
+-   `maxIssueAge` defaults to 30 days, anything over 30 days won't get written, You can edit this number.
+-   Example of GitHub markdown output:
 
 ```md
 ## Updated: 2022-01-18T22:53:35.522Z
 
 ### babel/babel
+
 |**Title**|**Age**|
 |:----|:----|
-|[[Bug]: Typescript plugin fails on named tuple positions where the name is a reserved word in JS|https://github.com/babel/babel/issues/13702]|147&nbsp;days|
+|[[Bug]: Typescript plugin fails on named tuple positions where the name is a reserved word in JS|https://github.com/babel/babel/issues/13702]|147&nbsp;days|Typescript|
 |[[preset-env] all the core-js imports are removed|https://github.com/babel/babel/issues/12545]|392&nbsp;days|
-|[[Bug]: TypeError: Error while loading config - yield* (intermediate value) is not iterable|https://github.com/babel/babel/issues/13462]|218&nbsp;days|
+| [[Bug]: TypeError: Error while loading config - yield\* (intermediate value) is not iterable|https://github.com/babel/babel/issues/13462]|218&nbsp;days|Typescript|
 ```
 
 ### Config.json Format
@@ -151,6 +167,7 @@ The output file is a JSON file in the format:
       "title": "Issue Title 1",
       "createdAt": "2020-10-16T01:07:36Z",
       "repositoryNameWithOwner": "repository/name",
+      "languages": ["JavaScript", "TypeScript", "CSS"],
       "url": "https://github.com/repository/name/issues/65",
       "updatedAt": "2020-10-16T01:07:36Z",
       "labels": [
@@ -162,6 +179,7 @@ The output file is a JSON file in the format:
       "title": "Issue Title 2",
       "createdAt": "2020-10-12T22:37:17Z",
       "repositoryNameWithOwner": "repository/name",
+      "languages": ["JavaScript"],
       "url": "https://github.com/repository/name/issues/58",
       "updatedAt": "2020-10-12T22:37:17Z",
       "labels": [
@@ -175,6 +193,7 @@ The output file is a JSON file in the format:
       "title": "Issue 102",
       "createdAt": "2020-10-03T13:16:58Z",
       "repositoryNameWithOwner": "respository/second_name",
+      "languages": ["JavaScript", "Rust"],
       "url": "https://github.com/respository/second_name/issues/12137",
       "updatedAt": "2020-10-03T13:16:58Z",
       "labels": [

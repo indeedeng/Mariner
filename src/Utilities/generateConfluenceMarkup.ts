@@ -29,13 +29,14 @@ export function generateConfluenceMarkup(
 
         markupArray.push('\n');
         markupArray.push(`h3. ${dependency}`);
-        markupArray.push('||*Title*||*Age*||');
+        markupArray.push('||*Title*||*Age*||*Languages*||');
 
         relevantIssues.forEach((issue) => {
             const ageInWholeDays = calculateAgeInWholeDays(issue.createdAt, now);
-
             const cleanedTitleMarkup = removeBracesAndBrackets(issue.title);
-            markupArray.push(`|[${cleanedTitleMarkup}|${issue.url}]|${ageInWholeDays}&nbsp;days|`);
+            markupArray.push(
+                `|[${cleanedTitleMarkup}|${issue.url}]|${ageInWholeDays}&nbsp;days|${issue.languages}|`
+            );
         });
     }
 
