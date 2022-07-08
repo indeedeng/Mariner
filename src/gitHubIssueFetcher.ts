@@ -145,8 +145,10 @@ export class GitHubIssueFetcher {
         const edgeArray: Edge[] = [];
         for (const chunk of reposForEachCall) {
             const listOfRepos = this.createListOfRepos(chunk);
+
+            // Note on linked: https://docs.github.com/en/search-github/searching-on-github/searching-issues-and-pull-requests#search-for-linked-issues-and-pull-requests
             const variables: Variables = {
-                queryString: `label:"${label}" state:open ${listOfRepos} created:>${dateTimeStringForQuery}`,
+                queryString: `label:"${label}" state:open ${listOfRepos} created:>${dateTimeStringForQuery} -linked:pr`,
                 pageSize,
                 maxLabelsToRetrieve,
             };
