@@ -270,7 +270,7 @@ You should have local copies of both the oss-mariner project and the project tha
 In the oss-mariner project, run `npm link`. This will "publish" oss-mariner locally on your
 computer. Then in the other project, run `npm link oss-mariner`.
 This will replace the public npm version of oss-mariner with your local copy.
-To undo run `npm unlink --no-save oss-mariner>` on your project’s directory to remove the local symlink.
+To undo run `npm unlink --no-save oss-mariner` on your project’s directory to remove the local symlink.
 To remove global symlink go to oss-mariner project and run `npm unlink`
 
 ## Project Maintainers
