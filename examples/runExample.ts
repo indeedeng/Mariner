@@ -60,7 +60,7 @@ const repositoryIdentifiers = Object.keys(countsByLibrary);
 const prefix = 'https://api.github.com/repos/';
 const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
     if (identifier.startsWith(prefix)) {
-        return identifier.substr(prefix.length);
+        return identifier.substring(prefix.length);
     } else {
         return identifier;
     }
