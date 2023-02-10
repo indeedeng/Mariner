@@ -2,6 +2,10 @@ import { Config } from './config';
 import { Octokit } from '@octokit/rest';
 import fs from 'fs';
 
+export type GitHubContributorRepo = {
+    owner: string;
+    repo: string;
+};
 export interface Contributor {
     login: string;
     id: number;
@@ -32,8 +36,7 @@ export class SponsorabilityFetcher {
     }
     public async fetchSponsorables(token: string) {
         /* To-do:
-          1. Read file of deps
-          2. Figure out types
+          2. Figure out types -- still working on it/rough draft
           3. create function to loop through
           each dependeny and pass each one in fetchContributors
         */
@@ -64,95 +67,3 @@ export class SponsorabilityFetcher {
         return listOfContributors.data;
     }
 }
-
-/*
-Response Schema
-{
-  "type": "array",
-  "items": {
-    "title": "Contributor",
-    "description": "Contributor",
-    "type": "object",
-    "properties": {
-      "login": {
-        "type": "string"
-      },
-      "id": {
-        "type": "integer"
-      },
-      "node_id": {
-        "type": "string"
-      },
-      "avatar_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "gravatar_id": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "html_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "followers_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "following_url": {
-        "type": "string"
-      },
-      "gists_url": {
-        "type": "string"
-      },
-      "starred_url": {
-        "type": "string"
-      },
-      "subscriptions_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "organizations_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "repos_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "events_url": {
-        "type": "string"
-      },
-      "received_events_url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "type": {
-        "type": "string"
-      },
-      "site_admin": {
-        "type": "boolean"
-      },
-      "contributions": {
-        "type": "integer"
-      },
-      "email": {
-        "type": "string"
-      },
-      "name": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "contributions",
-      "type"
-    ]
-  }
-}
-*/
