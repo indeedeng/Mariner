@@ -1,5 +1,6 @@
 import { Config } from './config';
 import { Octokit } from '@octokit/rest';
+import fs from 'fs';
 
 export interface Contributor {
     login: string;
@@ -36,7 +37,17 @@ export class SponsorabilityFetcher {
           3. create function to loop through
           each dependeny and pass each one in fetchContributors
         */
+        const dependencies = this.readDependenciesFile();
+        console.log(typeof dependencies);
+
         return this.fetchContributors(token);
+    }
+
+    public readDependenciesFile(): string {
+        const fileDir = './examples/exampleData.json';
+        const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
+
+        return data;
     }
 
     public async fetchContributors(token: string) {
