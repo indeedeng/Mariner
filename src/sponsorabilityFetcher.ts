@@ -2,7 +2,7 @@ import { Config } from './config';
 import { Octokit } from '@octokit/rest';
 import fs from 'fs';
 
-export type GitHubContributorRepo = {
+export type RepositoryContributorInfo = {
     owner: string;
     repo: string;
 };
@@ -37,33 +37,61 @@ export class SponsorabilityFetcher {
     public async fetchSponsorables(token: string) {
         /* To-do:
           2. Figure out types -- still working on it/rough draft
-          3. create function to loop through
-          each dependeny and pass each one in fetchContributors
         */
-        const dependencies = this.readDependenciesFile();
-        console.log(typeof dependencies);
-
-        return this.fetchContributors(token);
-    }
-
-    public readDependenciesFile(): string {
         const fileDir = './examples/exampleData.json';
-        const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
+        const dependencies = this.readJsonFile(fileDir);
 
-        return data;
+        const ownerAndRepo = this.extractContributorsOwnerAndRepo(dependencies);
+        const contributors = await this.fetchContributors(token, ownerAndRepo);
+        const all = Promise.all(contributors);
+
+        return all;
     }
 
-    public async fetchContributors(token: string) {
+    public extractContributorsOwnerAndRepo(dependencies: string[]): RepositoryContributorInfo[] {
+        const contributorsInformation = Object.keys(dependencies);
+
+        return contributorsInformation.map((contributorInfo) => {
+            const ownerAndRepo = contributorInfo.split('/');
+            const owner = ownerAndRepo[0];
+            const repo = ownerAndRepo[1];
+            const contributorOwnerAndRepo: RepositoryContributorInfo = { owner, repo };
+
+            return contributorOwnerAndRepo;
+        });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public readJsonFile(fileDir: string): any {
+        // will update type
+        try {
+            const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
+            const contributors = JSON.parse(data);
+
+            return contributors;
+        } catch (err) {
+            console.log('Error parsing JSON string');
+        }
+    }
+
+    public async fetchContributors(
+        token: string,
+        ownerAndRepo: RepositoryContributorInfo[]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): Promise<any[]> {
         const octokit = new Octokit({
             auth: token,
         });
 
-        const listOfContributors = await octokit.repos.listContributors({
-            // will removce when looping through
-            owner: 'indeedeng', // user or org name
-            repo: 'mariner', // repoName
+        const contributors = ownerAndRepo.map(async (contributor) => {
+            const listOfContributors = await octokit.repos.listContributors({
+                owner: contributor.owner,
+                repo: contributor.repo,
+            });
+
+            return listOfContributors.data;
         });
 
-        return listOfContributors.data;
+        return contributors;
     }
 }
