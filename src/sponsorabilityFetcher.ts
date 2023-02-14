@@ -41,8 +41,8 @@ export class SponsorabilityFetcher {
         const fileDir = './examples/exampleData.json';
         const dependencies = this.readJsonFile(fileDir);
 
-        const ownerAndRepo = this.extractContributorsOwnerAndRepo(dependencies);
-        const contributors = await this.fetchContributors(token, ownerAndRepo);
+        const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
+        const contributors = await this.fetchContributors(token, ownerAndRepos);
         const all = Promise.all(contributors);
 
         return all;
