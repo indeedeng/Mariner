@@ -53,7 +53,6 @@ export class SponsorabilityFetcher {
         );
 
         const contributors = this.convertToContributors(githubContributors);
-        console.log('Returning contributors: ', contributors.length);
 
         return contributors;
     }
@@ -81,8 +80,7 @@ export class SponsorabilityFetcher {
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public readJsonFile(fileDir: string): any {
+    public readJsonFile(fileDir: string): string[] {
         if (fs.existsSync(fileDir)) {
             try {
                 const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
@@ -129,28 +127,3 @@ export class SponsorabilityFetcher {
         return contributors;
     }
 }
-
-// export interface Contributor {
-//     login: string;
-//     id: number;
-//     node_id: string;
-//     avatar_url: string;
-//     gravatar_id: string;
-//     url: string;
-//     html_url: string;
-//     followers_url: string;
-//     following_url: string;
-//     gists_url: string;
-//     starred_url: string;
-//     subscriptions_url: string;
-//     organizations_url: string;
-//     repos_url: string;
-//     events_url: string;
-//     received_events_url: string;
-//     type: string;
-//     site_admin: boolean;
-//     contributions: number;
-// }
-
-// export type RepoName = string;
-// export type ContributorsByRepoName = Map<RepoName, Contributor[]>;
