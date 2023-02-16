@@ -1,7 +1,20 @@
 import { Config } from './config';
 import { Contributor, ContributorFetcher } from './contributorFetcher';
 
-// const queryTemplate = ``;
+const queryTemplate = `query ($login: String!) {
+  user(login: $login) {
+    ... on Sponsorable {
+      sponsors(first: 10) {
+        totalCount
+        nodes {
+          ... on User { login, name, url  }
+          ... on Organization { login, name, url }
+        }
+      }
+    }
+  }
+}`;
+
 export class SponsorabilityFetcher {
     private readonly config: Config;
 
