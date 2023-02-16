@@ -88,7 +88,7 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
 const fileDir = './examples/exampleData.json'; // possibly update
 
 fetchSponsorableContributors
-    .fetchSponsorables(token, fileDir)
+    .fetchContributors(token, fileDir)
     .then((results) => {
         return results;
     })
