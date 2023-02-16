@@ -7,6 +7,7 @@
     "author": "",
     "license": "Apache-2.0",
     "scripts": {
+        "start": "node dist/examples/runExample.js",
         "test": "jest",
         "check": "tsc -noEmit true --project tsconfig.json",
         "lint": "eslint src/ --ext .js,.ts",
