@@ -1,6 +1,7 @@
 import { Config } from './config';
 import { Contributor, ContributorFetcher } from './contributorFetcher';
 
+// query WIP:
 const queryTemplate = `query ($login: String!) {
   user(login: $login) {
     ... on Sponsorable {
