@@ -46,7 +46,7 @@ export class SponsorabilityFetcher {
 
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
 
-        const githubContributors: GitHubContributor[] = await this.fetchContributors(
+        const githubContributors: GitHubContributor[] = await this.fetchGitHubContributors(
             token,
             ownerAndRepos
         );
@@ -93,7 +93,7 @@ export class SponsorabilityFetcher {
         throw new Error(`Can't find data in file directory: ${fileDir}`);
     }
 
-    public async fetchContributors(
+    public async fetchGitHubContributors(
         token: string,
         ownerAndRepo: RepositoryContributorInfo[]
     ): Promise<GitHubContributor[]> {
