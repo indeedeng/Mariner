@@ -67,7 +67,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const finder = new mariner.IssueFinder(config);
-const findSponsorables = new mariner.SponsorabilityFetcher(config);
+const fetchSponsorableContributors = new mariner.SponsorabilityFetcher(config);
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): Record<string, mariner.Issue[]> {
     const record: Record<string, mariner.Issue[]> = {};
@@ -85,8 +85,9 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-const fileDir = './examples/exampleData.json';
-findSponsorables
+const fileDir = './examples/exampleData.json'; // possibly update
+
+fetchSponsorableContributors
     .fetchSponsorables(token, fileDir)
     .then((results) => {
         return results;
