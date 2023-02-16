@@ -6,7 +6,7 @@
     Optionally, you can have environment variables for INPUT_FILE_PATH and OUTPUT_FILE_PATH,
         but they have defaults that will work with the standard development environment.
     Then, run `npm run build`
-    Finally, run `node dist/examples/runExample.js`
+    Finally, run `npm start` or `node dist/examples/runExample.js`
 
     You'll know it's run correctly if you have a new file
         examples/output.json with some GitHub issues in it.

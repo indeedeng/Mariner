@@ -258,7 +258,7 @@ Run `nvm use` to use the appropiate version of Node specified in the .nvmrc file
 
 Run `npm run build` to compile the code to Javascript.
 
-Run `node dist/examples/runExample.js` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
+Run `npm start` (to use GraphQL) or `node dist/examples/runOldCode.ts` (to use REST calls), to run the example program. It requires internet access, since it calls the GitHub API. It will take a couple minutes to complete. Some of the output includes the word "ERROR", so don't panic.
 
 Ensure to lint your code by running `npm run lint` before submitting any code for review. Either manually fix the errors or run `npm run lint:fix` to automatically fix any errors.
 
