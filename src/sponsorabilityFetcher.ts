@@ -41,7 +41,7 @@ export class SponsorabilityFetcher {
         this.config = config;
     }
 
-    public async fetchSponsorables(token: string, fileDir: string): Promise<Contributor[]> {
+    public async fetchContributors(token: string, fileDir: string): Promise<Contributor[]> {
         const dependencies = this.readJsonFile(fileDir);
 
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
