@@ -85,8 +85,9 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
+const fileDir = './examples/exampleData.json';
 findSponsorables
-    .fetchSponsorables(token)
+    .fetchSponsorables(token, fileDir)
     .then((results) => {
         return results;
     })

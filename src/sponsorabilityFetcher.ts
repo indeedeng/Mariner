@@ -41,8 +41,7 @@ export class SponsorabilityFetcher {
         this.config = config;
     }
 
-    public async fetchSponsorables(token: string): Promise<Contributor[]> {
-        const fileDir = './examples/exampleData.json';
+    public async fetchSponsorables(token: string, fileDir: string): Promise<Contributor[]> {
         const dependencies = this.readJsonFile(fileDir);
 
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
@@ -103,6 +102,7 @@ export class SponsorabilityFetcher {
         });
 
         const contributors: GitHubContributor[] = [];
+
         const promises = ownerAndRepo.map(async (contributor) => {
             const fullRepoIdentifier = {
                 owner: contributor.owner,
