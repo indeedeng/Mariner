@@ -87,10 +87,10 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
 
 findSponsorables
     .fetchSponsorables(token)
-    .then((sponsorables) => {
-        console.log(sponsorables);
+    .then((results) => {
+        return results;
     })
-    .catch((err) => {
+    .catch((err: { message: string }) => {
         logger.error(err.message);
         console.log(err);
     });

@@ -1,16 +1,37 @@
 import { Config } from './config';
-import { Octokit } from '@octokit/rest';
+import { Octokit } from '@octokit/rest'; // OctokitResponse
+
 import fs from 'fs';
 
 export type RepositoryContributorInfo = {
     owner: string;
     repo: string;
 };
-export interface Contributor {
+export type Contributor = {
     login: string;
-    id: number;
-    html_url: string;
+    url: string;
     contributions: number;
+};
+export interface GitHubContributor {
+    login?: string | undefined;
+    id?: number | undefined;
+    node_id?: string | undefined;
+    avatar_url?: string | undefined;
+    gravatar_id?: string | null | undefined;
+    url?: string | undefined;
+    html_url?: string | undefined;
+    followers_url?: string | undefined;
+    following_url?: string | undefined;
+    gists_url?: string | undefined;
+    starred_url?: string | undefined;
+    subscriptions_url?: string | undefined;
+    organizations_url?: string | undefined;
+    repos_url?: string | undefined;
+    events_url?: string | undefined;
+    received_events_url?: string | undefined;
+    type?: string | undefined;
+    site_admin?: boolean | undefined;
+    contributions?: number | undefined;
 }
 
 export class SponsorabilityFetcher {
@@ -19,18 +40,32 @@ export class SponsorabilityFetcher {
     public constructor(config: Config) {
         this.config = config;
     }
-    public async fetchSponsorables(token: string) {
-        /* To-do:
-          2. Figure out types -- still working on it/rough draft
-        */
+
+    public async fetchSponsorables(token: string): Promise<Contributor[]> {
         const fileDir = './examples/exampleData.json';
         const dependencies = this.readJsonFile(fileDir);
 
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
-        const contributors = await this.fetchContributors(token, ownerAndRepos);
-        const all = Promise.all(contributors);
 
-        return all;
+        const githubContributors: GitHubContributor[] = await this.fetchContributors(
+            token,
+            ownerAndRepos
+        );
+
+        const contributors = this.convertToContributors(githubContributors);
+        console.log('Returning contributors: ', contributors.length);
+
+        return contributors;
+    }
+
+    public convertToContributors(githubContributor: GitHubContributor[]): Contributor[] {
+        return githubContributor.map((contributor) => {
+            return {
+                login: contributor.login ?? '',
+                url: contributor.html_url ?? '',
+                contributions: contributor.contributions ?? -1,
+            };
+        });
     }
 
     public extractContributorsOwnerAndRepo(dependencies: string[]): RepositoryContributorInfo[] {
@@ -48,34 +83,48 @@ export class SponsorabilityFetcher {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public readJsonFile(fileDir: string): any {
-        // will update type
-        try {
-            const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
-            const contributors = JSON.parse(data);
+        if (fs.existsSync(fileDir)) {
+            try {
+                const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
+                const contributors = JSON.parse(data);
 
-            return contributors;
-        } catch (err) {
-            console.log('Error parsing JSON string');
+                return contributors;
+            } catch (err) {
+                console.log('Error parsing JSON string');
+            }
         }
+        throw new Error(`Can't find data in file directory: ${fileDir}`);
     }
 
     public async fetchContributors(
         token: string,
         ownerAndRepo: RepositoryContributorInfo[]
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any[]> {
+    ): Promise<GitHubContributor[]> {
         const octokit = new Octokit({
             auth: token,
         });
 
-        const contributors = ownerAndRepo.map(async (contributor) => {
-            const listOfContributors = await octokit.repos.listContributors({
+        const contributors: GitHubContributor[] = [];
+        const promises = ownerAndRepo.map(async (contributor) => {
+            const fullRepoIdentifier = {
                 owner: contributor.owner,
                 repo: contributor.repo,
-            });
+            };
 
-            return listOfContributors.data;
+            const response = await octokit.repos?.listContributors(fullRepoIdentifier);
+
+            if (response.status !== 200) {
+                throw new Error(`Could not retrieve repositories for ${contributor}`);
+            }
+
+            if (!response.data) {
+                throw new Error(`No data for ${contributor}`);
+            }
+
+            contributors.push(...response.data); // optimize later
         });
+
+        await Promise.all(promises);
 
         return contributors;
     }
@@ -102,3 +151,6 @@ export class SponsorabilityFetcher {
 //     site_admin: boolean;
 //     contributions: number;
 // }
+
+// export type RepoName = string;
+// export type ContributorsByRepoName = Map<RepoName, Contributor[]>;
