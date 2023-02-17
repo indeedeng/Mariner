@@ -34,20 +34,45 @@ export class SponsorabilityFetcher {
         fileDir: string
     ): Promise<Contributor[]> {
         const fetchSponsorableContributors = new ContributorFetcher(this.config);
-        const allContributors = fetchSponsorableContributors.fetchContributors(token, fileDir);
-        // To-do:
-        // Add types to unpack data from graphql query, look at docs to add what I miss
-        // create function that loops thorugh each contributor and fetch sponsorable info
-        //
+        const allContributors = await fetchSponsorableContributors.fetchContributors(
+            token,
+            fileDir
+        );
 
-        const login = 'filiptronicek'; // example data from community discussion  https://github.com/community/community/discussions/3818
-        // outputs : { user: { sponsors: { totalCount: 5, nodes: [Array] } } }
+        const sponsorData = await this.fetchContributorsSponsorInformation(
+            token,
+            queryTemplate,
+            allContributors
+        );
 
-        const variables: Variables = { userLogin: `${login}` };
-        const sponsorableData = await this.fetchSponsorData(token, variables, queryTemplate);
-        console.log(sponsorableData);
+        console.log(sponsorData);
 
         return allContributors;
+    }
+
+    public async fetchContributorsSponsorInformation(
+        token: string,
+        query: string,
+        contributors: Contributor[]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): Promise<any> {
+        console.log(contributors.length);
+        const testContributorArray = [{ login: 'filiptronicek' }, { login: 'IngridGdesigns' }]; // test data
+        let contributorSponsorInfo;
+
+        for (const contributor of testContributorArray) {
+            // Add Contributors here
+            const userLogin = contributor.login;
+            const variables: Variables = { userLogin };
+            console.log(variables);
+
+            const response = await this.fetchSponsorData(token, variables, query);
+            console.log(response);
+            // contributorSponsorInfo.push(...[response]);
+        }
+
+        return contributorSponsorInfo;
+        // outputs : { user: { sponsors: { totalCount: 5, nodes: [Array] } } }
     }
 
     public async fetchSponsorData(
