@@ -50,10 +50,19 @@ export class ContributorFetcher {
             token,
             ownerAndRepos
         );
+        const filteredContributors = this.filterOutDependabots(githubContributors); // remove dependabot
 
-        const contributors = this.convertToContributors(githubContributors);
+        const contributors = this.convertToContributors(filteredContributors);
 
         return contributors;
+    }
+
+    public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
+        const result = githubContributors.filter(
+            (userLogin) => userLogin.login !== 'dependabot[bot]'
+        );
+
+        return result;
     }
 
     public convertToContributors(githubContributor: GitHubContributor[]): Contributor[] {
