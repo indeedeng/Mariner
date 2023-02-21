@@ -67,7 +67,7 @@ export class SponsorabilityFetcher {
             allContributors
         );
 
-        console.log(sponsorData);
+        console.log(sponsorData.length);
 
         return allContributors;
     }
@@ -79,17 +79,25 @@ export class SponsorabilityFetcher {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): Promise<any> {
         console.log(contributors.length);
-        const testContributorArray = [{ login: 'filiptronicek' }, { login: 'mvdan' }]; // test data
-        let contributorSponsorInfo;
+        // const testContributorArray = [{ login: 'filiptronicek' }, { login: 'mvdan' }]; // test data
 
-        for (const contributor of testContributorArray) {
+        const contributorSponsorInfo = new Map();
+
+        for (const contributor of contributors) {
             // Add Contributors here
             const userLogin = contributor.login;
+
             const variables: Variables = { userLogin };
 
             const response = await this.fetchSponsorData(token, variables, query);
-            console.log(response.user.sponsors.nodes);
-            // contributorSponsorInfo.push(...[response]);
+
+            console.log(response);
+            // console.log(response.user.sponsors.nodes.user);
+
+            // contributorSponsorInfo.set(
+            //     response.user.sponsors.nodes.user,
+            //     response.user.sponsors.nodes.organization
+            // );
         }
 
         return contributorSponsorInfo;
