@@ -1,9 +1,10 @@
 import { Config } from './config';
 import { Contributor, ContributorFetcher } from './contributorFetcher';
 import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
-import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
 
 interface User {
+    type: string;
     name: string;
     email: string;
     login: string;
@@ -15,6 +16,7 @@ interface User {
 }
 
 interface Organization {
+    type: string;
     login: string;
     url: string;
     sponsorListing: {
@@ -22,29 +24,28 @@ interface Organization {
     };
 }
 interface Sponsorable {
-    nodes: {
-        organization: Organization[];
-        user: User[];
-    };
+    nodes: [User | Organization];
 }
 
 // query WIP: fetchiing first 10 sponsors, need to add pagination
 const queryTemplate = `query fetchSponsorable($userLogin: String!) {
-  search(query: $userLogin, type: USER, first: 100) {
+  search(query: $userLogin, type: USER, first: 10) {
     nodes {
-      ... on Organization {
-        login
-        url
-        sponsorsListing {
-          name
-        }
-      }
       ... on User {
+        __typename
         name
         email
         login
         url
         bio
+        sponsorsListing {
+          name
+        }
+      }
+        ... on Organization {
+        __typename
+        login
+        url
         sponsorsListing {
           name
         }
@@ -80,7 +81,6 @@ export class SponsorabilityFetcher {
             allContributors
         );
         console.log(`Line 69 ${JSON.stringify(sponsorData)}`);
-        console.log(sponsorData.length);
 
         return allContributors;
     }
@@ -89,48 +89,63 @@ export class SponsorabilityFetcher {
         token: string,
         query: string,
         contributors: Contributor[]
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
+    ): Promise<Sponsorable[]> {
         console.log(`LINE 81 ${contributors.length}`);
-        // const testContributorArray = [{ login: 'filiptronicek' }, { login: 'mvdan' }]; // test data
+        // const testContributorsArray = [{ login: 'mvdan' }]; // test data
 
-        const contributorSponsorInfo = new Map();
+        const contributorSponsorInfo = [];
 
         for (const contributor of contributors) {
-            // Add Contributors here
             const userLogin = contributor.login;
-
             const variables: Variables = { userLogin };
 
             const response = await this.fetchSponsorData(token, variables, query);
-
-            console.log(`Line 94 ${JSON.stringify(response)}`);
+            contributorSponsorInfo.push(response);
         }
 
         return contributorSponsorInfo;
-        // outputs : { user: { sponsors: { totalCount: 5, nodes: [Array] } } }
     }
 
     public async fetchSponsorData(
         token: string,
         variables: Variables,
         query: string
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
+    ): Promise<Sponsorable> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
 
-        const response: Sponsorable = await graphqlWithAuth(query, variables);
+        const response: GraphQlQueryResponseData = await graphqlWithAuth(query, variables);
 
-        return response;
+        const result: Sponsorable = response.search.nodes;
+
+        return result;
     }
 }
 
+// const result: IssueCountAndIssues = {
+//     issueCount: 0,
+//     edges: [],
+//     pageInfo: {
+//         hasNextPage: true,
+//     },
+// };
+// while (result.pageInfo.hasNextPage) {
+//     getLogger().info(`Calling: ${queryId}`);
+//     const response = (await graphqlWithAuth(query, variables)) as Response;
+//     const issueCountsAndIssues = response.search;
+//     getLogger().info(
+//         `Fetched: ${queryId} => ` +
+//             `${issueCountsAndIssues.edges.length}/${issueCountsAndIssues.issueCount} (${issueCountsAndIssues.pageInfo.hasNextPage})`
+//     );
+//     const rateLimit = response.rateLimit;
+//     getLogger().info(`Rate limits: ${JSON.stringify(rateLimit)}`);
+//     variables.after = issueCountsAndIssues.pageInfo.endCursor;
+//     result.pageInfo.hasNextPage = issueCountsAndIssues.pageInfo.hasNextPage;
+//     result.edges.push(...issueCountsAndIssues.edges);
+
 // add needed scopes to read me
-/*
-message: "Your token has not been granted the required scopes to execute this query.
-The 'email' field requires one of the following scopes: ['user:email', 'read:user'],
-but your token has only been granted the: ['read:org'] scopes.
+/*output users.... orgs later.
+field requires one of the following scopes: ['user:email', 'read:user'],m['read:org'] scopes.
 Please modify your token's scopes at: https://github.com/settings/tokens."
 */
