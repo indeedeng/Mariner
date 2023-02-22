@@ -3,35 +3,31 @@ import { Contributor, ContributorFetcher } from './contributorFetcher';
 import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
-// interface User {
-//     name: string;
-//     email: string;
-//     login: string;
-//     url: string;
-//     bio: string;
-//     sponsorListing: {
-//         name: string;
-//     };
-// }
+interface User {
+    name: string;
+    email: string;
+    login: string;
+    url: string;
+    bio: string;
+    sponsorListing: {
+        name: string;
+    };
+}
 
-// interface Organization {
-//     login: string;
-//     url: string;
-//     sponsorListing: {
-//         name: string;
-//     };
-// }
-// interface Sponsorable {
-//     user: {
-//         sponsors: {
-//             totalCount: number; // total  sponsor count
-//             nodes: {
-//                 user: User[];
-//                 organization: Organization[];
-//             };
-//         };
-//     };
-// }
+interface Organization {
+    login: string;
+    url: string;
+    sponsorListing: {
+        name: string;
+    };
+}
+interface Sponsorable {
+    nodes: {
+        organization: Organization[];
+        user: User[];
+    };
+}
+
 // query WIP: fetchiing first 10 sponsors, need to add pagination
 const queryTemplate = `query fetchSponsorable($userLogin: String!) {
   search(query: $userLogin, type: USER, first: 100) {
@@ -109,12 +105,6 @@ export class SponsorabilityFetcher {
             const response = await this.fetchSponsorData(token, variables, query);
 
             console.log(`Line 94 ${JSON.stringify(response)}`);
-            // console.log(response.user.sponsors.nodes.user);
-
-            // contributorSponsorInfo.set(
-            //     response.user.sponsors.nodes.user,
-            //     response.user.sponsors.nodes.organization
-            // );
         }
 
         return contributorSponsorInfo;
@@ -131,7 +121,7 @@ export class SponsorabilityFetcher {
             headers: { authorization: `token ${token}` },
         });
 
-        const response = await graphqlWithAuth(query, variables);
+        const response: Sponsorable = await graphqlWithAuth(query, variables);
 
         return response;
     }
