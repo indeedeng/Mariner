@@ -210,7 +210,9 @@ Please note that only the first 100 labels per issue will be fetched. If a singl
 
 ## Token
 
-To run Mariner, you must create a token. The GitHub token must be a valid personal access token.
+To run Mariner, you must create a token. The GitHub token must be a valid personal access token. 
+It requires one of the following scopes: ['user:email', 'read:user', 'read:org'] scopes.
+Please modify your token's scopes at: https://github.com/settings/tokens."
 It does not require any permissions beyond the default, so when you create it you can leave all
 the boxes unchecked. Be careful not to share your token with anyone. If it gets exposed, revoke
 it and create a replacement.
