@@ -5,6 +5,7 @@ export interface Config {
     numberOfReposPerCall: number;
     inputFilePath: string;
     outputFilePath: string;
+    outputSponsorableFilePath: string;
     daysAgoCreated: number;
 }
 
@@ -21,6 +22,7 @@ export function readConfigFile(configFilePath: string): Config {
         numberOfReposPerCall: rawConfig.numberOfReposPerCall,
         inputFilePath: rawConfig.inputFilePath,
         outputFilePath: rawConfig.outputFilePath,
+        outputSponsorableFilePath: rawConfig.outputSponsorableFilePath,
         daysAgoCreated: daysAgoCreated,
     };
 
