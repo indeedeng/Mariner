@@ -6,6 +6,7 @@
     ],
     "inputFilePath": "examples/exampleData.json",
     "outputFilePath": "examples/output.json",
+    "outputSponsorableFilePath": "examples/sponsorableOutput.tsv",
     "daysAgoCreated": 90,
     "numberOfReposPerCall": 1000
 }
