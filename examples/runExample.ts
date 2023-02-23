@@ -49,6 +49,7 @@ mariner.setLogger(logger);
 
 logger.info(`Input:  ${path.resolve(config.inputFilePath)}`);
 logger.info(`Output: ${path.resolve(config.outputFilePath)}`);
+logger.info(`Sponsorable Output: ${path.resolve(config.outputSponsorableFilePath)}`);
 logger.info(`Fetching issues from the last ${config.daysAgoCreated} days`);
 
 const contents = fs.readFileSync(config.inputFilePath, {
@@ -90,9 +91,33 @@ const fileDir = './examples/exampleData.json'; // possibly update
 fetchSponsorables
     .fetchSponsorabilityInformation(token, fileDir)
     .then((results) => {
-        console.log(results);
+        console.log(results.length);
+        console.log(results, 'line 98 in runExample file');
 
-        return results;
+        /* output 2
+[
+  {
+    type: 'User',
+    email: 'mvdan@mvdan.cc',
+    login: 'mvdan',
+    url: 'https://github.com/mvdan',
+    sponsorListingName: 'sponsors-mvdan'
+  },
+  {
+    type: 'User',
+    email: 'kzm@zkat.tech',
+    login: 'zkat',
+    url: 'https://github.com/zkat',
+    sponsorListingName: 'sponsors-zkat'
+  }
+] line 98 in runExample file*/
+
+        fs.writeFileSync(
+            config.outputSponsorableFilePath,
+            `${JSON.stringify(results, undefined, 2)}`
+        );
+
+        // logger.info(`Saved User results to: ${config.outputSponsorableFilePath}`);
     })
     .catch((err: { message: string }) => {
         logger.error(err.message);

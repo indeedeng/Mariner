@@ -5,11 +5,11 @@ import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
 interface Node {
     __typename: string;
-    email: string;
+    email?: string;
     login: string;
     url: string;
-    sponsorListing: {
-        name: string;
+    sponsorsListing: {
+        name: string | null;
     };
 }
 
@@ -32,7 +32,7 @@ interface Response {
     search: Sponsorable;
 }
 interface Sponsorable {
-    nodes: Node[];
+    nodes: Node;
 }
 
 // query WIP: fetchiing first 10 sponsors, need to add pagination
@@ -83,14 +83,13 @@ export class SponsorabilityFetcher {
             queryTemplate,
             allContributors
         );
-        // console.log(`Line 69 ${JSON.stringify(sponsorable)}`);
 
         const allUsers = this.convertToUsers(sponsorable);
 
-        // const users = await this.filterUserAndOrganization(sponsorable); // mvp returning users for now;
-
         return allUsers;
     }
+
+    // const users = await this.filterUserAndOrganization(sponsorable); // mvp returning users for now;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // public filterUserAndOrganization(sponsorable: string[]): any {
@@ -106,7 +105,7 @@ export class SponsorabilityFetcher {
                 email: node.email ?? '',
                 login: node.login,
                 url: node.url,
-                sponsorListingName: node.sponsorListing.name,
+                sponsorListingName: node.sponsorsListing.name ?? '',
             };
 
             return user;
@@ -118,8 +117,13 @@ export class SponsorabilityFetcher {
         query: string,
         contributors: Contributor[]
     ): Promise<Node[]> {
-        const testContributorsArray = [{ login: 'mvdan' }, { login: 'zkat' }]; // test data
-        const contributorSponsorInfo: Node[] = [];
+        const testContributorsArray = [
+            { login: 'mvdan' },
+            { login: 'zkat' },
+            { login: 'IngridGdesigns' },
+        ]; // test data
+
+        const sponsorInfo: object[] = [];
         console.log(typeof contributors); // currently not being used
 
         for (const contributor of testContributorsArray) {
@@ -128,16 +132,26 @@ export class SponsorabilityFetcher {
 
             const response = await this.fetchSponsorData(token, variables, query);
 
-            response.nodes.forEach((node) => {
-                // seperate function after mvp
-                if (node.sponsorListing !== null && node.__typename === 'User') {
-                    contributorSponsorInfo.push(node);
+            sponsorInfo.push(response.nodes);
+        }
+
+        const allcontributorSponsorInfo: Node[] = [];
+        sponsorInfo.forEach((subarray) => {
+            // pull out to seperate function
+            const users: Node[] = Object.values(subarray);
+            users.forEach((contributor) => {
+                console.log(`${JSON.stringify(contributor.sponsorsListing)}`); // does print
+                // contributor.__typename === 'User' &&
+                if (contributor.sponsorsListing?.name && contributor.__typename === 'User') {
+                    // console.log(`Line 148 ${JSON.stringify(contributor)}`);
+                    // user conversion
+                    allcontributorSponsorInfo.push(...[contributor]);
                 }
             });
-        }
-        console.log(contributorSponsorInfo);
+        });
+        // console.log(allcontributorSponsorInfo);
 
-        return contributorSponsorInfo;
+        return allcontributorSponsorInfo;
     }
 
     public async fetchSponsorData(
