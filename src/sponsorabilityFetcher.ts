@@ -5,7 +5,6 @@ import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
 interface Node {
     __typename: string;
-    name: string;
     email: string;
     login: string;
     url: string;
@@ -16,8 +15,7 @@ interface Node {
 
 interface User {
     type: string;
-    name: string;
-    email: string;
+    email?: string;
     login: string;
     url: string;
     sponsorListingName: string;
@@ -43,7 +41,6 @@ const queryTemplate = `query fetchSponsorable($userLogin: String!) {
     nodes {
       ... on User {
         __typename
-        name
         email
         login
         url
@@ -86,7 +83,7 @@ export class SponsorabilityFetcher {
             queryTemplate,
             allContributors
         );
-        console.log(`Line 69 ${JSON.stringify(sponsorable)}`);
+        // console.log(`Line 69 ${JSON.stringify(sponsorable)}`);
 
         const allUsers = this.convertToUsers(sponsorable);
 
@@ -104,14 +101,15 @@ export class SponsorabilityFetcher {
 
     public convertToUsers(nodes: Node[]): User[] {
         return nodes.map((node) => {
-            return {
+            const user: User = {
                 type: node.__typename,
-                name: node.name,
-                email: node.email,
+                email: node.email ?? '',
                 login: node.login,
                 url: node.url,
                 sponsorListingName: node.sponsorListing.name,
             };
+
+            return user;
         });
     }
 
@@ -122,7 +120,7 @@ export class SponsorabilityFetcher {
     ): Promise<Node[]> {
         const testContributorsArray = [{ login: 'mvdan' }, { login: 'zkat' }]; // test data
         const contributorSponsorInfo: Node[] = [];
-        console.log(contributors.length); // currently not being used
+        console.log(typeof contributors); // currently not being used
 
         for (const contributor of testContributorsArray) {
             const userLogin = contributor.login;
@@ -137,6 +135,7 @@ export class SponsorabilityFetcher {
                 }
             });
         }
+        console.log(contributorSponsorInfo);
 
         return contributorSponsorInfo;
     }
@@ -158,15 +157,6 @@ export class SponsorabilityFetcher {
     }
 }
 
-//  if (sponsorable.sponsorListing !== null && sponsorable.__typename === 'User') {
-//                 const user: User = {
-//                     type: sponsorable.__typename,
-//                     name: sponsorable.name,
-//                     email: sponsorable.email,
-//                     login: sponsorable.login,
-//                     url: sponsorable.url,
-//                     sponsorListingName: sponsorable.sponsorListing.name,
-//                 };
 // deall with orgs later
 // if (sponsorable.sponsorListing !== null && sponsorable.__typename === 'Organization') {
 //     const organization: Organization = {
@@ -178,20 +168,3 @@ export class SponsorabilityFetcher {
 
 //     return organization;
 // }
-
-// response.nodes.forEach((node) => {
-//     console.log('this is the node', node);
-// if (node.sponsorListing !== null && node.__typename === 'User') {
-//     const user: User = {
-//         type: node.__typename,
-//         name: node.name,
-//         email: node.email,
-//         login: node.login,
-//         url: node.url,
-//         sponsorListingName: node.sponsorListing.name,
-//     };
-//     contributorSponsorInfo.push(user);
-// }
-// });
-
-// contributorSponsorInfo.push(response.nodes);
