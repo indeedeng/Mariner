@@ -32,7 +32,7 @@ interface Response {
     search: Sponsorable;
 }
 interface Sponsorable {
-    nodes: Node;
+    nodes: Node[];
 }
 
 // query WIP: fetchiing first 10 sponsors, need to add pagination
@@ -123,33 +123,22 @@ export class SponsorabilityFetcher {
             { login: 'IngridGdesigns' },
         ]; // test data
 
-        const sponsorInfo: object[] = [];
+        // const sponsorInfo: object[] = [];
         console.log(typeof contributors); // currently not being used
 
+        const allcontributorSponsorInfo: Node[] = [];
         for (const contributor of testContributorsArray) {
             const userLogin = contributor.login;
             const variables: Variables = { userLogin };
 
             const response = await this.fetchSponsorData(token, variables, query);
 
-            sponsorInfo.push(response.nodes);
-        }
-
-        const allcontributorSponsorInfo: Node[] = [];
-        sponsorInfo.forEach((subarray) => {
-            // pull out to seperate function
-            const users: Node[] = Object.values(subarray);
-            users.forEach((contributor) => {
-                console.log(`${JSON.stringify(contributor.sponsorsListing)}`); // does print
-                // contributor.__typename === 'User' &&
-                if (contributor.sponsorsListing?.name && contributor.__typename === 'User') {
-                    // console.log(`Line 148 ${JSON.stringify(contributor)}`);
-                    // user conversion
-                    allcontributorSponsorInfo.push(...[contributor]);
+            response.nodes.forEach((user) => {
+                if (user.sponsorsListing?.name && user.__typename === 'User') {
+                    allcontributorSponsorInfo.push(...[user]);
                 }
             });
-        });
-        // console.log(allcontributorSponsorInfo);
+        }
 
         return allcontributorSponsorInfo;
     }
