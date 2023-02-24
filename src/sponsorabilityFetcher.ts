@@ -89,15 +89,6 @@ export class SponsorabilityFetcher {
         return allUsers;
     }
 
-    // const users = await this.filterUserAndOrganization(sponsorable); // mvp returning users for now;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // public filterUserAndOrganization(sponsorable: string[]): any {
-    //     sponsorable.forEach((data) => {
-    //         console.log(data);
-    //     });
-    // }
-
     public convertToUsers(nodes: Node[]): User[] {
         return nodes.map((node) => {
             const user: User = {
@@ -123,7 +114,6 @@ export class SponsorabilityFetcher {
             { login: 'IngridGdesigns' },
         ]; // test data
 
-        // const sponsorInfo: object[] = [];
         console.log(typeof contributors); // currently not being used
 
         const allcontributorSponsorInfo: Node[] = [];
@@ -159,6 +149,12 @@ export class SponsorabilityFetcher {
         return result;
     }
 }
+
+//   public filterUserAndOrganization(sponsorable: Node[]): any {
+//         sponsorable.forEach((data) => {
+//             console.log(data.__typename);
+//         });
+//     }
 
 // deall with orgs later
 // if (sponsorable.sponsorListing !== null && sponsorable.__typename === 'Organization') {
