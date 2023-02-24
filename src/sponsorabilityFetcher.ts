@@ -89,12 +89,23 @@ export class SponsorabilityFetcher {
             allContributors
         );
 
-        const allUsers = this.convertToUsers(sponsorable);
+        const allUsers = this.convertToUsers(sponsorable, allContributors);
 
         return allUsers;
     }
 
-    public convertToUsers(nodes: Node[]): User[] {
+    public getContributionCount(nodeLogin: string, contributors: Contributor[]): number {
+        let count = 0;
+        contributors.forEach((contributor) => {
+            if (nodeLogin === contributor.login) {
+                count = contributor.contributions;
+            }
+        });
+
+        return count;
+    }
+
+    public convertToUsers(nodes: Node[], contributors: Contributor[]): User[] {
         const allUsers = nodes.map((node) => {
             return {
                 type: node.__typename,
@@ -103,7 +114,7 @@ export class SponsorabilityFetcher {
                 url: node.url,
                 sponsorListingName: node.sponsorsListing.name ?? '',
                 sponsorsLink: node.sponsorsListing.dashboard ?? '',
-                contributionsCount: 0, // this.getContributionCount(node.login) ?? '',
+                contributionsCount: this.getContributionCount(node.login, contributors) ?? '',
             };
         });
 
