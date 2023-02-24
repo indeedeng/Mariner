@@ -10,15 +10,18 @@ interface Node {
     url: string;
     sponsorsListing: {
         name: string | null;
+        dashboard: string | null;
     };
 }
 
 interface User {
-    type: string;
+    type: string; // may not be needed here after sorting in Node
     email?: string;
     login: string;
     url: string;
     sponsorListingName: string;
+    sponsorsLink: string;
+    contributionsCount: number;
 }
 
 // interface Organization {
@@ -46,6 +49,7 @@ const queryTemplate = `query fetchSponsorable($userLogin: String!) {
         url
         sponsorsListing {
           name
+          dashboardUrl
         }
       }
         ... on Organization {
@@ -54,6 +58,7 @@ const queryTemplate = `query fetchSponsorable($userLogin: String!) {
         url
         sponsorsListing {
           name
+          dashboardUrl
         }
       }
     }
@@ -90,17 +95,19 @@ export class SponsorabilityFetcher {
     }
 
     public convertToUsers(nodes: Node[]): User[] {
-        return nodes.map((node) => {
-            const user: User = {
+        const allUsers = nodes.map((node) => {
+            return {
                 type: node.__typename,
                 email: node.email ?? '',
                 login: node.login,
                 url: node.url,
                 sponsorListingName: node.sponsorsListing.name ?? '',
+                sponsorsLink: node.sponsorsListing.dashboard ?? '',
+                contributionsCount: 0, // this.getContributionCount(node.login) ?? '',
             };
-
-            return user;
         });
+
+        return allUsers;
     }
 
     public async fetchContributorsSponsorInformation(
@@ -108,19 +115,18 @@ export class SponsorabilityFetcher {
         query: string,
         contributors: Contributor[]
     ): Promise<Node[]> {
-        const testContributorsArray = [
-            { login: 'mvdan' },
-            { login: 'zkat' },
-            { login: 'IngridGdesigns' },
-        ]; // test data
+        // const testContributorsArray = [
+        //     { login: 'mvdan' },
+        //     { login: 'zkat' },
+        //     { login: 'IngridGdesigns' },
+        // ]; // test data
 
         console.log(typeof contributors); // currently not being used
 
         const allcontributorSponsorInfo: Node[] = [];
-        for (const contributor of testContributorsArray) {
+        for (const contributor of contributors) {
             const userLogin = contributor.login;
             const variables: Variables = { userLogin };
-
             const response = await this.fetchSponsorData(token, variables, query);
 
             response.nodes.forEach((user) => {
