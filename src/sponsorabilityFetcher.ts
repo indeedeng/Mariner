@@ -89,12 +89,23 @@ export class SponsorabilityFetcher {
             allContributors
         );
 
-        const allUsers = this.convertToUsers(sponsorable);
+        const allUsers = this.convertToUsers(sponsorable, allContributors);
 
         return allUsers;
     }
 
-    public convertToUsers(nodes: Node[]): User[] {
+    public getContributionCount(userLogin: string, contributors: Contributor[]): number {
+        let count = 0;
+        contributors.forEach((contributor) => {
+            if (userLogin === contributor.login) {
+                count = contributor.contributions;
+            }
+        });
+
+        return count;
+    }
+
+    public convertToUsers(nodes: Node[], contributors: Contributor[]): User[] {
         const allUsers = nodes.map((node) => {
             return {
                 type: node.__typename,
@@ -103,7 +114,7 @@ export class SponsorabilityFetcher {
                 url: node.url,
                 sponsorListingName: node.sponsorsListing.name ?? '',
                 sponsorsLink: node.sponsorsListing.dashboard ?? '',
-                contributionsCount: 0, // zero until I figure out where to pull data
+                contributionsCount: this.getContributionCount(node.login, contributors) ?? 0,
             };
         });
 
@@ -115,16 +126,16 @@ export class SponsorabilityFetcher {
         query: string,
         contributors: Contributor[]
     ): Promise<Node[]> {
-        const testContributorsArray = [
-            { login: 'mvdan' },
-            { login: 'zkat' },
-            { login: 'IngridGdesigns' },
-        ]; // test data
+        // const testContributorsArray = [
+        //     { login: 'mvdan', contributions: '4' },
+        //     { login: 'zkat' },
+        //     { login: 'IngridGdesigns' },
+        // ]; // test data
 
-        console.log(typeof contributors); // currently not being used
+        // console.log(typeof contributors); // currently not being used
 
         const allcontributorSponsorInfo: Node[] = [];
-        for (const contributor of testContributorsArray) {
+        for (const contributor of contributors) {
             const userLogin = contributor.login;
             const variables: Variables = { userLogin };
             const response = await this.fetchSponsorData(token, variables, query);
