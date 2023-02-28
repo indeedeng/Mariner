@@ -1,8 +1,6 @@
 import { Config } from './config';
 import { Octokit } from '@octokit/rest'; // OctokitResponse
 
-import fs from 'fs';
-
 export type RepositoryContributorInfo = {
     owner: string;
     repo: string;
@@ -77,6 +75,7 @@ export class ContributorFetcher {
                 login: contributor.login ?? '',
                 url: contributor.html_url ?? '',
                 contributions: contributor.contributions ?? -1,
+                // repo:
             };
         });
     }
@@ -94,20 +93,6 @@ export class ContributorFetcher {
         });
     }
 
-    public readJsonFile(fileDir: string): string[] {
-        if (fs.existsSync(fileDir)) {
-            try {
-                const data = fs.readFileSync(fileDir, { encoding: 'utf8' });
-                const contributors = JSON.parse(data);
-
-                return contributors;
-            } catch (err) {
-                console.log('Error parsing JSON string');
-            }
-        }
-        throw new Error(`Can't find data in file directory: ${fileDir}`);
-    }
-
     public async fetchGitHubContributors(
         token: string,
         ownerAndRepo: RepositoryContributorInfo[]
@@ -116,7 +101,7 @@ export class ContributorFetcher {
             auth: token,
         });
 
-        const contributors: GitHubContributor[] = [];
+        const gitHubContributors: GitHubContributor[] = [];
 
         const promises = ownerAndRepo.map(async (contributor) => {
             const fullRepoIdentifier = {
@@ -134,11 +119,11 @@ export class ContributorFetcher {
                 throw new Error(`No data for ${contributor}`);
             }
 
-            contributors.push(...response.data); // optimize later
+            gitHubContributors.push(...response.data); // optimize later
         });
 
         await Promise.all(promises);
 
-        return contributors;
+        return gitHubContributors;
     }
 }
