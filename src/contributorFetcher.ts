@@ -11,6 +11,19 @@ export type Contributor = {
     url: string;
     contributions: number;
 };
+
+// export interface Response {
+//     status: 200;
+//     url: string;
+//     headers: {
+//         connection: string;
+//         date: string;
+//         etag: string;
+//         server: string;
+//         vary: string;
+//     };
+//     data: [GitHubContributor];
+// }
 export interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
@@ -50,13 +63,13 @@ export class ContributorFetcher {
     ): Promise<Contributor[]> {
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
 
-        const githubContributors: GitHubContributor[] = await this.fetchGitHubContributors(
-            token,
-            ownerAndRepos
-        );
-        const filteredContributors = this.filterOutDependabots(githubContributors); // remove dependabot
+        const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
 
-        const contributors = this.convertToContributors(filteredContributors);
+        // const filteredContributors = this.filterOutDependabots(githubContributors); // remove dependabot
+
+        // const contributors = this.convertToContributors(filteredContributors);
+        const contributors: Contributor[] = [{ login: 'la', url: '', contributions: 2 }];
+        console.log(githubContributors.length);
 
         return contributors;
     }
@@ -80,8 +93,10 @@ export class ContributorFetcher {
         });
     }
 
-    public extractContributorsOwnerAndRepo(dependencies: string[]): RepositoryContributorInfo[] {
-        const contributorsInformation = Object.keys(dependencies);
+    public extractContributorsOwnerAndRepo(
+        repositoryIdentifiers: string[]
+    ): RepositoryContributorInfo[] {
+        const contributorsInformation = Object.values(repositoryIdentifiers);
 
         return contributorsInformation.map((contributorInfo) => {
             const ownerAndRepo = contributorInfo.split('/');
@@ -95,15 +110,15 @@ export class ContributorFetcher {
 
     public async fetchGitHubContributors(
         token: string,
-        ownerAndRepo: RepositoryContributorInfo[]
-    ): Promise<GitHubContributor[]> {
+        ownerAndRepos: RepositoryContributorInfo[]
+    ): Promise<Map<string, GitHubContributor[]>[]> {
         const octokit = new Octokit({
             auth: token,
         });
 
-        const gitHubContributors: GitHubContributor[] = [];
+        const gitHubContributorsByRepoName = new Map<RepositoryName, GitHubContributor[]>();
 
-        const promises = ownerAndRepo.map(async (contributor) => {
+        const promises = ownerAndRepos.map(async (contributor) => {
             const fullRepoIdentifier = {
                 owner: contributor.owner,
                 repo: contributor.repo,
@@ -119,10 +134,13 @@ export class ContributorFetcher {
                 throw new Error(`No data for ${contributor}`);
             }
 
-            gitHubContributors.push(...response.data); // optimize later
+            const ownerRepo = `${contributor.owner}/${contributor.repo}`;
+            gitHubContributorsByRepoName.set(ownerRepo, response.data);
+
+            return gitHubContributorsByRepoName;
         });
 
-        await Promise.all(promises);
+        const gitHubContributors = await Promise.all(promises);
 
         return gitHubContributors;
     }
