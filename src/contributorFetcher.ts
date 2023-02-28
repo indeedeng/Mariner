@@ -8,6 +8,7 @@ export type RepositoryContributorInfo = {
     repo: string;
 };
 export type Contributor = {
+    // repo information
     login: string;
     url: string;
     contributions: number;
@@ -34,6 +35,10 @@ export interface GitHubContributor {
     contributions?: number | undefined;
 }
 
+export type RepositoryName = string;
+
+export type contributorsByRepoName = Map<RepositoryName, Contributor[]>;
+
 export class ContributorFetcher {
     private readonly config: Config;
 
@@ -41,10 +46,11 @@ export class ContributorFetcher {
         this.config = config;
     }
 
-    public async fetchContributors(token: string, fileDir: string): Promise<Contributor[]> {
-        const dependencies = this.readJsonFile(fileDir);
-
-        const ownerAndRepos = this.extractContributorsOwnerAndRepo(dependencies);
+    public async fetchContributors(
+        token: string,
+        repositoryIdentifiers: string[]
+    ): Promise<Contributor[]> {
+        const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
 
         const githubContributors: GitHubContributor[] = await this.fetchGitHubContributors(
             token,

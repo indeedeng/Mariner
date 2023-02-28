@@ -2,6 +2,7 @@ import { Config } from './config';
 import { Contributor, ContributorFetcher } from './contributorFetcher';
 import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { createTsv } from './createTsv';
 
 interface Node {
     __typename: string;
@@ -76,11 +77,14 @@ export class SponsorabilityFetcher {
         this.config = config;
     }
 
-    public async fetchSponsorabilityInformation(token: string, fileDir: string): Promise<User[]> {
+    public async fetchSponsorabilityInformation(
+        token: string,
+        repositoryIdentifiers: string[]
+    ): Promise<User[]> {
         const fetchSponsorableContributors = new ContributorFetcher(this.config);
         const allContributors = await fetchSponsorableContributors.fetchContributors(
             token,
-            fileDir
+            repositoryIdentifiers
         );
 
         const sponsorable = await this.fetchContributorsSponsorInformation(
@@ -90,6 +94,8 @@ export class SponsorabilityFetcher {
         );
 
         const allUsers = this.convertToUsers(sponsorable, allContributors);
+
+        createTsv(allUsers);
 
         return allUsers;
     }

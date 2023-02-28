@@ -86,10 +86,8 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-const fileDir = './examples/exampleData.json'; // possibly update
-
 fetchSponsorables
-    .fetchSponsorabilityInformation(token, fileDir)
+    .fetchSponsorabilityInformation(token, repositoryLookupName)
     .then((results) => {
         console.log(results.length);
         console.log(results, 'line 98 in runExample file');
