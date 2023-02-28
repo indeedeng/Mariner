@@ -64,23 +64,31 @@ export class ContributorFetcher {
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
 
         const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
+        console.log(githubContributors);
 
         // const filteredContributors = this.filterOutDependabots(githubContributors); // remove dependabot
 
         // const contributors = this.convertToContributors(filteredContributors);
         const contributors: Contributor[] = [{ login: 'la', url: '', contributions: 2 }];
-        console.log(githubContributors.length);
 
         return contributors;
     }
 
-    public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
-        const result = githubContributors.filter(
-            (userLogin) => userLogin.login !== 'dependabot[bot]'
-        );
-
-        return result;
-    }
+    // public filterOutDependabots(githubContributors: Map<string, GitHubContributor[]>[]): void {
+    //Map<string, GitHubContributor[]>
+    // githubContributors.forEach((values, key) => {
+    //     for (const [index, value] of values.entries()) {
+    //         console.log(key, index, value);
+    //         for (const userLogin of value) {
+    //            userLogin.login !== 'dependabot[bot]'
+    //         }
+    //     }
+    // });
+    // const result = githubContributors.filter(
+    //     (userLogin) => userLogin.login !== 'dependabot[bot]'
+    // );
+    // return result;
+    // }
 
     public convertToContributors(githubContributor: GitHubContributor[]): Contributor[] {
         return githubContributor.map((contributor) => {
@@ -111,14 +119,14 @@ export class ContributorFetcher {
     public async fetchGitHubContributors(
         token: string,
         ownerAndRepos: RepositoryContributorInfo[]
-    ): Promise<Map<string, GitHubContributor[]>[]> {
+    ): Promise<Map<RepositoryName, GitHubContributor[]>> {
         const octokit = new Octokit({
             auth: token,
         });
 
         const gitHubContributorsByRepoName = new Map<RepositoryName, GitHubContributor[]>();
 
-        const promises = ownerAndRepos.map(async (contributor) => {
+        for (const contributor of ownerAndRepos.values()) {
             const fullRepoIdentifier = {
                 owner: contributor.owner,
                 repo: contributor.repo,
@@ -133,15 +141,11 @@ export class ContributorFetcher {
             if (!response.data) {
                 throw new Error(`No data for ${contributor}`);
             }
+            const ownerRepo = `${fullRepoIdentifier.owner}/${fullRepoIdentifier.repo}`;
 
-            const ownerRepo = `${contributor.owner}/${contributor.repo}`;
             gitHubContributorsByRepoName.set(ownerRepo, response.data);
+        }
 
-            return gitHubContributorsByRepoName;
-        });
-
-        const gitHubContributors = await Promise.all(promises);
-
-        return gitHubContributors;
+        return gitHubContributorsByRepoName;
     }
 }
