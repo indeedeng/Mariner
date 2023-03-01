@@ -1,5 +1,6 @@
 import { Config } from './config';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { User } from './sponsorabilityFetcher';
 
 const queryTemplate = `query fetchRepos($userLogins: String!) {
   search(query: $userLogins, type: REPOSITORY, first: 10) {
@@ -30,20 +31,19 @@ export class ReposFetcher {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async fetchSponsorabilityInformation(token: string, allUsers: string[]): Promise<any> {
+    public async fetchSponsorableRepoInfo(token: string, allUsers: User[]): Promise<any> {
         // create a loop through allUsers..
-        const repoNameAndLanguages: string[] = [];
+        const repoNameAndLanguages: User[] = [];
         allUsers.forEach(async (user) => {
-            console.log(user);
-            const variables: Variables = { userLogin: 'userLogin' };
-            const sponsorable = await this.fetchContributorRepos(token, queryTemplate, variables);
+            const variables: Variables = { userLogin: user.login };
+            const sponsorable = await this.fetchRepos(token, queryTemplate, variables);
             repoNameAndLanguages.push(sponsorable); // temporary
         });
 
         return repoNameAndLanguages;
     }
 
-    public async fetchContributorRepos(
+    public async fetchRepos(
         token: string,
         query: string,
         variables: Variables
