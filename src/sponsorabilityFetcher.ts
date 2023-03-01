@@ -2,6 +2,7 @@ import { Config } from './config';
 import { Contributor, ContributorFetcher } from './contributorFetcher';
 import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
+import { ReposFetcher } from './reposFetcher';
 import { createTsv } from './createTsv';
 
 interface Node {
@@ -15,7 +16,7 @@ interface Node {
     };
 }
 
-interface User {
+export interface User {
     type: string; // may not be needed here after sorting in Node
     email?: string;
     login: string;
@@ -94,8 +95,10 @@ export class SponsorabilityFetcher {
         );
 
         const allUsers = this.convertToUsers(sponsorable, allContributors);
+        const fetchRepos = new ReposFetcher(this.config);
+        const allRepos = await fetchRepos.fetchSponsorableRepoInfo(token, allUsers);
 
-        createTsv(allUsers);
+        createTsv(allRepos);
 
         return allUsers;
     }
