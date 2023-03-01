@@ -95,6 +95,8 @@ export class SponsorabilityFetcher {
         );
 
         const allUsers = this.convertToUsers(sponsorable, allContributors);
+
+        //
         const fetchRepos = new ReposFetcher(this.config);
         const allRepos = await fetchRepos.fetchSponsorableRepoInfo(token, allUsers);
 
@@ -104,14 +106,14 @@ export class SponsorabilityFetcher {
     }
 
     public getContributionCount(userLogin: string, contributors: Contributor[]): number {
-        let count = 0;
+        let contributionCounts = 0;
         contributors.forEach((contributor) => {
             if (userLogin === contributor.login) {
-                count = contributor.contributions;
+                contributionCounts = contributor.contributions;
             }
         });
 
-        return count;
+        return contributionCounts;
     }
 
     public convertToUsers(nodes: Node[], contributors: Contributor[]): User[] {
@@ -136,12 +138,12 @@ export class SponsorabilityFetcher {
         contributors: Contributor[]
     ): Promise<Node[]> {
         // const testContributorsArray = [
-        //     { login: 'mvdan', contributions: '4' },
-        //     { login: 'zkat' },
-        //     { login: 'IngridGdesigns' },
+        //     { login: 'mvdan', contributions: 4 },
+        //     { login: 'zkat', contributions: 2 },
+        //     { login: 'IngridGdesigns', contributions: 2 },
         // ]; // test data
 
-        // console.log(typeof contributors); // currently not being used
+        console.log(typeof contributors); // currently not being used
 
         const allcontributorSponsorInfo: Node[] = [];
         for (const contributor of contributors) {
