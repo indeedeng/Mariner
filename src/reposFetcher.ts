@@ -1,5 +1,23 @@
 import { Config } from './config';
 
+const queryTemplate = `
+query fetchRepos($userLogins: String!) {
+  search(query: $userLogins, type: REPOSITORY, first: 10) {
+    nodes {
+      ... on Repository {
+        name
+        languages(first: 10) {
+          edges {
+            node {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}`;
+
 export class ReposFetcher {
     private readonly config: Config;
 
