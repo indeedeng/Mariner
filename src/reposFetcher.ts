@@ -32,11 +32,15 @@ export class ReposFetcher {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async fetchSponsorabilityInformation(token: string, allUsers: string[]): Promise<any> {
         // create a loop through allUsers..
+        const repoNameAndLanguages: string[] = [];
+        allUsers.forEach(async (user) => {
+            console.log(user);
+            const variables: Variables = { userLogin: 'userLogin' };
+            const sponsorable = await this.fetchContributorRepos(token, queryTemplate, variables);
+            repoNameAndLanguages.push(sponsorable); // temporary
+        });
 
-        const variables: Variables = { userLogin: 'userLogin' };
-        const sponsorable = await this.fetchContributorRepos(token, queryTemplate, variables);
-
-        return sponsorable;
+        return repoNameAndLanguages;
     }
 
     public async fetchContributorRepos(
@@ -47,6 +51,7 @@ export class ReposFetcher {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): Promise<any> {
         // get repos;
+        console.log(token.length, query.length, variables.userLogin);
     }
     //To-do:
     /*
