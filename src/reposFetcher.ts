@@ -3,6 +3,24 @@ import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/di
 import { User } from './sponsorabilityFetcher';
 import { graphql } from '@octokit/graphql';
 
+interface Response {
+    search: Repos;
+}
+interface Repos {
+    nodes: Node[];
+}
+
+interface Node {
+    repositoryName: string;
+    languages: { edges: Languages[] };
+}
+
+interface Languages {
+    node: {
+        name: string;
+    };
+}
+
 const queryTemplate = `query fetchRepoInfo($login: String!) {
   search(query: $login, type: REPOSITORY, first: 10) {
     nodes {
@@ -59,41 +77,14 @@ export class ReposFetcher {
 
         const response: GraphQlQueryResponseData = await graphqlWithAuth(query, variables);
 
-        const result = response.search;
+        const result: Response = response.search;
         console.log(`fetchRepos function line 61: ${JSON.stringify(result, null, 2)}`);
 
         return result;
     }
     //To-do:
     /*
-    . added types/interfaces
+    . added types/interfaces - test them
+    . add function
     */
 }
-// output
-// {
-//   "nodes": [
-//     {
-//       "name": "laurabeatris.com",
-//       "languages": {
-//         "edges": [
-//           {
-//             "node": {
-//               "name": "TypeScript"
-//             }
-//           },
-//           {
-//             "node": {
-//               "name": "JavaScript"
-//             }
-//           }
-//         ]
-//       }
-//     },
-//     {
-//       "name": "LauraBeatris",
-//       "languages": {
-//         "edges": []
-//       }
-//     }
-//   ]
-// }
