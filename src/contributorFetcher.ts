@@ -8,7 +8,6 @@ export type RepositoryContributorInfo = {
 export interface ContributionCountOfUserIntoRepo {
     repoIdentifier: string;
     login: string;
-    url: string;
     contributions: number;
 }
 export interface GitHubContributor {
@@ -52,7 +51,7 @@ export class ContributorFetcher {
 
         const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
 
-        const contributorsWithRepoIdentifier = [];
+        const contributionCountOfUserIntoRepos = [];
 
         for (const [index, ghContributor] of githubContributors.entries()) {
             const repoIdentifier = index;
@@ -62,11 +61,12 @@ export class ContributorFetcher {
                 repoIdentifier
             );
 
-            contributorsWithRepoIdentifier.push(...allContributors);
+            contributionCountOfUserIntoRepos.push(...allContributors);
         }
 
-        return contributorsWithRepoIdentifier;
+        return contributionCountOfUserIntoRepos;
     }
+
     public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
         const result = githubContributors.filter(
             (userLogin) => userLogin.login !== 'dependabot[bot]'

@@ -96,7 +96,6 @@ export class SponsorabilityFetcher {
 
         const allUsers = this.convertToUsers(sponsorable, allContributors);
 
-        //
         const fetchRepos = new ReposFetcher(this.config);
         const allRepos = await fetchRepos.fetchSponsorableRepoInfo(token, allUsers);
 
