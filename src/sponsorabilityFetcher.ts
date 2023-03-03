@@ -1,6 +1,6 @@
 import { Config } from './config';
 import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
-import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
+import { graphql } from '@octokit/graphql';
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 import { ReposFetcher } from './reposFetcher';
 import { createTsv } from './createTsv';
@@ -18,6 +18,7 @@ interface Node {
 
 export interface User {
     type: string; // may not be needed here after sorting in Node
+    repoIdentifier: string;
     email?: string;
     login: string;
     sponsorListingName: string;
@@ -103,30 +104,37 @@ export class SponsorabilityFetcher {
         return allUsers;
     }
 
-    public getContributionCount(
+    public getContributorInfo(
         userLogin: string,
         contributors: ContributionCountOfUserIntoRepo[]
-    ): number {
-        let contributionCounts = 0;
+    ): [number, string] {
+        const contributionAndRepoId: [number, string] = [0, '']; // Tuples
+
         contributors.forEach((contributor) => {
             if (userLogin === contributor.login) {
-                contributionCounts = contributor.contributions;
+                contributionAndRepoId[0] = contributor.contributions;
+                contributionAndRepoId[1] = contributor.repoIdentifier;
             }
         });
 
-        return contributionCounts;
+        return contributionAndRepoId;
     }
 
     public convertToUsers(nodes: Node[], contributors: ContributionCountOfUserIntoRepo[]): User[] {
         const allUsers = nodes.map((node) => {
+            const contributionAndRepoId = this.getContributorInfo(node.login, contributors);
+            const repoIdentifier = contributionAndRepoId[1];
+            const contributionsCount = contributionAndRepoId[0];
+
             return {
                 type: node.__typename,
+                repoIdentifier: repoIdentifier ?? '',
                 email: node.email ?? '',
                 login: node.login,
                 url: `https://github.com/${node.login}`,
                 sponsorListingName: node.sponsorsListing.name ?? '',
                 sponsorsLink: node.sponsorsListing.dashboard ?? '',
-                contributionsCount: this.getContributionCount(node.login, contributors) ?? 0,
+                contributionsCount: contributionsCount ?? 0,
             };
         });
 

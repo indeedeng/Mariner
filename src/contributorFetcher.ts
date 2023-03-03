@@ -1,5 +1,5 @@
 import { Config } from './config';
-import { Octokit } from '@octokit/rest'; // OctokitResponse
+import { Octokit } from '@octokit/rest';
 
 export type RepositoryContributorInfo = {
     owner: string;
@@ -76,10 +76,10 @@ export class ContributorFetcher {
     }
 
     public async convertToContributor(
-        githubContributor: GitHubContributor[],
+        githubContributors: GitHubContributor[],
         repoIdentifier: string
     ): Promise<ContributionCountOfUserIntoRepo[]> {
-        return githubContributor.map((ghContributor) => {
+        return githubContributors.map((ghContributor) => {
             return {
                 repoIdentifier,
                 login: ghContributor.login ?? '',
