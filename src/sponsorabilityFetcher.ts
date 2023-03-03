@@ -150,7 +150,6 @@ export class SponsorabilityFetcher {
         const allcontributorSponsorInfo: Node[] = [];
         for (const contributor of contributors) {
             const userLogin = contributor.login;
-            console.log(userLogin);
             const variables: Variables = { userLogin };
             const response = await this.fetchSponsorData(token, variables, query);
 
