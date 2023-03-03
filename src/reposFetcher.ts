@@ -1,7 +1,7 @@
 import { Config } from './config';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
 import { User } from './sponsorabilityFetcher';
-import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
+import { graphql } from '@octokit/graphql';
 
 const queryTemplate = `query fetchRepoInfo($login: String!) {
   search(query: $login, type: REPOSITORY, first: 10) {
@@ -33,10 +33,9 @@ export class ReposFetcher {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async fetchSponsorableRepoInfo(token: string, allUsers: User[]): Promise<any> {
-        // create a loop through allUsers..
         const repoNameAndLanguages: User[] = [];
         allUsers.forEach(async (user) => {
-            console.log(`Line 39: ${user.login}`);
+            // console.log(`Line 39: ${user.login[10]}`);
             const login = user.login;
 
             const variables: Variables = { login };
@@ -68,7 +67,6 @@ export class ReposFetcher {
     //To-do:
     /*
     . added types/interfaces
-    . fix contributorFetcher.ts file - may need support
     */
 }
 // output
