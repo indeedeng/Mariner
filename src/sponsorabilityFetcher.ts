@@ -106,27 +106,30 @@ export class SponsorabilityFetcher {
         return allSponsorableUsers;
     }
 
-    public getContributorInfo(
+    public fetchContributionCountOfUserAndRepo(
         userLogin: string,
         contributors: ContributionCountOfUserIntoRepo[]
     ): [number, string] {
-        const contributionAndRepoId: [number, string] = [0, '']; // Tuples
+        const contributionsAndRepoIds: [number, string] = [0, '']; // Tuples
 
         contributors.forEach((contributor) => {
             if (userLogin === contributor.login) {
-                contributionAndRepoId[0] = contributor.contributions;
-                contributionAndRepoId[1] = contributor.repoIdentifier;
+                contributionsAndRepoIds[0] = contributor.contributions;
+                contributionsAndRepoIds[1] = contributor.repoIdentifier;
             }
         });
 
-        return contributionAndRepoId;
+        return contributionsAndRepoIds;
     }
 
     public convertToUsers(nodes: Node[], contributors: ContributionCountOfUserIntoRepo[]): User[] {
         const allUsers = nodes.map((node) => {
-            const contributionAndRepoId = this.getContributorInfo(node.login, contributors);
-            const repoIdentifier = contributionAndRepoId[1];
+            const contributionAndRepoId = this.fetchContributionCountOfUserAndRepo(
+                node.login,
+                contributors
+            );
             const contributionsCount = contributionAndRepoId[0];
+            const repoIdentifier = contributionAndRepoId[1];
 
             return {
                 type: node.__typename,
@@ -157,6 +160,7 @@ export class SponsorabilityFetcher {
         // console.log(typeof contributors); // currently not being used
 
         const allSponsorableUsersInfo: Node[] = [];
+
         for (const contributor of contributors) {
             const userLogin = contributor.login;
             const variables: Variables = { userLogin };
