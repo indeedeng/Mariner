@@ -3,7 +3,7 @@ import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/di
 import { User } from './sponsorabilityFetcher';
 import { graphql } from '@octokit/graphql';
 
-interface Response {
+interface GitHubResponse {
     search: Repos;
 }
 interface Repos {
@@ -11,7 +11,7 @@ interface Repos {
 }
 
 interface Node {
-    repositoryName: string;
+    name: string; // repositoryName
     languages: { edges: Languages[] };
 }
 
@@ -51,36 +51,34 @@ export class ReposFetcher {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     public async fetchSponsorableRepoInfo(token: string, allUsers: User[]): Promise<any> {
-        const repoNameAndLanguages: User[] = [];
+        const repoNameAndLanguages: Node[][] = [];
         allUsers.forEach(async (user) => {
             // console.log(`Line 39: ${user.login[10]}`);
             const login = user.login;
 
             const variables: Variables = { login };
             const sponsorable = await this.fetchRepos(token, variables, queryTemplate);
+            console.log(sponsorable);
             repoNameAndLanguages.push(sponsorable); // temporary
         });
 
         return repoNameAndLanguages;
     }
 
-    public async fetchRepos(
-        token: string,
-        variables: Variables,
-        query: string
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
+    public async fetchRepos(token: string, variables: Variables, query: string): Promise<Node[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
 
-        const response: GraphQlQueryResponseData = await graphqlWithAuth(query, variables);
+        const response: GraphQlQueryResponseData = (await graphqlWithAuth(
+            query,
+            variables
+        )) as GitHubResponse;
 
-        const result: Response = response.search;
+        const result: Repos = response.search;
         console.log(`fetchRepos function line 61: ${JSON.stringify(result, null, 2)}`);
 
-        return result;
+        return result.nodes;
     }
     //To-do:
     /*
