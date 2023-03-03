@@ -5,13 +5,12 @@ export type RepositoryContributorInfo = {
     owner: string;
     repo: string;
 };
-export type Contributor = {
-    // repo information
+export interface Contributor {
     repoIdentifier: string;
     login: string;
     url: string;
     contributions: number;
-};
+}
 export interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
@@ -36,7 +35,7 @@ export interface GitHubContributor {
 
 export type RepositoryName = string;
 
-export type contributorsByRepoName = Map<RepositoryName, Contributor[]>;
+export type contributorsByRepoName = Map<RepositoryName, GitHubContributor[]>;
 
 export class ContributorFetcher {
     private readonly config: Config;
@@ -53,9 +52,7 @@ export class ContributorFetcher {
 
         const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
 
-        // const contributorsByRepoName = new Map<RepositoryName, Contributor[]>();
-
-        const contributors = [];
+        const contributorsWithRepoIdentifier = [];
 
         for (const [index, ghContributor] of githubContributors.entries()) {
             const repoIdentifier = index;
@@ -65,19 +62,10 @@ export class ContributorFetcher {
                 repoIdentifier
             );
 
-            contributors.push(...allContributors);
+            contributorsWithRepoIdentifier.push(...allContributors);
         }
-        // console.log(contributors);
 
-        // const x: Contributor[] = [];
-        // contributors.forEach((user) => {
-        //     const repository = user.repoIdentifier;
-        //     x.push(user);
-        //     contributorsByRepoName.set(repository, x);
-        // });
-        // console.log(contributorsByRepoName); // manipulate back to Map?
-
-        return contributors;
+        return contributorsWithRepoIdentifier;
     }
     public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
         const result = githubContributors.filter(
