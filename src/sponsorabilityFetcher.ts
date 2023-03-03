@@ -20,7 +20,6 @@ export interface User {
     type: string; // may not be needed here after sorting in Node
     email?: string;
     login: string;
-    url: string;
     sponsorListingName: string;
     sponsorsLink: string;
     contributionsCount: number;
@@ -124,7 +123,7 @@ export class SponsorabilityFetcher {
                 type: node.__typename,
                 email: node.email ?? '',
                 login: node.login,
-                url: node.url,
+                url: `https://github.com/${node.login}`,
                 sponsorListingName: node.sponsorsListing.name ?? '',
                 sponsorsLink: node.sponsorsListing.dashboard ?? '',
                 contributionsCount: this.getContributionCount(node.login, contributors) ?? 0,
@@ -145,7 +144,7 @@ export class SponsorabilityFetcher {
         //     { login: 'IngridGdesigns', contributions: 2 },
         // ]; // test data
 
-        console.log(typeof contributors); // currently not being used
+        // console.log(typeof contributors); // currently not being used
 
         const allcontributorSponsorInfo: Node[] = [];
         for (const contributor of contributors) {
