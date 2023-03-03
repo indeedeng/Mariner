@@ -1,5 +1,5 @@
 import { Config } from './config';
-import { Contributor, ContributorFetcher } from './contributorFetcher';
+import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
 import { graphql } from '@octokit/graphql'; // GraphQlQueryResponseData
 import { RequestParameters } from '@octokit/graphql/dist-types/types';
 import { ReposFetcher } from './reposFetcher';
@@ -105,7 +105,10 @@ export class SponsorabilityFetcher {
         return allUsers;
     }
 
-    public getContributionCount(userLogin: string, contributors: Contributor[]): number {
+    public getContributionCount(
+        userLogin: string,
+        contributors: ContributionCountOfUserIntoRepo[]
+    ): number {
         let contributionCounts = 0;
         contributors.forEach((contributor) => {
             if (userLogin === contributor.login) {
@@ -116,7 +119,7 @@ export class SponsorabilityFetcher {
         return contributionCounts;
     }
 
-    public convertToUsers(nodes: Node[], contributors: Contributor[]): User[] {
+    public convertToUsers(nodes: Node[], contributors: ContributionCountOfUserIntoRepo[]): User[] {
         const allUsers = nodes.map((node) => {
             return {
                 type: node.__typename,
@@ -135,7 +138,7 @@ export class SponsorabilityFetcher {
     public async fetchContributorsSponsorInformation(
         token: string,
         query: string,
-        contributors: Contributor[]
+        contributors: ContributionCountOfUserIntoRepo[]
     ): Promise<Node[]> {
         // const testContributorsArray = [
         //     { login: 'mvdan', contributions: 4 },
@@ -148,6 +151,7 @@ export class SponsorabilityFetcher {
         const allcontributorSponsorInfo: Node[] = [];
         for (const contributor of contributors) {
             const userLogin = contributor.login;
+            console.log(userLogin);
             const variables: Variables = { userLogin };
             const response = await this.fetchSponsorData(token, variables, query);
 

@@ -5,7 +5,7 @@ export type RepositoryContributorInfo = {
     owner: string;
     repo: string;
 };
-export interface Contributor {
+export interface ContributionCountOfUserIntoRepo {
     repoIdentifier: string;
     login: string;
     url: string;
@@ -47,7 +47,7 @@ export class ContributorFetcher {
     public async fetchContributors(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<Contributor[]> {
+    ): Promise<ContributionCountOfUserIntoRepo[]> {
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
 
         const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
@@ -78,7 +78,7 @@ export class ContributorFetcher {
     public async convertToContributor(
         githubContributor: GitHubContributor[],
         repoIdentifier: string
-    ): Promise<Contributor[]> {
+    ): Promise<ContributionCountOfUserIntoRepo[]> {
         return githubContributor.map((ghContributor) => {
             return {
                 repoIdentifier,
