@@ -94,14 +94,16 @@ export class SponsorabilityFetcher {
             allContributors
         );
 
-        const allUsers = this.convertToUsers(sponsorable, allContributors);
+        const allSponsorableUsers = this.convertToUsers(sponsorable, allContributors);
 
+        // WIP
         const fetchRepos = new ReposFetcher(this.config);
-        const allRepos = await fetchRepos.fetchSponsorableRepoInfo(token, allUsers);
+        const allRepos = await fetchRepos.fetchSponsorableRepoInfo(token, allSponsorableUsers);
 
         createTsv(allRepos);
+        //
 
-        return allUsers;
+        return allSponsorableUsers;
     }
 
     public getContributorInfo(
@@ -154,7 +156,7 @@ export class SponsorabilityFetcher {
 
         // console.log(typeof contributors); // currently not being used
 
-        const allcontributorSponsorInfo: Node[] = [];
+        const allSponsorableUsersInfo: Node[] = [];
         for (const contributor of contributors) {
             const userLogin = contributor.login;
             const variables: Variables = { userLogin };
@@ -162,12 +164,12 @@ export class SponsorabilityFetcher {
 
             response.nodes.forEach((user) => {
                 if (user.sponsorsListing?.name && user.__typename === 'User') {
-                    allcontributorSponsorInfo.push(...[user]);
+                    allSponsorableUsersInfo.push(...[user]);
                 }
             });
         }
 
-        return allcontributorSponsorInfo;
+        return allSponsorableUsersInfo;
     }
 
     public async fetchSponsorData(
