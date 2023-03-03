@@ -7,23 +7,11 @@ export type RepositoryContributorInfo = {
 };
 export type Contributor = {
     // repo information
+    repoIdentifier: string;
     login: string;
     url: string;
     contributions: number;
 };
-
-// export interface Response {
-//     status: 200;
-//     url: string;
-//     headers: {
-//         connection: string;
-//         date: string;
-//         etag: string;
-//         server: string;
-//         vary: string;
-//     };
-//     data: [GitHubContributor];
-// }
 export interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
@@ -64,39 +52,51 @@ export class ContributorFetcher {
         const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
 
         const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
-        console.log(githubContributors);
 
-        // const filteredContributors = this.filterOutDependabots(githubContributors); // remove dependabot
+        // const contributorsByRepoName = new Map<RepositoryName, Contributor[]>();
 
-        // const contributors = this.convertToContributors(filteredContributors);
-        const contributors: Contributor[] = [{ login: 'la', url: '', contributions: 2 }];
+        const contributors = [];
+
+        for (const [index, ghContributor] of githubContributors.entries()) {
+            const repoIdentifier = index;
+            const filteredGitHubContributors = this.filterOutDependabots(ghContributor);
+            const allContributors = await this.convertToContributor(
+                filteredGitHubContributors,
+                repoIdentifier
+            );
+
+            contributors.push(...allContributors);
+        }
+        // console.log(contributors);
+
+        // const x: Contributor[] = [];
+        // contributors.forEach((user) => {
+        //     const repository = user.repoIdentifier;
+        //     x.push(user);
+        //     contributorsByRepoName.set(repository, x);
+        // });
+        // console.log(contributorsByRepoName); // manipulate back to Map?
 
         return contributors;
     }
+    public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
+        const result = githubContributors.filter(
+            (userLogin) => userLogin.login !== 'dependabot[bot]'
+        );
 
-    // public filterOutDependabots(githubContributors: Map<string, GitHubContributor[]>[]): void {
-    //Map<string, GitHubContributor[]>
-    // githubContributors.forEach((values, key) => {
-    //     for (const [index, value] of values.entries()) {
-    //         console.log(key, index, value);
-    //         for (const userLogin of value) {
-    //            userLogin.login !== 'dependabot[bot]'
-    //         }
-    //     }
-    // });
-    // const result = githubContributors.filter(
-    //     (userLogin) => userLogin.login !== 'dependabot[bot]'
-    // );
-    // return result;
-    // }
+        return result;
+    }
 
-    public convertToContributors(githubContributor: GitHubContributor[]): Contributor[] {
-        return githubContributor.map((contributor) => {
+    public async convertToContributor(
+        githubContributor: GitHubContributor[],
+        repoIdentifier: string
+    ): Promise<Contributor[]> {
+        return githubContributor.map((ghContributor) => {
             return {
-                login: contributor.login ?? '',
-                url: contributor.html_url ?? '',
-                contributions: contributor.contributions ?? -1,
-                // repo:
+                repoIdentifier,
+                login: ghContributor.login ?? '',
+                url: ghContributor.html_url ?? '',
+                contributions: ghContributor.contributions ?? -1,
             };
         });
     }
