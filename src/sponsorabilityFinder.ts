@@ -1,9 +1,6 @@
 import { Config } from './config';
 import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
-import {
-    SponsorableContributorsInformationFetcher,
-    Sponsor,
-} from './sponsorableContributorsInformationFetcher';
+import { SponsorableContributorsFetcher, Sponsor } from './sponsorableContributorsFetcher';
 // import { ReposFetcher } from './reposFetcher';
 // import { createTsv } from './createTsv';
 
@@ -67,9 +64,7 @@ export class SponsorabilityFetcher {
         repositoryIdentifiers: string[]
     ): Promise<SponsorRepoContributionHistory[]> {
         const fetchAllContributors = new ContributorFetcher(this.config);
-        const fetchSponsorableContributors = new SponsorableContributorsInformationFetcher(
-            this.config
-        );
+        const fetchSponsorableContributors = new SponsorableContributorsFetcher(this.config);
 
         const allContributorHistorys = await fetchAllContributors.fetchContributorsByRepoName(
             token,
@@ -83,21 +78,19 @@ export class SponsorabilityFetcher {
                 allContributorHistorys
             );
 
-        let allSponsorableUsers: SponsorRepoContributionHistory[] = [];
+        let allSponsorable: SponsorRepoContributionHistory[] = [];
 
         allContributorHistorys.forEach((ContributionCountOfUser) => {
-            allSponsorableUsers = this.convertSponsorableToUsersWithContributionCount(
+            allSponsorable = this.convertSponsorableToUsersWithContributionCount(
                 sponsorable,
                 ContributionCountOfUser
             );
         });
 
-        // const allSponsorableUsers = this.convertToUsers(sponsorable, allContributorHistorys);
-
         // createTsv(allRepos);
         //
 
-        return allSponsorableUsers;
+        return allSponsorable;
     }
 
     public fetchContributionCountOfUserAndRepo(

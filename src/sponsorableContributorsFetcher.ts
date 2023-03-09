@@ -25,7 +25,7 @@ interface Variables extends RequestParameters {
     queryString: string;
 }
 
-export class SponsorableContributorsInformationFetcher {
+export class SponsorableContributorsFetcher {
     private readonly config: Config;
 
     public constructor(config: Config) {
