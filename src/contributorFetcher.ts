@@ -34,7 +34,8 @@ export interface GitHubContributor {
 
 export type RepositoryName = string;
 
-export type contributorsByRepoName = Map<RepositoryName, GitHubContributor[]>;
+export type githubContributorsByRepoName = Map<RepositoryName, GitHubContributor[]>;
+export type contributorsByRepoName = Map<RepositoryName, ContributionCountOfUserIntoRepo[]>;
 
 export class ContributorFetcher {
     private readonly config: Config;
@@ -43,36 +44,29 @@ export class ContributorFetcher {
         this.config = config;
     }
 
-    public async fetchContributors(
+    public async fetchContributorsByRepoName(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<ContributionCountOfUserIntoRepo[]> {
-        const ownerAndRepos = this.extractContributorsOwnerAndRepo(repositoryIdentifiers);
+    ): Promise<Map<string, ContributionCountOfUserIntoRepo[]>> {
+        const ownerAndRepos = this.extractOwnerAndRepoNames(repositoryIdentifiers);
 
-        const githubContributors = await this.fetchGitHubContributors(token, ownerAndRepos);
-
-        const contributionCountOfUserIntoRepos = [];
-
-        for (const [index, ghContributor] of githubContributors.entries()) {
-            const repoIdentifier = index;
-            const filteredGitHubContributors = this.filterOutDependabots(ghContributor);
-            const allContributors = await this.convertToContributor(
-                filteredGitHubContributors,
-                repoIdentifier
-            );
-
-            contributionCountOfUserIntoRepos.push(...allContributors);
-        }
-
-        return contributionCountOfUserIntoRepos;
-    }
-
-    public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
-        const result = githubContributors.filter(
-            (userLogin) => userLogin.login !== 'dependabot[bot]'
+        const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(
+            token,
+            ownerAndRepos
         );
 
-        return result;
+        const contributionCountOfUserIntoRepos = [];
+        const contributorsByRepoName = new Map<RepositoryName, ContributionCountOfUserIntoRepo[]>();
+
+        for (const [index, ghContributor] of gitHubContributorsByRepoName.entries()) {
+            const repoIdentifier = index;
+            const allContributors = await this.convertToContributor(ghContributor, repoIdentifier);
+
+            contributionCountOfUserIntoRepos.push(...allContributors);
+            contributorsByRepoName.set(repoIdentifier, allContributors);
+        }
+
+        return contributorsByRepoName;
     }
 
     public async convertToContributor(
@@ -89,9 +83,7 @@ export class ContributorFetcher {
         });
     }
 
-    public extractContributorsOwnerAndRepo(
-        repositoryIdentifiers: string[]
-    ): RepositoryContributorInfo[] {
+    public extractOwnerAndRepoNames(repositoryIdentifiers: string[]): RepositoryContributorInfo[] {
         const contributorsInformation = Object.values(repositoryIdentifiers);
 
         return contributorsInformation.map((contributorInfo) => {
@@ -104,7 +96,7 @@ export class ContributorFetcher {
         });
     }
 
-    public async fetchGitHubContributors(
+    public async fetchGitHubContributorsByRepoName(
         token: string,
         ownerAndRepos: RepositoryContributorInfo[]
     ): Promise<Map<RepositoryName, GitHubContributor[]>> {
@@ -137,3 +129,16 @@ export class ContributorFetcher {
         return gitHubContributorsByRepoName;
     }
 }
+
+/*
+get a list of all the contributors by repoName
+ const ownerAndRepos = extractOwnerAndRepoNames()
+- gitHubContributorsByRepoName = fetchGithubContributorsByRepoName(ownerAndRepos);
+
+   gitHubContributorsByRepoName returns ContributionCountOfUserIntoRepo[];
+
+- Then I would need to get sponsor information, if this contributor is sponsorable
+  const sponsorableContributorInformation = fetchSponosorableConributorInformation();
+- After, I would need information on the languages of each sponsorableContributor contributed to
+- const sponsorableRepoLanuageUsed = fetchLanguagesByRepositoryContribution()
+*/
