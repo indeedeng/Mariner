@@ -1,5 +1,9 @@
 import { Config } from './config';
-import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
+import {
+    ContributionCountOfUserIntoRepo,
+    ContributorFetcher,
+    RepositoryName,
+} from './contributorFetcher';
 import { SponsorableContributorsFetcher, Sponsor } from './sponsorableContributorsFetcher';
 // import { ReposFetcher } from './reposFetcher';
 // import { createTsv } from './createTsv';
@@ -52,7 +56,7 @@ const queryTemplate = `query fetchSponsorable($queryString: String!) {
   }
 }`;
 
-export class SponsorabilityFetcher {
+export class SponsorabilityFinder {
     private readonly config: Config;
 
     public constructor(config: Config) {
@@ -79,21 +83,21 @@ export class SponsorabilityFetcher {
             );
 
         let allSponsorable: SponsorRepoContributionHistory[] = [];
+        const sponsorMap = new Map<RepositoryName, SponsorRepoContributionHistory[]>();
 
-        allContributorHistorys.forEach((ContributionCountOfUser) => {
+        allContributorHistorys.forEach((ContributionCountOfUser, index) => {
+            const repositoryName = index;
             allSponsorable = this.convertSponsorableToUsersWithContributionCount(
                 sponsorable,
                 ContributionCountOfUser
             );
+            sponsorMap.set(repositoryName, allSponsorable);
         });
-
-        // createTsv(allRepos);
-        //
 
         return allSponsorable;
     }
 
-    public fetchContributionCountOfUserAndRepo(
+    public getContributionCountOfUserAndRepo(
         userLogin: string,
         contributors: ContributionCountOfUserIntoRepo[]
     ): [number, string] {
@@ -114,7 +118,7 @@ export class SponsorabilityFetcher {
         contributors: ContributionCountOfUserIntoRepo[]
     ): SponsorRepoContributionHistory[] {
         const allUsers = sponsorableContributor.map((sponsorable) => {
-            const contributionAndRepoId = this.fetchContributionCountOfUserAndRepo(
+            const contributionAndRepoId = this.getContributionCountOfUserAndRepo(
                 sponsorable.login,
                 contributors
             );
@@ -136,29 +140,3 @@ export class SponsorabilityFetcher {
         return allUsers;
     }
 }
-
-//   public filterUserAndOrganization(sponsorable: Node[]): any {
-//         sponsorable.forEach((data) => {
-//             console.log(data.__typename);
-//         });
-//     }
-
-// deall with orgs later
-// if (sponsorable.sponsorListing !== null && sponsorable.__typename === 'Organization') {
-//     const organization: Organization = {
-//         type: sponsorable.__typename,
-//         login: sponsorable.login,
-//         url: sponsorable.url,
-//         sponsorListingName: sponsorable.sponsorListing.name,
-//     };
-
-//     return organization;
-// }
-// /
-//     public filterOutDependabots(githubContributors: GitHubContributor[]): GitHubContributor[] {
-//         const result = githubContributors.filter(
-//             (userLogin) => userLogin.login !== 'dependabot[bot]'
-//         );
-
-//         return result;
-//     }
