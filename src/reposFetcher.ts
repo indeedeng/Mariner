@@ -21,6 +21,8 @@ interface Languages {
     };
 }
 
+export type OwnerAndRepoName = string;
+
 const queryTemplate = `query fetchRepoInfo($repoIdentifier: String!) {
   search(query: $repoIdentifier, type: REPOSITORY, first: 10) {
  nodes {
@@ -65,46 +67,46 @@ export class ReposLanguageAndProjectCountsFetcher {
         token: string,
         allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
-        const repositoryLanguage = await this.fetchAllRepositoryInfos(token, allSponsorable);
+    ): Promise<Map<OwnerAndRepoName, Node[][]>> {
+        const repositoryLanguage = await this.fetchAllRepositoryLanguages(token, allSponsorable);
 
         return repositoryLanguage;
     }
 
     // WIP
-    // public countLanguages(repositoryLanguages: string[]): string[] {
-    //     for (const language of repositoryLanguages) {
-    //         console.log(language);
-    //     }
+    public countLanguages(repositoryLanguages: Map<string, Node[][]>): string[] {
+        for (const language of repositoryLanguages) {
+            console.log(language);
+        }
 
-    //     return ['something'];
-    // }
+        return ['something'];
+    }
 
     public async fetchAllRepositoryLanguages(
         token: string,
         allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<any> {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const languages: any[] = [];
+    ): Promise<Map<OwnerAndRepoName, Node[][]>> {
+        const languages: Node[][] = [];
+        const repoLanguageInformation = new Map<OwnerAndRepoName, Node[][]>();
 
-        allSponsorable.forEach(async (sponsorable, index) => {
-            const repoIdentifier = index;
+        for (const [repos] of allSponsorable.entries()) {
+            const repoIdentifier = repos;
             const variables: Variables = { repoIdentifier: `repo:${repoIdentifier}` }; // get specific repo
-            const repositoryLanguageAndProjectInfo = await this.fetchRepos(
+            const repositoryLanguageAndOwnerWithName = await this.fetchRepos(
                 token,
                 variables,
                 queryTemplate
             );
 
-            // output
-            // [{ name: 'pipenv', languages: { edges: [Array] } }]
-            // [{ name: 'util', languages: { edges: [Array] } }];
+            languages.push(repositoryLanguageAndOwnerWithName); // temporary, do we want an array?
+            repoLanguageInformation.set(repoIdentifier, languages);
+        }
 
-            languages.push(repositoryLanguageAndProjectInfo); // temporary, do we want an array?
-        });
+        //     // output
+        //     // [{ name: 'pipenv', languages: { edges: [Array] } }]
+        //     // [{ name: 'util', languages: { edges: [Array] } }];
 
-        return languages;
+        return repoLanguageInformation;
     }
 
     public async fetchRepos(token: string, variables: Variables, query: string): Promise<Node[]> {
@@ -123,3 +125,14 @@ export class ReposLanguageAndProjectCountsFetcher {
         return result.nodes;
     }
 }
+
+// [({ node: { name: 'Python' } },
+// { node: { name: 'Roff' } },
+// { node: { name: 'Shell' } },
+// { node: { name: 'Batchfile' } },
+// { node: { name: 'Makefile' } })];
+
+// [({ node: { name: 'Java' } },
+// { node: { name: 'C' } },
+// { node: { name: 'Makefile' } },
+// { node: { name: 'FreeMarker' } })];
