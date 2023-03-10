@@ -1,11 +1,7 @@
 import { Config } from './config';
-import {
-    ContributionCountOfUserIntoRepo,
-    ContributorFetcher,
-    RepositoryName,
-} from './contributorFetcher';
+import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
 import { SponsorableContributorsFetcher, Sponsor } from './sponsorableContributorsFetcher';
-// import { ReposFetcher } from './reposFetcher';
+import { ReposLanguageAndProjectCountsFetcher } from './reposFetcher';
 // import { createTsv } from './createTsv';
 
 export interface SponsorRepoContributionHistory {
@@ -17,7 +13,7 @@ export interface SponsorRepoContributionHistory {
     sponsorsLink: string;
     contributionsCount: number;
 }
-
+export type RepositoryName = string;
 // interface Organization {
 //     type: string;
 //     login: string;
@@ -66,9 +62,9 @@ export class SponsorabilityFinder {
     public async fetchSponsorabilityInformation(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<SponsorRepoContributionHistory[]> {
+    ): Promise<Map<string, SponsorRepoContributionHistory[]>> {
         const fetchAllContributors = new ContributorFetcher(this.config);
-        const fetchSponsorableContributors = new SponsorableContributorsFetcher(this.config);
+        const sponsorableContributorsFetcher = new SponsorableContributorsFetcher(this.config);
 
         const allContributorHistorys = await fetchAllContributors.fetchContributorsByRepoName(
             token,
@@ -76,7 +72,7 @@ export class SponsorabilityFinder {
         );
 
         const sponsorable =
-            await fetchSponsorableContributors.fetchSponsorableContributorsInformation(
+            await sponsorableContributorsFetcher.fetchSponsorableContributorsInformation(
                 token,
                 queryTemplate,
                 allContributorHistorys
@@ -94,7 +90,12 @@ export class SponsorabilityFinder {
             sponsorMap.set(repositoryName, allSponsorable);
         });
 
-        return allSponsorable;
+        const repositoryFetcher = new ReposLanguageAndProjectCountsFetcher(this.config);
+        const reposLanguageAndContributions =
+            await repositoryFetcher.repositoryLanguageAndProjectInfo(token, sponsorMap);
+        console.log(reposLanguageAndContributions);
+
+        return sponsorMap;
     }
 
     public getContributionCountOfUserAndRepo(

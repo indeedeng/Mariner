@@ -1,6 +1,6 @@
 import { Config } from './config';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
-import { User } from './sponsorabilityFetcher';
+import { SponsorRepoContributionHistory } from './sponsorabilityFinder';
 import { graphql } from '@octokit/graphql';
 
 interface GitHubResponse {
@@ -11,7 +11,7 @@ interface Repos {
 }
 
 interface Node {
-    name: string; // repositoryName
+    nameWithOwner: string; // repositoryName
     languages: { edges: Languages[] };
 }
 
@@ -21,11 +21,11 @@ interface Languages {
     };
 }
 
-const queryTemplate = `query fetchRepoInfo($login: String!) {
-  search(query: $login, type: REPOSITORY, first: 10) {
+const queryTemplate = `query fetchRepoInfo($repoIdentifier: String!) {
+  search(query: $repoIdentifier, type: REPOSITORY, first: 10) {
  nodes {
       ... on Repository {
-        name
+        nameWithOwner
         languages(first: 10) {
           edges {
             node {
@@ -39,7 +39,7 @@ const queryTemplate = `query fetchRepoInfo($login: String!) {
 }`;
 
 interface Variables extends RequestParameters {
-    login: string;
+    repoIdentifier: string;
 }
 
 export interface UserRepo {
@@ -53,54 +53,37 @@ export interface UserRepo {
     other: number;
 }
 
-export class ReposFetcher {
+export type RepositoryName = string;
+export class ReposLanguageAndProjectCountsFetcher {
     private readonly config: Config;
 
     public constructor(config: Config) {
         this.config = config;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public async fetchSponsorableRepoInfo(token: string, allUsers: User[]): Promise<any> {
-        const repoNameAndLanguages = [];
-        for (const user of allUsers) {
-            const login = user.login;
-
-            const variables: Variables = { login };
-            const sponsorable = await this.fetchRepos(token, variables, queryTemplate);
-            // console.log(sponsorable);
-            repoNameAndLanguages.push({ login: user.login, repo: sponsorable }); // temporary
-        }
+    public async repositoryLanguageAndProjectInfo(
+        token: string,
+        allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const count: any = {};
+    ): Promise<any> {
+        // const languages = [];
 
-        for (const userRepo of repoNameAndLanguages) {
-            const countProjects = userRepo.repo.reduce((counter, obj) => {
-                if (obj.name) {
-                    console.log(obj.name);
-                    counter += 1;
-                }
+        allSponsorable.forEach(async (sponsorable, index) => {
+            const repoIdentifier = index;
+            const variables: Variables = { repoIdentifier: `repo:${repoIdentifier}` }; // get specific repo
+            const repositoryLanguageAndProjectInfo = await this.fetchRepos(
+                token,
+                variables,
+                queryTemplate
+            );
 
-                return counter;
-            }, 0);
+            console.log(repositoryLanguageAndProjectInfo);
+            // output
+            // [{ name: 'pipenv', languages: { edges: [Array] } }]
+            // [{ name: 'util', languages: { edges: [Array] } }];
 
-            console.log(countProjects); // project counts
-            const userProjectLanguages = Object.values(userRepo.repo);
-
-            for (const project of userProjectLanguages) {
-                project.languages.edges.forEach((language) => {
-                    // console.log(language.node.name, userRepo.login);
-                    // const name = project.name;
-                    if (count[language.node.name]) {
-                        count[language.node.name] += 1;
-                    } else {
-                        count[language.node.name] = 1;
-                    }
-                });
-            }
-        }
-
-        return repoNameAndLanguages;
+            // languages.push({ login: sponsorable, repo: index }); // temporary
+        });
     }
 
     public async fetchRepos(token: string, variables: Variables, query: string): Promise<Node[]> {
@@ -117,39 +100,5 @@ export class ReposFetcher {
         // console.log(`fetchRepos function line 81: ${JSON.stringify(result, null, 2)}`);
 
         return result.nodes;
-    }
-    //To-do:
-    /*
-    . added types/interfaces - test them
-    . add function
-    */
-
-    public countLanguages(repo: string[]): string[] {
-        const a = repo.map((type) => {
-            let language = '';
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const languages: any = {
-                java: function () {
-                    language = 'Java';
-                },
-                javascript: function () {
-                    language = 'Javascript';
-                },
-                python: function () {
-                    language = 'Python';
-                },
-                go: function () {
-                    language = 'Go';
-                },
-                default: function () {
-                    language = 'Other';
-                },
-            };
-            console.log(`the language for this repo is ${language}`);
-
-            return (languages[type] || languages.defualt)();
-        });
-
-        return a;
     }
 }
