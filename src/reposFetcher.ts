@@ -94,6 +94,7 @@ export class RepoLanguagesFetcher {
             // clean up forEach??
             githubRepoWithLanguages.forEach((repoWithLanguages) => {
                 repoWithLanguages.languages.edges.forEach((language) => {
+                    //buggy code, needs refactoring
                     if (languageCount[language.node.name]) {
                         languageCount[language.node.name] += 1;
                     } else {
@@ -103,6 +104,29 @@ export class RepoLanguagesFetcher {
             });
         });
         console.log(languageCount);
+
+        //  WIP - its mushin everything in both arrays...
+        // [
+        //   Python: 1,
+        //   Roff: 1,
+        //   Shell: 1,
+        //   Batchfile: 1,
+        //   Makefile: 2,
+        //   Java: 1,
+        //   C: 1,
+        //   FreeMarker: 1
+        // ]
+        // 14
+        // [
+        //   Python: 1,
+        //   Roff: 1,
+        //   Shell: 1,
+        //   Batchfile: 1,
+        //   Makefile: 2,
+        //   Java: 1,
+        //   C: 1,
+        //   FreeMarker: 1
+        // ]
 
         return [];
     }
