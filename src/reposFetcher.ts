@@ -61,12 +61,32 @@ export class ReposLanguageAndProjectCountsFetcher {
         this.config = config;
     }
 
-    public async repositoryLanguageAndProjectInfo(
+    public async fetchAllRepositoryInfos(
         token: string,
         allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): Promise<any> {
-        // const languages = [];
+        const repositoryLanguage = await this.fetchAllRepositoryInfos(token, allSponsorable);
+
+        return repositoryLanguage;
+    }
+
+    // WIP
+    // public countLanguages(repositoryLanguages: string[]): string[] {
+    //     for (const language of repositoryLanguages) {
+    //         console.log(language);
+    //     }
+
+    //     return ['something'];
+    // }
+
+    public async fetchAllRepositoryLanguages(
+        token: string,
+        allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): Promise<any> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const languages: any[] = [];
 
         allSponsorable.forEach(async (sponsorable, index) => {
             const repoIdentifier = index;
@@ -77,13 +97,14 @@ export class ReposLanguageAndProjectCountsFetcher {
                 queryTemplate
             );
 
-            console.log(repositoryLanguageAndProjectInfo);
             // output
             // [{ name: 'pipenv', languages: { edges: [Array] } }]
             // [{ name: 'util', languages: { edges: [Array] } }];
 
-            // languages.push({ login: sponsorable, repo: index }); // temporary
+            languages.push(repositoryLanguageAndProjectInfo); // temporary, do we want an array?
         });
+
+        return languages;
     }
 
     public async fetchRepos(token: string, variables: Variables, query: string): Promise<Node[]> {
