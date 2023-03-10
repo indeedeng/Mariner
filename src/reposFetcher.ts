@@ -89,16 +89,20 @@ export class RepoLanguagesFetcher {
         gitHubRepoNamesWithOwnerAndLanguages: GitHubRepoNameWithOwnerAndLanguages[][]
     ): Promise<string[]> {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-        // const languageCount = [];
+        const languageCount: any = [];
         gitHubRepoNamesWithOwnerAndLanguages.forEach((githubRepoWithLanguages) => {
             // clean up forEach??
             githubRepoWithLanguages.forEach((repoWithLanguages) => {
                 repoWithLanguages.languages.edges.forEach((language) => {
-                    console.log(language.node.name);
+                    if (languageCount[language.node.name]) {
+                        languageCount[language.node.name] += 1;
+                    } else {
+                        languageCount[language.node.name] = 1;
+                    }
                 });
             });
         });
+        console.log(languageCount);
 
         return [];
     }
