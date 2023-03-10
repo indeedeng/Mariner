@@ -1,7 +1,7 @@
 import { Config } from './config';
 import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
 import { SponsorableContributorsFetcher, Sponsor } from './sponsorableContributorsFetcher';
-import { ReposLanguageAndProjectCountsFetcher } from './reposFetcher';
+import { RepoLanguagesFetcher } from './reposFetcher';
 // import { createTsv } from './createTsv';
 
 export interface SponsorRepoContributionHistory {
@@ -81,21 +81,21 @@ export class SponsorabilityFinder {
         let allSponsorable: SponsorRepoContributionHistory[] = [];
         const sponsorMap = new Map<RepositoryName, SponsorRepoContributionHistory[]>();
 
-        allContributorHistorys.forEach((ContributionCountOfUser, index) => {
+        allContributorHistorys.forEach((contributionCountOfUser, index) => {
             const repositoryName = index;
             allSponsorable = this.convertSponsorableToUsersWithContributionCount(
                 sponsorable,
-                ContributionCountOfUser
+                contributionCountOfUser
             );
             sponsorMap.set(repositoryName, allSponsorable);
         });
 
-        const repositoryFetcher = new ReposLanguageAndProjectCountsFetcher(this.config);
-        const reposLanguageAndContributions = await repositoryFetcher.fetchAllRepositoryLanguages(
+        const repositoryFetcher = new RepoLanguagesFetcher(this.config);
+        const reposLanguageAndContributions = await repositoryFetcher.fetchAllReposLanguages(
             token,
             sponsorMap
         );
-        console.log(reposLanguageAndContributions);
+        console.log('\ninside sponsorabilityFinder line 98: ', reposLanguageAndContributions, '\n');
 
         return sponsorMap;
     }

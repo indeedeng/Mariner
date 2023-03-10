@@ -7,10 +7,10 @@ interface GitHubResponse {
     search: Repos;
 }
 interface Repos {
-    nodes: Node[];
+    nodes: GitHubRepoNameWithOwnerAndLanguages[];
 }
 
-interface Node {
+interface GitHubRepoNameWithOwnerAndLanguages {
     nameWithOwner: string; // repositoryName
     languages: { edges: Languages[] };
 }
@@ -56,38 +56,62 @@ export interface UserRepo {
 }
 
 export type RepositoryName = string;
-export class ReposLanguageAndProjectCountsFetcher {
+export class RepoLanguagesFetcher {
     private readonly config: Config;
 
     public constructor(config: Config) {
         this.config = config;
     }
 
-    public async fetchAllRepositoryInfos(
+    public async fetchAllReposLanguages(
         token: string,
         allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): Promise<Map<OwnerAndRepoName, Node[][]>> {
-        const repositoryLanguage = await this.fetchAllRepositoryLanguages(token, allSponsorable);
+    ): Promise<Map<OwnerAndRepoName, GitHubRepoNameWithOwnerAndLanguages[][]>> {
+        const repositoryLanguages = await this.fetchAllGitHubRepositoryLanguages(
+            token,
+            allSponsorable
+        );
 
-        return repositoryLanguage;
+        let languagesCount;
+        repositoryLanguages.forEach(async (repo, index) => {
+            const repoId = index;
+            console.log(repoId.length);
+            languagesCount = await this.countLanguages(repo);
+        });
+
+        console.log(languagesCount);
+
+        return repositoryLanguages;
     }
 
     // WIP
-    public countLanguages(repositoryLanguages: Map<string, Node[][]>): string[] {
-        for (const language of repositoryLanguages) {
-            console.log(language);
-        }
+    public async countLanguages(
+        gitHubRepoNamesWithOwnerAndLanguages: GitHubRepoNameWithOwnerAndLanguages[][]
+    ): Promise<string[]> {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-        return ['something'];
+        // const languageCount = [];
+        gitHubRepoNamesWithOwnerAndLanguages.forEach((githubRepoWithLanguages) => {
+            // clean up forEach??
+            githubRepoWithLanguages.forEach((repoWithLanguages) => {
+                repoWithLanguages.languages.edges.forEach((language) => {
+                    console.log(language.node.name);
+                });
+            });
+        });
+
+        return [];
     }
 
-    public async fetchAllRepositoryLanguages(
+    public async fetchAllGitHubRepositoryLanguages(
         token: string,
         allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
-    ): Promise<Map<OwnerAndRepoName, Node[][]>> {
-        const languages: Node[][] = [];
-        const repoLanguageInformation = new Map<OwnerAndRepoName, Node[][]>();
+    ): Promise<Map<OwnerAndRepoName, GitHubRepoNameWithOwnerAndLanguages[][]>> {
+        const languages: GitHubRepoNameWithOwnerAndLanguages[][] = [];
+        const repoLanguageInformation = new Map<
+            OwnerAndRepoName,
+            GitHubRepoNameWithOwnerAndLanguages[][]
+        >();
 
         for (const [repos] of allSponsorable.entries()) {
             const repoIdentifier = repos;
@@ -109,7 +133,11 @@ export class ReposLanguageAndProjectCountsFetcher {
         return repoLanguageInformation;
     }
 
-    public async fetchRepos(token: string, variables: Variables, query: string): Promise<Node[]> {
+    public async fetchRepos(
+        token: string,
+        variables: Variables,
+        query: string
+    ): Promise<GitHubRepoNameWithOwnerAndLanguages[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
@@ -125,14 +153,3 @@ export class ReposLanguageAndProjectCountsFetcher {
         return result.nodes;
     }
 }
-
-// [({ node: { name: 'Python' } },
-// { node: { name: 'Roff' } },
-// { node: { name: 'Shell' } },
-// { node: { name: 'Batchfile' } },
-// { node: { name: 'Makefile' } })];
-
-// [({ node: { name: 'Java' } },
-// { node: { name: 'C' } },
-// { node: { name: 'Makefile' } },
-// { node: { name: 'FreeMarker' } })];
