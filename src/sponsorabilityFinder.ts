@@ -91,8 +91,10 @@ export class SponsorabilityFinder {
         });
 
         const repositoryFetcher = new ReposLanguageAndProjectCountsFetcher(this.config);
-        const reposLanguageAndContributions =
-            await repositoryFetcher.repositoryLanguageAndProjectInfo(token, sponsorMap);
+        const reposLanguageAndContributions = await repositoryFetcher.fetchAllRepositoryLanguages(
+            token,
+            sponsorMap
+        );
         console.log(reposLanguageAndContributions);
 
         return sponsorMap;
