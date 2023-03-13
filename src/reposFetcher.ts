@@ -7,10 +7,14 @@ export type RepositoryContributorInfo = {
     name: string;
 };
 
-interface LanguageNode {
+interface GitHubLanguageNode {
     node: {
         name: string;
     };
+}
+
+interface Languages {
+    name: string;
 }
 
 export type OwnerAndRepoName = string;
@@ -32,17 +36,6 @@ interface Variables extends RequestParameters {
     name: string;
 }
 
-export interface UserRepo {
-    login: string;
-    projectCount: number;
-    impactCount: number;
-    java: number;
-    javascript: number;
-    python: number;
-    go: number;
-    other: number;
-}
-
 export type RepositoryName = string;
 export class RepoLanguagesFetcher {
     private readonly config: Config;
@@ -53,9 +46,9 @@ export class RepoLanguagesFetcher {
 
     public async fetchAllReposLanguages(
         token: string,
-        repositoryIdentifiers: string[] // get list of repository names, not map
-    ): Promise<Map<string, string[]>> {
-        const repoLanguageInformation = new Map<string, string[]>();
+        repositoryIdentifiers: string[]
+    ): Promise<Map<string, Languages[]>> {
+        const repoLanguageInformation = new Map<string, Languages[]>();
 
         for (const repoIdentifier of repositoryIdentifiers) {
             const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
@@ -64,13 +57,6 @@ export class RepoLanguagesFetcher {
         }
 
         return repoLanguageInformation;
-    }
-
-    public extractLanguagesArray(repositoryLanguageAndOwnerWithName: unknown): string[] {
-        // repositoryLanguageAndOwnerWithName.forEach((repository
-        console.log('line 84', repositoryLanguageAndOwnerWithName);
-
-        return [];
     }
 
     public extractOwnerAndRepoName(repoIdentifier: string): RepositoryContributorInfo {
@@ -82,10 +68,20 @@ export class RepoLanguagesFetcher {
         return contributorOwnerAndRepo;
     }
 
+    public extractLanguagesArray(repositoryLanguages: GitHubLanguageNode[]): Languages[] {
+        const languages = repositoryLanguages.map((languageName) => {
+            return {
+                name: languageName.node.name,
+            };
+        });
+
+        return languages;
+    }
+
     public async fetchLanguagesForSingleRepo(
         token: string,
         repoIdentifier: string
-    ): Promise<string[]> {
+    ): Promise<Languages[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
@@ -94,17 +90,13 @@ export class RepoLanguagesFetcher {
 
         const owner = ownerAndRepoName.owner;
         const name = ownerAndRepoName.name;
-
         const variables: Variables = { owner, name };
 
         const response: GraphQlQueryResponseData = await graphqlWithAuth(queryTemplate, variables);
+        const result = response.repository.languages.edges as GitHubLanguageNode[];
 
-        const result: LanguageNode[] = response.repository.languages.edges;
-        console.log(result, 'line 105');
+        const languages = this.extractLanguagesArray(result);
 
-        // conversion between nodes and edges into an array of strings
-        // const languages = this.extractLanguagesArray(repositoryLanguageAndOwnerWithName)
-
-        return [];
+        return languages;
     }
 }
