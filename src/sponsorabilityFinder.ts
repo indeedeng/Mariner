@@ -13,7 +13,9 @@ export interface SponsorRepoContributionHistory {
     sponsorsLink: string;
     contributionsCount: number;
 }
+
 export type RepositoryName = string;
+
 // interface Organization {
 //     type: string;
 //     login: string;
@@ -93,7 +95,7 @@ export class SponsorabilityFinder {
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
         const reposLanguageAndContributions = await repositoryFetcher.fetchAllReposLanguages(
             token,
-            sponsorMap
+            repositoryIdentifiers
         );
         console.log('\ninside sponsorabilityFinder line 98: ', reposLanguageAndContributions, '\n');
 
