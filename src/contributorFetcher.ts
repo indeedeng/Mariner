@@ -84,9 +84,7 @@ export class ContributorFetcher {
     }
 
     public extractOwnerAndRepoNames(repositoryIdentifiers: string[]): RepositoryContributorInfo[] {
-        const contributorsInformation = Object.values(repositoryIdentifiers);
-
-        return contributorsInformation.map((contributorInfo) => {
+        return repositoryIdentifiers.map((contributorInfo) => {
             const ownerAndRepo = contributorInfo.split('/');
             const owner = ownerAndRepo[0];
             const repo = ownerAndRepo[1];
