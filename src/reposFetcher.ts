@@ -1,21 +1,13 @@
 import { Config } from './config';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
-import { SponsorRepoContributionHistory } from './sponsorabilityFinder';
 import { graphql } from '@octokit/graphql';
 
-interface GitHubResponse {
-    search: Repos;
-}
-interface Repos {
-    nodes: GitHubRepoNameWithOwnerAndLanguages[];
-}
+export type RepositoryContributorInfo = {
+    owner: string;
+    name: string;
+};
 
-interface GitHubRepoNameWithOwnerAndLanguages {
-    nameWithOwner: string; // repositoryName
-    languages: { edges: Languages[] };
-}
-
-interface Languages {
+interface LanguageNode {
     node: {
         name: string;
     };
@@ -23,17 +15,12 @@ interface Languages {
 
 export type OwnerAndRepoName = string;
 
-const queryTemplate = `query fetchRepoInfo($repoIdentifier: String!) {
-  search(query: $repoIdentifier, type: REPOSITORY, first: 10) {
- nodes {
-      ... on Repository {
-        nameWithOwner
-        languages(first: 10) {
-          edges {
-            node {
-              name
-            }
-          }
+const queryTemplate = `query fetchLanguagesForRepo($owner: String!, $name: String!){
+  repository(owner: $owner, name: $name) {
+    languages(first:20) {
+      edges {
+        node {
+          name
         }
       }
     }
@@ -41,7 +28,8 @@ const queryTemplate = `query fetchRepoInfo($repoIdentifier: String!) {
 }`;
 
 interface Variables extends RequestParameters {
-    repoIdentifier: string;
+    owner: string;
+    name: string;
 }
 
 export interface UserRepo {
@@ -65,119 +53,58 @@ export class RepoLanguagesFetcher {
 
     public async fetchAllReposLanguages(
         token: string,
-        allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
-    ): Promise<Map<OwnerAndRepoName, GitHubRepoNameWithOwnerAndLanguages[][]>> {
-        const repositoryLanguages = await this.fetchAllGitHubRepositoryLanguages(
-            token,
-            allSponsorable
-        );
+        repositoryIdentifiers: string[] // get list of repository names, not map
+    ): Promise<Map<string, string[]>> {
+        const repoLanguageInformation = new Map<string, string[]>();
 
-        let languagesCount;
-        repositoryLanguages.forEach(async (repo, index) => {
-            const repoId = index;
-            console.log(repoId.length);
-            languagesCount = await this.countLanguages(repo);
-        });
+        for (const repoIdentifier of repositoryIdentifiers) {
+            const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
 
-        console.log(languagesCount);
-
-        return repositoryLanguages;
-    }
-
-    // WIP
-    public async countLanguages(
-        gitHubRepoNamesWithOwnerAndLanguages: GitHubRepoNameWithOwnerAndLanguages[][]
-    ): Promise<string[]> {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const languageCount: any = [];
-        gitHubRepoNamesWithOwnerAndLanguages.forEach((githubRepoWithLanguages) => {
-            // clean up forEach??
-            githubRepoWithLanguages.forEach((repoWithLanguages) => {
-                repoWithLanguages.languages.edges.forEach((language) => {
-                    //buggy code, needs refactoring
-                    if (languageCount[language.node.name]) {
-                        languageCount[language.node.name] += 1;
-                    } else {
-                        languageCount[language.node.name] = 1;
-                    }
-                });
-            });
-        });
-        console.log(languageCount);
-
-        //  WIP - its mushin everything in both arrays...
-        // [
-        //   Python: 1,
-        //   Roff: 1,
-        //   Shell: 1,
-        //   Batchfile: 1,
-        //   Makefile: 2,
-        //   Java: 1,
-        //   C: 1,
-        //   FreeMarker: 1
-        // ]
-        // 14
-        // [
-        //   Python: 1,
-        //   Roff: 1,
-        //   Shell: 1,
-        //   Batchfile: 1,
-        //   Makefile: 2,
-        //   Java: 1,
-        //   C: 1,
-        //   FreeMarker: 1
-        // ]
-
-        return [];
-    }
-
-    public async fetchAllGitHubRepositoryLanguages(
-        token: string,
-        allSponsorable: Map<RepositoryName, SponsorRepoContributionHistory[]>
-    ): Promise<Map<OwnerAndRepoName, GitHubRepoNameWithOwnerAndLanguages[][]>> {
-        const languages: GitHubRepoNameWithOwnerAndLanguages[][] = [];
-        const repoLanguageInformation = new Map<
-            OwnerAndRepoName,
-            GitHubRepoNameWithOwnerAndLanguages[][]
-        >();
-
-        for (const [repos] of allSponsorable.entries()) {
-            const repoIdentifier = repos;
-            const variables: Variables = { repoIdentifier: `repo:${repoIdentifier}` }; // get specific repo
-            const repositoryLanguageAndOwnerWithName = await this.fetchRepos(
-                token,
-                variables,
-                queryTemplate
-            );
-
-            languages.push(repositoryLanguageAndOwnerWithName); // temporary, do we want an array?
             repoLanguageInformation.set(repoIdentifier, languages);
         }
-
-        //     // output
-        //     // [{ name: 'pipenv', languages: { edges: [Array] } }]
-        //     // [{ name: 'util', languages: { edges: [Array] } }];
 
         return repoLanguageInformation;
     }
 
-    public async fetchRepos(
+    public extractLanguagesArray(repositoryLanguageAndOwnerWithName: unknown): string[] {
+        // repositoryLanguageAndOwnerWithName.forEach((repository
+        console.log('line 84', repositoryLanguageAndOwnerWithName);
+
+        return [];
+    }
+
+    public extractOwnerAndRepoName(repoIdentifier: string): RepositoryContributorInfo {
+        const ownerAndRepo = repoIdentifier.split('/');
+        const owner = ownerAndRepo[0];
+        const name = ownerAndRepo[1];
+        const contributorOwnerAndRepo: RepositoryContributorInfo = { owner, name };
+
+        return contributorOwnerAndRepo;
+    }
+
+    public async fetchLanguagesForSingleRepo(
         token: string,
-        variables: Variables,
-        query: string
-    ): Promise<GitHubRepoNameWithOwnerAndLanguages[]> {
+        repoIdentifier: string
+    ): Promise<string[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
 
-        const response: GraphQlQueryResponseData = (await graphqlWithAuth(
-            query,
-            variables
-        )) as GitHubResponse;
+        const ownerAndRepoName = this.extractOwnerAndRepoName(repoIdentifier);
 
-        const result: Repos = response.search;
-        // console.log(`fetchRepos function line 81: ${JSON.stringify(result, null, 2)}`);
+        const owner = ownerAndRepoName.owner;
+        const name = ownerAndRepoName.name;
 
-        return result.nodes;
+        const variables: Variables = { owner, name };
+
+        const response: GraphQlQueryResponseData = await graphqlWithAuth(queryTemplate, variables);
+
+        const result: LanguageNode[] = response.repository.languages.edges;
+        console.log(result, 'line 105');
+
+        // conversion between nodes and edges into an array of strings
+        // const languages = this.extractLanguagesArray(repositoryLanguageAndOwnerWithName)
+
+        return [];
     }
 }
