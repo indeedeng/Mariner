@@ -50,17 +50,20 @@ export class RepoLanguagesFetcher {
     ): Promise<Map<string, Languages[]>> {
         const repoLanguageInformation = new Map<string, Languages[]>();
 
-        // repositoryIdentifiers.forEach(async (repoIdentifier) => {
-        //     const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
+        // await Promise.all( <=== one solution to await the promise
+        //     repositoryIdentifiers.map(async (repoIdentifier) => {
+        //         const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
 
-        //     repoLanguageInformation.set(repoIdentifier, languages);
-        // }); // keep getting Map(0) {}
+        //         repoLanguageInformation.set(repoIdentifier, languages);
+        //     })
+        // );
 
         for (const repoIdentifier of repositoryIdentifiers) {
             const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
 
             repoLanguageInformation.set(repoIdentifier, languages);
         }
+        console.log(repoLanguageInformation, 'line 66');
 
         return repoLanguageInformation;
     }
