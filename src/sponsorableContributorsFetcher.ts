@@ -5,6 +5,7 @@ import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
 export interface Sponsor {
     __typename: string;
+    repoIdentifier: string;
     email?: string;
     login: string;
     url: string;
@@ -46,19 +47,45 @@ export class SponsorableContributorsFetcher {
         // console.log(typeof contributors); // currently not being used
 
         const allSponsorableUsersInfo: Sponsor[] = [];
-        contributors.forEach((repoIdentifier) => {
-            repoIdentifier.forEach(async (contributor) => {
+        const sponsorableMap = new Map<string, Sponsor[]>();
+        for (const [repoIdentifier, githubUsers] of contributors) {
+            console.log(repoIdentifier.length); //  remove later
+            for (const contributor of githubUsers) {
                 const userLogin = contributor.login;
                 const variables: Variables = { queryString: userLogin };
                 const response = await this.fetchSponsorData(token, variables, query);
 
-                response.nodes.forEach((user) => {
+                const results = response.nodes;
+
+                for (const user of results) {
                     if (user.sponsorsListing?.name && user.__typename === 'User') {
+                        // console.log(user);
                         allSponsorableUsersInfo.push(...[user]);
                     }
-                });
-            });
-        });
+                }
+            }
+            sponsorableMap.set(repoIdentifier, allSponsorableUsersInfo);
+        }
+        // contributors.forEach(async (contributionCountOfUserIntoRepo, repoIdentifier) => {
+        //     contributionCountOfUserIntoRepo.forEach(async (contributor) => {
+        //         const userLogin = contributor.login;
+        //         const variables: Variables = { queryString: userLogin };
+        //         const response = await this.fetchSponsorData(token, variables, query);
+
+        //         await Promise.all(
+        //             response.nodes.map((user) => {
+        //                 if (user.sponsorsListing?.name && user.__typename === 'User') {
+        //                     // console.log(user);
+        //                     allSponsorableUsersInfo.push(...[user]);
+        //                 }
+        //                 sponsorableMap.set(repoIdentifier, allSponsorableUsersInfo);
+
+        //                 return sponsorableMap;
+        //             })
+        //         );
+        //     });
+        // });
+        console.log(allSponsorableUsersInfo, 'line 62 sponsorable fetcher');
 
         return allSponsorableUsersInfo;
     }
