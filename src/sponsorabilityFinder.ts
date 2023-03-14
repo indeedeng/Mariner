@@ -6,12 +6,12 @@ import { RepoLanguagesFetcher } from './reposFetcher';
 
 export interface SponsorRepoContributionHistory {
     type: string; // may not be needed here after sorting in Node
-    repoIdentifier: string;
     email?: string;
     login: string;
     sponsorListingName: string;
     sponsorsLink: string;
     contributionsCount: number;
+    // JavaScript: number;
     // Java: number;
     // Python: number;
     // Go: number;
@@ -106,20 +106,19 @@ export class SponsorabilityFinder {
         return sponsorMap;
     }
 
-    public getContributionCountOfUserAndRepo(
+    public getContributionCountOfUser(
         userLogin: string,
         contributors: ContributionCountOfUserIntoRepo[]
-    ): [number, string] {
-        const contributionsAndRepoIds: [number, string] = [0, '']; // Tuples
+    ): number {
+        let contributionCounts = 0;
 
         contributors.forEach((contributor) => {
             if (userLogin === contributor.login) {
-                contributionsAndRepoIds[0] = contributor.contributions;
-                contributionsAndRepoIds[1] = contributor.repoIdentifier;
+                contributionCounts = contributor.contributions;
             }
         });
 
-        return contributionsAndRepoIds;
+        return contributionCounts;
     }
 
     public convertSponsorableToUsersWithContributionCount(
@@ -127,16 +126,13 @@ export class SponsorabilityFinder {
         contributors: ContributionCountOfUserIntoRepo[]
     ): SponsorRepoContributionHistory[] {
         const allUsers = sponsorableContributor.map((sponsorable) => {
-            const contributionAndRepoId = this.getContributionCountOfUserAndRepo(
+            const contributionsCount = this.getContributionCountOfUser(
                 sponsorable.login,
                 contributors
             );
-            const contributionsCount = contributionAndRepoId[0];
-            const repoIdentifier = contributionAndRepoId[1];
 
             return {
                 type: sponsorable.__typename,
-                repoIdentifier: repoIdentifier ?? '',
                 email: sponsorable.email ?? '',
                 login: sponsorable.login,
                 url: `https://github.com/${sponsorable.login}`,
