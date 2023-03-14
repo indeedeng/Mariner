@@ -5,7 +5,16 @@ import { RequestParameters } from '@octokit/graphql/dist-types/types';
 
 export interface Sponsor {
     __typename: string;
-    repoIdentifier: string;
+    email?: string;
+    login: string;
+    url: string;
+    sponsorsListing: {
+        name: string | null;
+        dashboard: string | null;
+    };
+}
+export interface GithubSponsor {
+    __typename: string;
     email?: string;
     login: string;
     url: string;
@@ -38,18 +47,12 @@ export class SponsorableContributorsFetcher {
         query: string,
         contributors: Map<RepositoryName, ContributionCountOfUserIntoRepo[]>
     ): Promise<Sponsor[]> {
-        // const testContributorsArray = [
-        //     { login: 'mvdan', contributions: 4 },
-        //     { login: 'zkat', contributions: 2 },
-        //     { login: 'IngridGdesigns', contributions: 2 },
-        // ]; // test data
-
-        // console.log(typeof contributors); // currently not being used
-
         const allSponsorableUsersInfo: Sponsor[] = [];
-        const sponsorableMap = new Map<string, Sponsor[]>();
+
         for (const [repoIdentifier, githubUsers] of contributors) {
-            console.log(repoIdentifier.length); //  remove later
+            console.log(
+                `For each ${repoIdentifier}, the length of contributors: ${contributors.size}`
+            ); //  remove later
             for (const contributor of githubUsers) {
                 const userLogin = contributor.login;
                 const variables: Variables = { queryString: userLogin };
@@ -59,33 +62,11 @@ export class SponsorableContributorsFetcher {
 
                 for (const user of results) {
                     if (user.sponsorsListing?.name && user.__typename === 'User') {
-                        // console.log(user);
                         allSponsorableUsersInfo.push(...[user]);
                     }
                 }
             }
-            sponsorableMap.set(repoIdentifier, allSponsorableUsersInfo);
         }
-        // contributors.forEach(async (contributionCountOfUserIntoRepo, repoIdentifier) => {
-        //     contributionCountOfUserIntoRepo.forEach(async (contributor) => {
-        //         const userLogin = contributor.login;
-        //         const variables: Variables = { queryString: userLogin };
-        //         const response = await this.fetchSponsorData(token, variables, query);
-
-        //         await Promise.all(
-        //             response.nodes.map((user) => {
-        //                 if (user.sponsorsListing?.name && user.__typename === 'User') {
-        //                     // console.log(user);
-        //                     allSponsorableUsersInfo.push(...[user]);
-        //                 }
-        //                 sponsorableMap.set(repoIdentifier, allSponsorableUsersInfo);
-
-        //                 return sponsorableMap;
-        //             })
-        //         );
-        //     });
-        // });
-        console.log(allSponsorableUsersInfo, 'line 62 sponsorable fetcher');
 
         return allSponsorableUsersInfo;
     }
@@ -106,3 +87,11 @@ export class SponsorableContributorsFetcher {
         return result;
     }
 }
+
+// const testContributorsArray = [
+//     { login: 'mvdan', contributions: 4 },
+//     { login: 'zkat', contributions: 2 },
+//     { login: 'IngridGdesigns', contributions: 2 },
+// ]; // test data
+
+// console.log(typeof contributors); // currently not being used
