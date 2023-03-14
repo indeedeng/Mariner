@@ -97,11 +97,13 @@ export class SponsorabilityFinder {
         });
 
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
-        const reposLanguageAndContributions = await repositoryFetcher.fetchAllRepositoryLanguages(
+        const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
             token,
             repositoryIdentifiers
         );
-        console.log('\ninside sponsorabilityFinder line 98: ', reposLanguageAndContributions, '\n');
+        console.log('\ninside sponsorabilityFinder line 98: ', repositoryLanguages, '\n');
+
+        // const languageCounts = this.countLanguages(repositoryLanguages)
 
         return sponsorMap;
     }
