@@ -44,7 +44,7 @@ export class RepoLanguagesFetcher {
         this.config = config;
     }
 
-    public async AllRepositoryLanguages(
+    public async fetchAllRepositoryLanguages(
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Languages[]>> {

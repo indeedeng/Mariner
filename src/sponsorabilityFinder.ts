@@ -93,7 +93,7 @@ export class SponsorabilityFinder {
         });
 
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
-        const reposLanguageAndContributions = await repositoryFetcher.AllRepositoryLanguages(
+        const reposLanguageAndContributions = await repositoryFetcher.fetchAllRepositoryLanguages(
             token,
             repositoryIdentifiers
         );
