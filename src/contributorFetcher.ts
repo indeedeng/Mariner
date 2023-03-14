@@ -130,13 +130,6 @@ export class ContributorFetcher {
 
 /*
 get a list of all the contributors by repoName
- const ownerAndRepos = extractOwnerAndRepoNames()
-- gitHubContributorsByRepoName = fetchGithubContributorsByRepoName(ownerAndRepos);
-
-   gitHubContributorsByRepoName returns ContributionCountOfUserIntoRepo[];
-
-- Then I would need to get sponsor information, if this contributor is sponsorable
-  const sponsorableContributorInformation = fetchSponosorableConributorInformation();
 - After, I would need information on the languages of each sponsorableContributor contributed to
 - const sponsorableRepoLanuageUsed = fetchLanguagesByRepositoryContribution()
 */
