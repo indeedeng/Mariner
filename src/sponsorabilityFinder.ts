@@ -12,6 +12,10 @@ export interface SponsorRepoContributionHistory {
     sponsorListingName: string;
     sponsorsLink: string;
     contributionsCount: number;
+    // Java: number;
+    // Python: number;
+    // Go: number;
+    // Other: number;
 }
 
 export type RepositoryName = string;
