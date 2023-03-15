@@ -74,13 +74,13 @@ export class SponsorabilityFinder {
                 allContributorHistorys
             );
 
-        // console.log(sponsorables, 'did it make it line 76');
-
         let allSponsorable: SponsorableWithContributionCount[] = [];
         const sponsorableContributorWithContributonCounts = new Map<
             OwnerAndRepoName,
             SponsorableWithContributionCount[]
         >();
+
+        // console.log(sponsorables);
 
         for (const [repositoryName, contributionCountOfUser] of allContributorHistorys) {
             allSponsorable = this.convertSponsorableToUsersWithContributionCount(
@@ -88,10 +88,15 @@ export class SponsorabilityFinder {
                 contributionCountOfUser
             );
 
+            // allSponsorable.forEach((s) => {
+
+            //     if (s.login === contributionCountOfUser[1][i].login) {
+            //         console.log(, 'whats in here?');
+            //     }
+            // });
             sponsorableContributorWithContributonCounts.set(repositoryName, allSponsorable);
         }
-
-        // console.log(sponsorableContributorWithContributonCounts);
+        console.log(sponsorableContributorWithContributonCounts);
 
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
         const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
@@ -135,27 +140,35 @@ export class SponsorabilityFinder {
                         languageCountByRepo[key] += 1;
                     }
                 });
-
-                repoLanguages.forEach((languages, repoID) => {
-                    const newArray = Object.entries(languageCountByRepo);
-                    const countMap = new Map(newArray);
-
-                    countMap.forEach((contributionCount, idx) => {
-                        // console.log(idx);
-                        if (repoID === idx) {
-                            console.log('add count to each language here: ', languages);
-
-                            // console.log(contributionCount);
-                            // console.log(repoID, ' this is repo ID');
-                        }
-                    });
-                });
             }
 
-            // console.log(langs);
             console.log(languageCountByRepo, 'contribution count by repo');
             // output { 'pypa/pipenv': 5, 'indeedeng/util': 1 }
         }
+
+        const languageCountarrs: any = [];
+
+        repoLanguages.forEach((languages, repoID) => {
+            const newArray = Object.entries(languageCountByRepo);
+            const countMap = new Map(newArray);
+
+            countMap.forEach((contributionCount, idx) => {
+                // console.log(idx);
+                if (repoID === idx) {
+                    for (const language of languages) {
+                        // console.log(language, repoID);
+
+                        if (!(idx in languageCountarrs)) {
+                            languageCountarrs[language.name] = contributionCount;
+                        }
+                    }
+
+                    // console.log(contributionCount);
+                    // console.log(repoID, ' this is repo ID');
+                }
+            });
+        });
+        console.log(languageCountarrs);
     }
 
     public getContributionCountOfUser(
@@ -178,11 +191,15 @@ export class SponsorabilityFinder {
         contributors: ContributionCountOfUserIntoRepo[]
     ): SponsorableWithContributionCount[] {
         const allSponsorable: Sponsor[][] = [];
-        for (const [repoId, sponsors] of sponsorableContributor) {
+        for (const [repoId, sponsors] of sponsorableContributor.entries()) {
             allSponsorable.push(sponsors);
         }
 
         const sponsors = allSponsorable.flat();
+
+        for (const so of sponsorableContributor) {
+            console.log(so[1], 'line 200');
+        }
 
         const allUsers = sponsors.map((sponsorable) => {
             const contributionsCount = this.getContributionCountOfUser(
