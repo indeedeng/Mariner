@@ -74,6 +74,33 @@ export class SponsorabilityFinder {
                 allContributorHistorys
             );
 
+        const sponsorableContributorWithContributonCounts =
+            this.extractContributionCountsOfAllSponsorableUsers(
+                sponsorables,
+                allContributorHistorys
+            );
+
+        const repositoryFetcher = new RepoLanguagesFetcher(this.config);
+        const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
+            token,
+            repositoryIdentifiers
+        );
+        console.log('\ninside sponsorabilityFinder line 98: ', repositoryLanguages.size, '\n');
+
+        const countsForAllLanguages = this.countLanguagesForEachContribution(
+            repositoryLanguages,
+            sponsorableContributorWithContributonCounts
+        );
+
+        console.log(countsForAllLanguages, 'language count');
+
+        return sponsorableContributorWithContributonCounts;
+    }
+
+    public extractContributionCountsOfAllSponsorableUsers(
+        sponsorables: Map<string, Sponsor[]>,
+        allContributorHistorys: Map<string, ContributionCountOfUserIntoRepo[]>
+    ): Map<string, SponsorableWithContributionCount[]> {
         let allSponsorable: SponsorableWithContributionCount[] = [];
         const sponsorableContributorWithContributonCounts = new Map<
             OwnerAndRepoName,
@@ -96,21 +123,6 @@ export class SponsorabilityFinder {
             // });
             sponsorableContributorWithContributonCounts.set(repositoryName, allSponsorable);
         }
-        console.log(sponsorableContributorWithContributonCounts);
-
-        const repositoryFetcher = new RepoLanguagesFetcher(this.config);
-        const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
-            token,
-            repositoryIdentifiers
-        );
-        console.log('\ninside sponsorabilityFinder line 98: ', repositoryLanguages.size, '\n');
-
-        const countsForAllLanguages = this.countLanguagesForEachContribution(
-            repositoryLanguages,
-            sponsorableContributorWithContributonCounts
-        );
-
-        console.log(countsForAllLanguages, 'language count');
 
         return sponsorableContributorWithContributonCounts;
     }
@@ -191,15 +203,11 @@ export class SponsorabilityFinder {
         contributors: ContributionCountOfUserIntoRepo[]
     ): SponsorableWithContributionCount[] {
         const allSponsorable: Sponsor[][] = [];
-        for (const [repoId, sponsors] of sponsorableContributor.entries()) {
+        for (const [repoId, sponsors] of sponsorableContributor) {
             allSponsorable.push(sponsors);
         }
 
         const sponsors = allSponsorable.flat();
-
-        for (const so of sponsorableContributor) {
-            console.log(so[1], 'line 200');
-        }
 
         const allUsers = sponsors.map((sponsorable) => {
             const contributionsCount = this.getContributionCountOfUser(
