@@ -70,14 +70,21 @@ export class SponsorableContributorsFetcher {
 
                 for (const user of response) {
                     if (user.sponsorsListing?.name && user.__typename === 'User') {
-                        // console.log(contributor.repoIdentifier, user.login);
-
-                        allSponsorableUsersInfo.push(user);
-
-                        sponsorables.set(contributor.repoIdentifier, allSponsorableUsersInfo);
+                        allSponsorableUsersInfo.push({ repoId: contributor.repoIdentifier, user });
                     }
                 }
             }
+
+            // need to refactor:
+            //  - weird loop to help eliminate duplication error when inserting into map
+            const all: Sponsor[] = [];
+
+            allSponsorableUsersInfo.forEach((sponsorable) => {
+                if (repoIdentifier === sponsorable.repoId) {
+                    all.push(...[sponsorable.user]);
+                    sponsorables.set(repoIdentifier, all);
+                }
+            });
         }
 
         return sponsorables;
