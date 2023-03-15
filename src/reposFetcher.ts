@@ -13,7 +13,7 @@ interface GitHubLanguageNode {
     };
 }
 
-interface Languages {
+export interface Languages {
     name: string;
 }
 
@@ -48,7 +48,7 @@ export class RepoLanguagesFetcher {
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Languages[]>> {
-        const repoLanguageInformation = new Map<string, Languages[]>();
+        const repoLanguageInformation = new Map<OwnerAndRepoName, Languages[]>();
 
         // await Promise.all( <=== one solution to await the promise
         //     repositoryIdentifiers.map(async (repoIdentifier) => {
@@ -63,7 +63,6 @@ export class RepoLanguagesFetcher {
 
             repoLanguageInformation.set(repoIdentifier, languages);
         }
-        console.log(repoLanguageInformation, 'line 66');
 
         return repoLanguageInformation;
     }
