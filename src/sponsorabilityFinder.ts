@@ -141,7 +141,7 @@ export class SponsorabilityFinder {
                     const countMap = new Map(newArray);
 
                     countMap.forEach((contributionCount, idx) => {
-                        console.log(idx);
+                        // console.log(idx);
                         if (repoID === idx) {
                             console.log('add count to each language here: ', languages);
 
