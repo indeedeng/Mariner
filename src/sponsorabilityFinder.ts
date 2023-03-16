@@ -5,7 +5,7 @@ import {
 } from './contributorFetcher';
 import {
     SponsorableContributorsFetcher,
-    Sponsor,
+    Sponsorable,
     queryTemplate,
 } from './sponsorableContributorsFetcher';
 import { Languages, RepoLanguagesFetcher } from './reposFetcher';
@@ -96,7 +96,7 @@ export class SponsorabilityFinder {
     }
 
     public extractContributionCountsOfAllSponsorableUsers(
-        sponsorables: Map<string, Sponsor[]>,
+        sponsorables: Map<string, Sponsorable[]>,
         allContributorHistorys: Map<string, ContributionCountOfUserIntoRepo[]>
     ): Map<string, SponsorableWithContributionCount[]> {
         const withContributionCounts = new Map<
@@ -128,7 +128,7 @@ export class SponsorabilityFinder {
     }
 
     public addContributionCount(
-        sponsorableContributor: Map<string, Sponsor[]>,
+        sponsorableContributor: Map<string, Sponsorable[]>,
         contributors: ContributionCountOfUserIntoRepo[]
     ): {
         repoId: string;
@@ -157,7 +157,7 @@ export class SponsorabilityFinder {
     }
 
     public convertToSponsorableWithCounts(
-        sponsorable: Sponsor,
+        sponsorable: Sponsorable,
         contributionsCount: number
     ): SponsorableWithContributionCount {
         const withContributionCount: SponsorableWithContributionCount = {
