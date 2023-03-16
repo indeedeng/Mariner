@@ -129,7 +129,7 @@ export class SponsorabilityFinder {
 
     public addContributionCount(
         sponsorableContributor: Map<string, Sponsorable[]>,
-        contributors: ContributionCountOfUserIntoRepo[]
+        contributionCounts: ContributionCountOfUserIntoRepo[]
     ): {
         repoId: string;
         contributor: SponsorableWithContributionCount;
@@ -143,7 +143,7 @@ export class SponsorabilityFinder {
             sponsorables.forEach((sponsorable) => {
                 const contributionsCount = this.getContributionCountOfUser(
                     sponsorable.login,
-                    contributors
+                    contributionCounts
                 );
 
                 const withContributionCount: SponsorableWithContributionCount =
