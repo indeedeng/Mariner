@@ -43,10 +43,6 @@ export type OwnerAndRepoName = string;
 //     sponsorListingName: string;
 // }
 
-// interface Response {
-//     search: Sponsorable;
-// }
-
 export class SponsorabilityFinder {
     private readonly config: Config;
 
@@ -86,7 +82,7 @@ export class SponsorabilityFinder {
             repositoryIdentifiers
         );
 
-        const countsForAllLanguages = this.countLanguagesForEachContribution(
+        const countsForAllLanguages = this.contributionCountsByReponame(
             repositoryLanguages,
             sponsorableContributorWithContributonCounts
         );
@@ -105,16 +101,16 @@ export class SponsorabilityFinder {
             SponsorableWithContributionCount[]
         >();
 
-        let withCounts: {
+        let withCountsAndRepoID: {
             repoId: string;
             contributor: SponsorableWithContributionCount;
         }[];
 
         for (const [key, contributionCountOfUser] of allContributorHistorys) {
-            withCounts = this.addContributionCount(sponsorables, contributionCountOfUser);
+            withCountsAndRepoID = this.addContributionCount(sponsorables, contributionCountOfUser);
 
             const storeSponsorableContributors: SponsorableWithContributionCount[] = [];
-            withCounts.forEach((objectWithContributorData) => {
+            withCountsAndRepoID.forEach((objectWithContributorData) => {
                 if (key === objectWithContributorData.repoId) {
                     storeSponsorableContributors.push(...[objectWithContributorData.contributor]);
                     withContributionCounts.set(
@@ -194,53 +190,54 @@ export class SponsorabilityFinder {
     for each repo count the number of contributions that were made,
     // incrementing language by only one per contributor
     */
-    public countLanguagesForEachContribution(
+    // countLanguagesForEachContribution;
+    public contributionCountsByReponame(
         repoLanguages: Map<string, Languages[]>,
         sponsorableWithContributions: Map<string, SponsorableWithContributionCount[]>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
-        // let languagesKey;
-        // const langs: { key: string; totalCounts: number }[] = [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const languageCountByRepo: any = {};
-        for (const [key, val] of sponsorableWithContributions) {
+        for (const [key, sponsorWithCounts] of sponsorableWithContributions) {
             if (repoLanguages.has(key)) {
-                val.forEach((userContribution) => {
-                    // console.log(element.contributionsCount, key);
+                sponsorWithCounts.forEach((userContribution) => {
                     if (userContribution.contributionsCount > 0) {
-                        // langs.push({ key: key, totalCounts: element.contributionsCount });
                         if (!(key in languageCountByRepo)) {
                             languageCountByRepo[key] = 0;
                         }
                         languageCountByRepo[key] += 1;
-                    }
+                    } // output:  { 'pypa/pipenv': 5, 'indeedeng/util': 1 }
                 });
             }
-
-            console.log(languageCountByRepo, 'contribution count by repo');
-            // output { 'pypa/pipenv': 5, 'indeedeng/util': 1 }
         }
 
+        const languageCounts = this.languagesCount(repoLanguages, languageCountByRepo);
+
+        return languageCounts;
+    }
+
+    public languagesCount(
+        repoLanguages: Map<string, Languages[]>,
+        languageCountByRepo: object
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ): any {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const languageCountarrs: any = [];
 
-        repoLanguages.forEach((languages, repoID) => {
-            const newArray = Object.entries(languageCountByRepo);
-            const countMap = new Map(newArray);
+        const newArray = Object.entries(languageCountByRepo);
+        const countMap = new Map(newArray);
 
-            countMap.forEach((contributionCount, idx) => {
-                // console.log(idx);
-                if (repoID === idx) {
-                    for (const language of languages) {
-                        // console.log(language, repoID);
-
+        repoLanguages.forEach((languages, languagesRepoID) => {
+            for (const language of languages) {
+                countMap.forEach((contributionCount, idx) => {
+                    if (languagesRepoID === idx) {
+                        // console.log(language.name, languagesRepoID);
                         if (!(idx in languageCountarrs)) {
                             languageCountarrs[language.name] = contributionCount;
                         }
                     }
-
-                    // console.log(contributionCount);
-                    // console.log(repoID, ' this is repo ID');
-                }
-            });
+                });
+            }
         });
         console.log(languageCountarrs);
     }
