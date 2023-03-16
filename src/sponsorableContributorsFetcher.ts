@@ -60,9 +60,14 @@ export class SponsorableContributorsFetcher {
         const allSponsorableUsersInfo = [];
         const sponsorables = new Map<string, Sponsorable[]>();
 
-        for (const [repoIdentifier, githubUsers] of contributors.entries()) {
-            console.log(`for repo: ${repoIdentifier}`);
-            for (const contributor of githubUsers) {
+        for (const [repoIdentifier] of contributors) {
+            const users = contributors.get(repoIdentifier);
+
+            if (!users) {
+                throw new Error(`Error when accessing this user: ${users} login `);
+            }
+
+            for (const contributor of users) {
                 const userLogin = contributor.login;
 
                 const variables: Variables = { queryString: userLogin };
