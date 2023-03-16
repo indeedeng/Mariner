@@ -1,5 +1,8 @@
 import { Config } from './config';
-import { ContributionCountOfUserIntoRepo, ContributorFetcher } from './contributorFetcher';
+import {
+    ContributionCountOfUserIntoRepo,
+    ContributorFetcher as ContributorHistoryFetcher,
+} from './contributorFetcher';
 import {
     SponsorableContributorsFetcher,
     Sponsor,
@@ -55,10 +58,10 @@ export class SponsorabilityFinder {
         repositoryIdentifiers: string[]
     ): Promise<Map<string, ContributionCountOfUserIntoRepo[]>> {
         //SponsorWithRepoIdAndContribution
-        const fetchAllContributors = new ContributorFetcher(this.config);
+        const contributorHistoryFetcher = new ContributorHistoryFetcher(this.config);
         const sponsorableContributorsFetcher = new SponsorableContributorsFetcher(this.config);
 
-        const allContributorHistorys = await fetchAllContributors.fetchContributorsByRepoName(
+        const allContributorHistorys = await contributorHistoryFetcher.fetchContributorsByRepoName(
             token,
             repositoryIdentifiers
         );
