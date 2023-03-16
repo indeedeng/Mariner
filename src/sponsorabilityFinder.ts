@@ -110,7 +110,10 @@ export class SponsorabilityFinder {
         }[];
 
         for (const [key, contributionCountOfUser] of allContributorHistorys) {
-            withCountsAndRepoID = this.addContributionCount(sponsorables, contributionCountOfUser);
+            withCountsAndRepoID = this.countSponsorableContributionsByRepo(
+                sponsorables,
+                contributionCountOfUser
+            );
 
             const storeSponsorableContributors: SponsorableWithContributionCount[] = [];
             withCountsAndRepoID.forEach((objectWithContributorData) => {
@@ -127,8 +130,9 @@ export class SponsorabilityFinder {
         return withContributionCounts;
     }
 
-    public addContributionCount(
-        sponsorableContributor: Map<string, Sponsorable[]>,
+    /// flagging it to discuss during pairing session
+    public countSponsorableContributionsByRepo(
+        sponsorablesByReponame: Map<string, Sponsorable[]>,
         contributionCounts: ContributionCountOfUserIntoRepo[]
     ): {
         repoId: string;
@@ -139,7 +143,7 @@ export class SponsorabilityFinder {
             contributor: SponsorableWithContributionCount;
         }[] = [];
 
-        for (const [repoId, sponsorables] of sponsorableContributor) {
+        for (const [repoId, sponsorables] of sponsorablesByReponame) {
             sponsorables.forEach((sponsorable) => {
                 const contributionsCount = this.getContributionCountOfUser(
                     sponsorable.login,
