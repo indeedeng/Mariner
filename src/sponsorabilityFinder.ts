@@ -139,8 +139,8 @@ export class SponsorabilityFinder {
             contributor: SponsorableWithContributionCount;
         }[] = [];
 
-        for (const [key, sponsors] of sponsorableContributor) {
-            sponsors.forEach((sponsorable) => {
+        for (const [repoId, sponsorables] of sponsorableContributor) {
+            sponsorables.forEach((sponsorable) => {
                 const contributionsCount = this.getContributionCountOfUser(
                     sponsorable.login,
                     contributors
@@ -149,7 +149,7 @@ export class SponsorabilityFinder {
                 const withContributionCount: SponsorableWithContributionCount =
                     this.convertToSponsorableWithCounts(sponsorable, contributionsCount);
 
-                allSponsorableWithCount.push({ repoId: key, contributor: withContributionCount });
+                allSponsorableWithCount.push({ repoId, contributor: withContributionCount });
             });
         }
 
