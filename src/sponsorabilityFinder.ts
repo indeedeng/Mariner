@@ -240,6 +240,33 @@ export class SponsorabilityFinder {
             }
         });
         console.log(languageCountarrs);
+        // WIP need to debug why it returns one array instead of two, per key
+        // output = [
+        //   Python: 5,
+        //   Roff: 5,
+        //   Shell: 5,
+        //   Batchfile: 5,
+        //   Makefile: 1,
+        //   Java: 1,
+        //   C: 1,
+        //   FreeMarker: 1
+        // ]
+
+        // expected:
+        // array 1 =>
+        //[
+        //   Python: 5,
+        //   Roff: 5,
+        //   Shell: 5,
+        //   Batchfile: 5,
+        //]
+        // array 2 =>
+        //[
+        //   Makefile: 1,
+        //   Java: 1,
+        //   C: 1,
+        //   FreeMarker: 1
+        // ]
     }
 }
 
