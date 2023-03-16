@@ -3,7 +3,7 @@ import { ContributionCountOfUserIntoRepo, RepositoryName } from './contributorFe
 import { graphql } from '@octokit/graphql';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
 
-export interface Sponsor {
+export interface Sponsorable {
     __typename: string;
     email?: string;
     login: string;
@@ -56,9 +56,9 @@ export class SponsorableContributorsFetcher {
         token: string,
         query: string,
         contributors: Map<RepositoryName, ContributionCountOfUserIntoRepo[]>
-    ): Promise<Map<string, Sponsor[]>> {
+    ): Promise<Map<string, Sponsorable[]>> {
         const allSponsorableUsersInfo = [];
-        const sponsorables = new Map<string, Sponsor[]>();
+        const sponsorables = new Map<string, Sponsorable[]>();
 
         for (const [repoIdentifier, githubUsers] of contributors.entries()) {
             console.log(`for repo: ${repoIdentifier}`);
@@ -77,7 +77,7 @@ export class SponsorableContributorsFetcher {
 
             // need to refactor:
             //  - weird loop to help eliminate duplication error when inserting into map
-            const all: Sponsor[] = [];
+            const all: Sponsorable[] = [];
 
             allSponsorableUsersInfo.forEach((sponsorable) => {
                 if (repoIdentifier === sponsorable.repoId) {
@@ -94,14 +94,14 @@ export class SponsorableContributorsFetcher {
         token: string,
         variables: Variables,
         query: string
-    ): Promise<Sponsor[]> {
+    ): Promise<Sponsorable[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
 
         const response: GraphQlQueryResponseData = await graphqlWithAuth(query, variables);
 
-        const result = response.search.nodes as Sponsor[];
+        const result = response.search.nodes as Sponsorable[];
 
         return result;
     }
