@@ -85,7 +85,6 @@ export class SponsorabilityFinder {
             token,
             repositoryIdentifiers
         );
-        console.log('\ninside sponsorabilityFinder line 98: ', repositoryLanguages.size, '\n');
 
         const countsForAllLanguages = this.countLanguagesForEachContribution(
             repositoryLanguages,
@@ -127,6 +126,67 @@ export class SponsorabilityFinder {
         }
 
         return withContributionCounts;
+    }
+
+    public addContributionCount(
+        sponsorableContributor: Map<string, Sponsor[]>,
+        contributors: ContributionCountOfUserIntoRepo[]
+    ): {
+        repoId: string;
+        contributor: SponsorableWithContributionCount;
+    }[] {
+        const allSponsorableWithCount: {
+            repoId: string;
+            contributor: SponsorableWithContributionCount;
+        }[] = [];
+
+        for (const [key, sponsors] of sponsorableContributor) {
+            sponsors.forEach((sponsorable) => {
+                const contributionsCount = this.getContributionCountOfUser(
+                    sponsorable.login,
+                    contributors
+                );
+
+                const withContributionCount: SponsorableWithContributionCount =
+                    this.convertToSponsorableWithCounts(sponsorable, contributionsCount);
+
+                allSponsorableWithCount.push({ repoId: key, contributor: withContributionCount });
+            });
+        }
+
+        return allSponsorableWithCount;
+    }
+
+    public convertToSponsorableWithCounts(
+        sponsorable: Sponsor,
+        contributionsCount: number
+    ): SponsorableWithContributionCount {
+        const withContributionCount: SponsorableWithContributionCount = {
+            type: sponsorable.__typename,
+            email: sponsorable.email ?? '',
+            login: sponsorable.login,
+            url: `https://github.com/${sponsorable.login}`,
+            sponsorListingName: sponsorable.sponsorsListing.name ?? '',
+            sponsorsLink: sponsorable.sponsorsListing.dashboard ?? '',
+            contributionsCount: contributionsCount ?? 0,
+        };
+
+        return withContributionCount;
+    }
+
+    public getContributionCountOfUser(
+        userLogin: string,
+        contributors: ContributionCountOfUserIntoRepo[]
+    ): number {
+        let contributionCounts = 0;
+
+        contributors.forEach((contributor) => {
+            if (userLogin === contributor.login) {
+                contributionCounts = contributor.contributions;
+            }
+        });
+
+        return contributionCounts;
     }
 
     /*
@@ -183,67 +243,6 @@ export class SponsorabilityFinder {
             });
         });
         console.log(languageCountarrs);
-    }
-
-    public getContributionCountOfUser(
-        userLogin: string,
-        contributors: ContributionCountOfUserIntoRepo[]
-    ): number {
-        let contributionCounts = 0;
-
-        contributors.forEach((contributor) => {
-            if (userLogin === contributor.login) {
-                contributionCounts = contributor.contributions;
-            }
-        });
-
-        return contributionCounts;
-    }
-
-    public addContributionCount(
-        sponsorableContributor: Map<string, Sponsor[]>,
-        contributors: ContributionCountOfUserIntoRepo[]
-    ): {
-        repoId: string;
-        contributor: SponsorableWithContributionCount;
-    }[] {
-        const allSponsorableWithCount: {
-            repoId: string;
-            contributor: SponsorableWithContributionCount;
-        }[] = [];
-
-        for (const [key, sponsors] of sponsorableContributor) {
-            sponsors.forEach((sponsorable) => {
-                const contributionsCount = this.getContributionCountOfUser(
-                    sponsorable.login,
-                    contributors
-                );
-
-                const withContributionCount: SponsorableWithContributionCount =
-                    this.convertToSponsorableWithCounts(sponsorable, contributionsCount);
-
-                allSponsorableWithCount.push({ repoId: key, contributor: withContributionCount });
-            });
-        }
-
-        return allSponsorableWithCount;
-    }
-
-    public convertToSponsorableWithCounts(
-        sponsorable: Sponsor,
-        contributionsCount: number
-    ): SponsorableWithContributionCount {
-        const withContributionCount: SponsorableWithContributionCount = {
-            type: sponsorable.__typename,
-            email: sponsorable.email ?? '',
-            login: sponsorable.login,
-            url: `https://github.com/${sponsorable.login}`,
-            sponsorListingName: sponsorable.sponsorsListing.name ?? '',
-            sponsorsLink: sponsorable.sponsorsListing.dashboard ?? '',
-            contributionsCount: contributionsCount ?? 0,
-        };
-
-        return withContributionCount;
     }
 }
 
