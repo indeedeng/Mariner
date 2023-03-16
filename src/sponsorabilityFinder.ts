@@ -1,50 +1,16 @@
 import { Config } from './config';
+
+import { SponsorableContributorsFetcher, queryTemplate } from './sponsorableContributorsFetcher';
+import { Languages, RepoLanguagesFetcher } from './reposFetcher';
 import {
     ContributionCountOfUserIntoRepo,
-    ContributorFetcher as ContributorHistoryFetcher,
-} from './contributorFetcher';
-import {
-    SponsorableContributorsFetcher,
+    OwnerAndRepoName,
+    SponsorableWithContributionCount,
     Sponsorable,
-    queryTemplate,
-} from './sponsorableContributorsFetcher';
-import { Languages, RepoLanguagesFetcher } from './reposFetcher';
+} from './types';
+import { ContributorFetcher } from './contributorFetcher';
 
 // import { createTsv } from './createTsv';
-
-export interface SponsorRepoContributionHistory {
-    login: string;
-    email?: string;
-    url: string;
-    sponsorListingName: string;
-    sponsorsLink: string;
-    // contributionsCount: number;
-    // JavaScript: number;
-    // Java: number;
-    // Python: number;
-    // Go: number;
-    // Other: number;
-}
-
-export interface SponsorableWithContributionCount {
-    type: string; // may not be needed here after sorting in Node
-    // repoIdentifier: string;
-    email?: string;
-    login: string;
-    url: string;
-    sponsorListingName: string;
-    sponsorsLink: string;
-    contributionsCount: number;
-}
-
-export type OwnerAndRepoName = string;
-
-// interface Organization {
-//     type: string;
-//     login: string;
-//     url: string;
-//     sponsorListingName: string;
-// }
 
 export class SponsorabilityFinder {
     private readonly config: Config;
@@ -58,7 +24,7 @@ export class SponsorabilityFinder {
         repositoryIdentifiers: string[]
     ): Promise<Map<string, ContributionCountOfUserIntoRepo[]>> {
         //SponsorWithRepoIdAndContribution
-        const contributorHistoryFetcher = new ContributorHistoryFetcher(this.config);
+        const contributorHistoryFetcher = new ContributorFetcher(this.config);
         const sponsorableContributorsFetcher = new SponsorableContributorsFetcher(this.config);
 
         const allContributorHistorys = await contributorHistoryFetcher.fetchContributorsByRepoName(
@@ -66,11 +32,14 @@ export class SponsorabilityFinder {
             repositoryIdentifiers
         );
 
+        // const contributionCount = allContributorHistorys.values();
+        // const allContributors = [...contributionCount].flat();
+
         const sponsorables =
             await sponsorableContributorsFetcher.fetchSponsorableContributorsInformation(
                 token,
                 queryTemplate,
-                allContributorHistorys
+                allContributorHistorys // keep getting duplicates
             );
 
         const sponsorableContributorWithContributonCounts =

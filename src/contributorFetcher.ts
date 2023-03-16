@@ -1,15 +1,7 @@
 import { Config } from './config';
 import { Octokit } from '@octokit/rest';
+import { ContributionCountOfUserIntoRepo, RepositoryContributorInfo } from './types';
 
-export type RepositoryContributorInfo = {
-    owner: string;
-    repo: string;
-};
-export interface ContributionCountOfUserIntoRepo {
-    repoIdentifier: string;
-    login: string;
-    contributions: number;
-}
 export interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
@@ -32,10 +24,7 @@ export interface GitHubContributor {
     contributions?: number | undefined;
 }
 
-export type RepositoryName = string;
-
-export type githubContributorsByRepoName = Map<RepositoryName, GitHubContributor[]>;
-export type contributorsByRepoName = Map<RepositoryName, ContributionCountOfUserIntoRepo[]>;
+export type githubContributorsByRepoName = Map<string, GitHubContributor[]>;
 
 export class ContributorFetcher {
     private readonly config: Config;
@@ -56,7 +45,7 @@ export class ContributorFetcher {
         );
 
         const contributionCountOfUserIntoRepos = [];
-        const contributorsByRepoName = new Map<RepositoryName, ContributionCountOfUserIntoRepo[]>();
+        const contributorsByRepoName = new Map<string, ContributionCountOfUserIntoRepo[]>();
 
         for (const [index, ghContributor] of gitHubContributorsByRepoName.entries()) {
             const repoIdentifier = index;
@@ -97,12 +86,12 @@ export class ContributorFetcher {
     public async fetchGitHubContributorsByRepoName(
         token: string,
         ownerAndRepos: RepositoryContributorInfo[]
-    ): Promise<Map<RepositoryName, GitHubContributor[]>> {
+    ): Promise<Map<string, GitHubContributor[]>> {
         const octokit = new Octokit({
             auth: token,
         });
 
-        const gitHubContributorsByRepoName = new Map<RepositoryName, GitHubContributor[]>();
+        const gitHubContributorsByRepoName = new Map<string, GitHubContributor[]>();
 
         for (const contributor of ownerAndRepos.values()) {
             const fullRepoIdentifier = {

@@ -1,18 +1,7 @@
 import { Config } from './config';
-import { ContributionCountOfUserIntoRepo, RepositoryName } from './contributorFetcher';
+import { ContributionCountOfUserIntoRepo, Sponsorable } from './types';
 import { graphql } from '@octokit/graphql';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
-
-export interface Sponsorable {
-    __typename: string;
-    email?: string;
-    login: string;
-    url: string;
-    sponsorsListing: {
-        name: string | null;
-        dashboard: string | null;
-    };
-}
 
 // query WIP: fetchiing first 10 sponsors, need to add pagination
 export const queryTemplate = `query fetchSponsorable($queryString: String!) {
@@ -55,7 +44,7 @@ export class SponsorableContributorsFetcher {
     public async fetchSponsorableContributorsInformation(
         token: string,
         query: string,
-        contributors: Map<RepositoryName, ContributionCountOfUserIntoRepo[]>
+        contributors: Map<string, ContributionCountOfUserIntoRepo[]>
     ): Promise<Map<string, Sponsorable[]>> {
         const allSponsorableUsersInfo = [];
         const sponsorables = new Map<string, Sponsorable[]>();
@@ -75,6 +64,10 @@ export class SponsorableContributorsFetcher {
 
                 for (const user of response) {
                     if (user.sponsorsListing?.name && user.__typename === 'User') {
+                        // allSponsorableUsersInfo.push(user);
+
+                        // sponsorables.set(repoIdentifier, allSponsorableUsersInfo);
+
                         allSponsorableUsersInfo.push({ repoId: contributor.repoIdentifier, user });
                     }
                 }
@@ -91,6 +84,7 @@ export class SponsorableContributorsFetcher {
                 }
             });
         }
+        console.log(sponsorables, 'line 100');
 
         return sponsorables;
     }
