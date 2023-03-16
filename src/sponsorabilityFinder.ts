@@ -57,7 +57,7 @@ export class SponsorabilityFinder {
     public async fetchSponsorabilityInformation(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<Map<string, SponsorableWithContributionCount[]>> {
+    ): Promise<Map<string, ContributionCountOfUserIntoRepo[]>> {
         //SponsorWithRepoIdAndContribution
         const fetchAllContributors = new ContributorFetcher(this.config);
         const sponsorableContributorsFetcher = new SponsorableContributorsFetcher(this.config);
@@ -94,37 +94,39 @@ export class SponsorabilityFinder {
 
         console.log(countsForAllLanguages, 'language count');
 
-        return sponsorableContributorWithContributonCounts;
+        return allContributorHistorys;
     }
 
     public extractContributionCountsOfAllSponsorableUsers(
         sponsorables: Map<string, Sponsor[]>,
         allContributorHistorys: Map<string, ContributionCountOfUserIntoRepo[]>
     ): Map<string, SponsorableWithContributionCount[]> {
-        let allSponsorable: SponsorableWithContributionCount[] = [];
-        const sponsorableContributorWithContributonCounts = new Map<
+        const withContributionCounts = new Map<
             OwnerAndRepoName,
             SponsorableWithContributionCount[]
         >();
 
-        // console.log(sponsorables);
+        let withCounts: {
+            repoId: string;
+            contributor: SponsorableWithContributionCount;
+        }[];
 
-        for (const [repositoryName, contributionCountOfUser] of allContributorHistorys) {
-            allSponsorable = this.convertSponsorableToUsersWithContributionCount(
-                sponsorables,
-                contributionCountOfUser
-            );
+        for (const [key, contributionCountOfUser] of allContributorHistorys) {
+            withCounts = this.addContributionCount(sponsorables, contributionCountOfUser);
 
-            // allSponsorable.forEach((s) => {
-
-            //     if (s.login === contributionCountOfUser[1][i].login) {
-            //         console.log(, 'whats in here?');
-            //     }
-            // });
-            sponsorableContributorWithContributonCounts.set(repositoryName, allSponsorable);
+            const storeSponsorableContributors: SponsorableWithContributionCount[] = [];
+            withCounts.forEach((objectWithContributorData) => {
+                if (key === objectWithContributorData.repoId) {
+                    storeSponsorableContributors.push(...[objectWithContributorData.contributor]);
+                    withContributionCounts.set(
+                        objectWithContributorData.repoId,
+                        storeSponsorableContributors
+                    );
+                }
+            });
         }
 
-        return sponsorableContributorWithContributonCounts;
+        return withContributionCounts;
     }
 
     /*
@@ -198,35 +200,50 @@ export class SponsorabilityFinder {
         return contributionCounts;
     }
 
-    public convertSponsorableToUsersWithContributionCount(
+    public addContributionCount(
         sponsorableContributor: Map<string, Sponsor[]>,
         contributors: ContributionCountOfUserIntoRepo[]
-    ): SponsorableWithContributionCount[] {
-        const allSponsorable: Sponsor[][] = [];
-        for (const [repoId, sponsors] of sponsorableContributor) {
-            allSponsorable.push(sponsors);
+    ): {
+        repoId: string;
+        contributor: SponsorableWithContributionCount;
+    }[] {
+        const allSponsorableWithCount: {
+            repoId: string;
+            contributor: SponsorableWithContributionCount;
+        }[] = [];
+
+        for (const [key, sponsors] of sponsorableContributor) {
+            sponsors.forEach((sponsorable) => {
+                const contributionsCount = this.getContributionCountOfUser(
+                    sponsorable.login,
+                    contributors
+                );
+
+                const withContributionCount: SponsorableWithContributionCount =
+                    this.convertToSponsorableWithCounts(sponsorable, contributionsCount);
+
+                allSponsorableWithCount.push({ repoId: key, contributor: withContributionCount });
+            });
         }
 
-        const sponsors = allSponsorable.flat();
+        return allSponsorableWithCount;
+    }
 
-        const allUsers = sponsors.map((sponsorable) => {
-            const contributionsCount = this.getContributionCountOfUser(
-                sponsorable.login,
-                contributors
-            );
+    public convertToSponsorableWithCounts(
+        sponsorable: Sponsor,
+        contributionsCount: number
+    ): SponsorableWithContributionCount {
+        const withContributionCount: SponsorableWithContributionCount = {
+            type: sponsorable.__typename,
+            email: sponsorable.email ?? '',
+            login: sponsorable.login,
+            url: `https://github.com/${sponsorable.login}`,
+            sponsorListingName: sponsorable.sponsorsListing.name ?? '',
+            sponsorsLink: sponsorable.sponsorsListing.dashboard ?? '',
+            contributionsCount: contributionsCount ?? 0,
+        };
 
-            return {
-                type: sponsorable.__typename,
-                email: sponsorable.email ?? '',
-                login: sponsorable.login,
-                url: `https://github.com/${sponsorable.login}`,
-                sponsorListingName: sponsorable.sponsorsListing.name ?? '',
-                sponsorsLink: sponsorable.sponsorsListing.dashboard ?? '',
-                contributionsCount: contributionsCount ?? 0,
-            };
-        });
-
-        return allUsers;
+        return withContributionCount;
     }
 }
 
