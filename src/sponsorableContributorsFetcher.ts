@@ -1,7 +1,18 @@
 import { Config } from './config';
-import { ContributionCountOfUserIntoRepo, Sponsorable } from './types';
+import { ContributionCountOfUserIntoRepo } from './types';
 import { graphql } from '@octokit/graphql';
 import { GraphQlQueryResponseData, RequestParameters } from '@octokit/graphql/dist-types/types';
+
+export interface GithubSponsorable {
+    __typename: string;
+    email?: string;
+    login: string;
+    url: string;
+    sponsorsListing: {
+        name: string | null;
+        dashboard: string | null;
+    };
+}
 
 // query WIP: fetchiing first 10 sponsors, need to add pagination
 export const queryTemplate = `query fetchSponsorable($queryString: String!) {
@@ -44,70 +55,39 @@ export class SponsorableContributorsFetcher {
     public async fetchSponsorableContributorsInformation(
         token: string,
         query: string,
-        contributors: Map<string, ContributionCountOfUserIntoRepo[]>
-    ): Promise<Map<string, Sponsorable[]>> {
-        const allSponsorableUsersInfo = [];
-        const sponsorables = new Map<string, Sponsorable[]>();
+        contributors: ContributionCountOfUserIntoRepo[]
+    ): Promise<GithubSponsorable[]> {
+        const sponsorableUsers = [];
 
-        for (const [repoIdentifier] of contributors) {
-            const users = contributors.get(repoIdentifier);
+        for (const contributor of contributors) {
+            const userLogin = contributor.login;
 
-            if (!users) {
-                throw new Error(`Error when accessing this user: ${users} login `);
-            }
+            const variables: Variables = { queryString: userLogin };
+            const response = await this.fetchSponsorableContributor(token, variables, query);
 
-            for (const contributor of users) {
-                const userLogin = contributor.login;
-
-                const variables: Variables = { queryString: userLogin };
-                const response = await this.fetchSponsorableContributor(token, variables, query);
-
-                for (const user of response) {
-                    if (user.sponsorsListing?.name && user.__typename === 'User') {
-                        // allSponsorableUsersInfo.push(user);
-
-                        // sponsorables.set(repoIdentifier, allSponsorableUsersInfo);
-
-                        allSponsorableUsersInfo.push({ repoId: contributor.repoIdentifier, user });
-                    }
+            for (const user of response) {
+                if (user.sponsorsListing?.name && user.__typename === 'User') {
+                    sponsorableUsers.push(user);
                 }
             }
-
-            // need to refactor:
-            //  - weird loop to help eliminate duplication error when inserting into map
-            const all: Sponsorable[] = [];
-
-            allSponsorableUsersInfo.forEach((sponsorable) => {
-                if (repoIdentifier === sponsorable.repoId) {
-                    all.push(...[sponsorable.user]);
-                    sponsorables.set(repoIdentifier, all);
-                }
-            });
         }
-        console.log(sponsorables, 'line 100');
 
-        return sponsorables;
+        return sponsorableUsers;
     }
 
     public async fetchSponsorableContributor(
         token: string,
         variables: Variables,
         query: string
-    ): Promise<Sponsorable[]> {
+    ): Promise<GithubSponsorable[]> {
         const graphqlWithAuth = graphql.defaults({
             headers: { authorization: `token ${token}` },
         });
 
         const response: GraphQlQueryResponseData = await graphqlWithAuth(query, variables);
 
-        const result = response.search.nodes as Sponsorable[];
+        const result = response.search.nodes as GithubSponsorable[];
 
         return result;
     }
 }
-
-// const testContributorsArray = [
-//     { login: 'mvdan', contributions: 4 },
-//     { login: 'zkat', contributions: 2 },
-//     { login: 'IngridGdesigns', contributions: 2 },
-// ]; // test data

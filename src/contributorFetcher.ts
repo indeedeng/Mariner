@@ -1,6 +1,6 @@
 import { Config } from './config';
 import { Octokit } from '@octokit/rest';
-import { ContributionCountOfUserIntoRepo, RepositoryContributorInfo } from './types';
+import { ContributionCountOfUserIntoRepo, RepoOwnerAndName } from './types';
 
 export interface GitHubContributor {
     login?: string | undefined;
@@ -72,12 +72,12 @@ export class ContributorFetcher {
         });
     }
 
-    public extractOwnerAndRepoNames(repositoryIdentifiers: string[]): RepositoryContributorInfo[] {
+    public extractOwnerAndRepoNames(repositoryIdentifiers: string[]): RepoOwnerAndName[] {
         return repositoryIdentifiers.map((contributorInfo) => {
             const ownerAndRepo = contributorInfo.split('/');
             const owner = ownerAndRepo[0];
             const repo = ownerAndRepo[1];
-            const contributorOwnerAndRepo: RepositoryContributorInfo = { owner, repo };
+            const contributorOwnerAndRepo: RepoOwnerAndName = { owner, repo };
 
             return contributorOwnerAndRepo;
         });
@@ -85,7 +85,7 @@ export class ContributorFetcher {
 
     public async fetchGitHubContributorsByRepoName(
         token: string,
-        ownerAndRepos: RepositoryContributorInfo[]
+        ownerAndRepos: RepoOwnerAndName[]
     ): Promise<Map<string, GitHubContributor[]>> {
         const octokit = new Octokit({
             auth: token,
