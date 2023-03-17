@@ -1,29 +1,30 @@
-export type RepositoryContributorInfo = {
+export type RepoOwnerAndName = {
     owner: string;
     repo: string;
 };
 export interface ContributionCountOfUserIntoRepo {
-    repoIdentifier: string;
+    repoIdentifier: string; // delete or not?
     login: string;
     contributions: number;
 }
 
-export type ContributorsByRepoName = Map<string, ContributionCountOfUserIntoRepo[]>;
+export type ContributorContributionCountsByRepoIdentifier = Map<
+    string,
+    ContributionCountOfUserIntoRepo[]
+>;
 
-export interface SponsorableWithContributionCount {
+export type SponsorablesByRepoIdentifier = Map<string, SponsorableWithListingNameAndLink[]>; // not used yet
+
+export interface SponsorableWithListingNameAndLink {
     type: string; // may not be needed here after sorting in Node
-    // repoIdentifier: string;
     email?: string;
     login: string;
     url: string;
     sponsorListingName: string;
     sponsorsLink: string;
-    contributionsCount: number;
 }
 
-export type OwnerAndRepoName = string;
-
-export interface SponsorRepoContributionHistory {
+export interface SponsorContributionHistory {
     login: string;
     email?: string;
     url: string;
@@ -37,13 +38,9 @@ export interface SponsorRepoContributionHistory {
     // Other: number;
 }
 
-export interface Sponsorable {
-    __typename: string;
-    email?: string;
-    login: string;
-    url: string;
-    sponsorsListing: {
-        name: string | null;
-        dashboard: string | null;
-    };
-}
+export type LanguagesByRepoIdentifier = Map<string, string[]>;
+
+// type RepoContributionsByContributor = Map<string, RepoContributions>;
+// type ContributionCountsByRepo = Map<string, number>;
+
+// repo names go to languages and add the counts and coutn the languages...
