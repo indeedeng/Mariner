@@ -30,12 +30,13 @@ export interface SponsorContributionHistory {
     url: string;
     sponsorListingName: string;
     sponsorsLink: string;
-    // contributionsCount: number;
-    // JavaScript: number;
-    // Java: number;
-    // Python: number;
-    // Go: number;
-    // Other: number;
+    impactScore: string;
+    contributionsCount: number;
+    JavaScript: number;
+    Java: number;
+    Python: number;
+    Go: number;
+    Other: number;
 }
 
 export type LanguagesByRepoIdentifier = Map<string, string[]>;
