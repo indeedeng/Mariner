@@ -17,8 +17,6 @@ export interface Languages {
     name: string;
 }
 
-export type OwnerAndRepoName = string;
-
 const queryTemplate = `query fetchLanguagesForRepo($owner: String!, $name: String!){
   repository(owner: $owner, name: $name) {
     languages(first:20) {
@@ -36,7 +34,6 @@ interface Variables extends RequestParameters {
     name: string;
 }
 
-export type RepositoryName = string;
 export class RepoLanguagesFetcher {
     private readonly config: Config;
 
@@ -48,7 +45,7 @@ export class RepoLanguagesFetcher {
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Languages[]>> {
-        const repoLanguageInformation = new Map<OwnerAndRepoName, Languages[]>();
+        const repoLanguageInformation = new Map<string, Languages[]>();
 
         for (const repoIdentifier of repositoryIdentifiers) {
             const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
@@ -100,11 +97,3 @@ export class RepoLanguagesFetcher {
         return languages;
     }
 }
-
-// await Promise.all( <=== one solution to await the promise
-//     repositoryIdentifiers.map(async (repoIdentifier) => {
-//         const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
-
-//         repoLanguageInformation.set(repoIdentifier, languages);
-//     })
-// );
