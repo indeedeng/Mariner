@@ -41,7 +41,7 @@ export interface SponsorContributionHistory {
 
 export type LanguagesByRepoIdentifier = Map<string, string[]>;
 
-// type RepoContributionsByContributor = Map<string, RepoContributions>;
-// type ContributionCountsByRepo = Map<string, number>;
+// export type RepoContributionsByContributor = Map<string, RepoContributions>;
+export type ContributionCountsByRepo = Map<string, number>;
 
 // repo names go to languages and add the counts and coutn the languages...

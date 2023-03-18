@@ -45,15 +45,15 @@ export class RepoLanguagesFetcher {
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Languages[]>> {
-        const repoLanguageInformation = new Map<string, Languages[]>();
+        const repoLanguageByRepoIdentifier = new Map<string, Languages[]>();
 
         for (const repoIdentifier of repositoryIdentifiers) {
             const languages = await this.fetchLanguagesForSingleRepo(token, repoIdentifier);
 
-            repoLanguageInformation.set(repoIdentifier, languages);
+            repoLanguageByRepoIdentifier.set(repoIdentifier, languages);
         }
 
-        return repoLanguageInformation;
+        return repoLanguageByRepoIdentifier;
     }
 
     public extractOwnerAndRepoName(repoIdentifier: string): RepositoryContributorInfo {
