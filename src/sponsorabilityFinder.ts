@@ -5,9 +5,10 @@ import {
     queryTemplate,
     GithubSponsorable,
 } from './sponsorableContributorsFetcher';
-import { RepoLanguagesFetcher } from './reposFetcher'; // Languages,
+import { Languages, RepoLanguagesFetcher } from './reposFetcher'; // Languages,
 import {
     ContributionCountOfUserIntoRepo,
+    ContributorContributionCountsByRepoIdentifier,
     SponsorableWithListingNameAndLink,
     SponsorContributionHistory,
 } from './types';
@@ -46,11 +47,29 @@ export class SponsorabilityFinder {
         const sponsorablesWithListingAndLink =
             this.convertToSponsorablesWithListingAndLink(sponsorables);
 
+        /*
+        Goal is to do a .map of Sponsorables[], and for each one look up their
+        contributionCountsByRepo. For each of those, look up the repo in
+        languagesByRepo and add 1 to that person's language count for each
+        language of that repo. And for each contributionCountsByRepo,
+        add the repo-impact * contribution count into that repo to the user's impact score.
+*/
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
         const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
             token,
             repositoryIdentifiers
         );
+
+        const contributorContributionCountsByRepoIdentifier =
+            this.countSponsorablesContributionsByRepoId(
+                sponsorablesWithListingAndLink,
+                allContributorHistorys,
+                repositoryLanguages
+            );
+
+        const vals = contributorContributionCountsByRepoIdentifier.values();
+
+        console.log(vals, 'line 70');
 
         // const contributorContributionCountsByRepoIdentifier =
         //     this.extractContributionCountsOfAllSponsorableUsers(
@@ -83,6 +102,68 @@ export class SponsorabilityFinder {
                 sponsorsLink: sponsorable.sponsorsListing.dashboard ?? '',
             };
         });
+    }
+
+    /// flagging it to discuss during pairing session
+    public countSponsorablesContributionsByRepoId(
+        sponsorablesByReponame: SponsorableWithListingNameAndLink[],
+        contributorContributionByRepoIdentifier: ContributorContributionCountsByRepoIdentifier,
+        repoLanguages: Map<string, Languages[]>
+    ): Map<string, number> {
+        // string[]
+        console.log(repoLanguages.size);
+        const contributionCountsByContributor = new Map<string, number>();
+
+        let contributionsCount;
+        for (const sponsorables of sponsorablesByReponame) {
+            for (const [contributor] of contributorContributionByRepoIdentifier) {
+                const users = contributorContributionByRepoIdentifier.get(contributor);
+
+                if (!users) {
+                    throw new Error(`Error when accessing this user: ${users} login `);
+                }
+
+                for (const user of users) {
+                    if (sponsorables.login === user.login) {
+                        contributionsCount = user.contributions;
+                        contributionCountsByContributor.set(sponsorables.login, contributionsCount);
+                    }
+                }
+
+                // if (repoLanguages.has(contributor)) {
+
+                // }
+                // const contributionsCount = this.getContributionCountOfUser(
+                //     sponsorables.login,
+                //     users
+                // );
+                // counts.push(contributionsCount);
+                // contributionCountsByRepoId.set(contributor, counts);
+            }
+        }
+
+        //     const withContributionCount: SponsorableWithListingNameAndLink =
+        //         this.convertToSponsorListingAndLink(sponsorable, contributionsCount);
+        //     allSponsorableWithCount.push({ repoId, contributor: withContributionCount });
+        // });
+
+        return contributionCountsByContributor;
+    }
+
+    public getContributionCountOfUser(
+        sponsorableLogin: string,
+        contributors: ContributionCountOfUserIntoRepo[]
+    ): number {
+        let contributionCounts = 0;
+
+        contributors.forEach((contributor) => {
+            if (sponsorableLogin === contributor.login) {
+                console.log(sponsorableLogin);
+                contributionCounts = contributor.contributions;
+            }
+        });
+
+        return contributionCounts;
     }
 
     // public extractContributionCountsOfAllSponsorableUsers(
@@ -146,21 +227,6 @@ export class SponsorabilityFinder {
 
     //     return allSponsorableWithCount;
     // }
-
-    public getContributionCountOfUser(
-        userLogin: string,
-        contributors: ContributionCountOfUserIntoRepo[]
-    ): number {
-        let contributionCounts = 0;
-
-        contributors.forEach((contributor) => {
-            if (userLogin === contributor.login) {
-                contributionCounts = contributor.contributions;
-            }
-        });
-
-        return contributionCounts;
-    }
 
     /*
 
