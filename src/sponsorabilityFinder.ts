@@ -67,9 +67,11 @@ export class SponsorabilityFinder {
                 repositoryLanguages
             );
 
-        const vals = contributorContributionCountsByRepoIdentifier.values();
-
-        console.log(vals, 'line 70');
+        console.log(
+            contributorContributionCountsByRepoIdentifier.values(),
+            'line 70',
+            contributorContributionCountsByRepoIdentifier.keys()
+        );
 
         // const contributorContributionCountsByRepoIdentifier =
         //     this.extractContributionCountsOfAllSponsorableUsers(
@@ -109,43 +111,47 @@ export class SponsorabilityFinder {
         sponsorablesByReponame: SponsorableWithListingNameAndLink[],
         contributorContributionByRepoIdentifier: ContributorContributionCountsByRepoIdentifier,
         repoLanguages: Map<string, Languages[]>
-    ): Map<string, number> {
-        // string[]
-        console.log(repoLanguages.size);
-        const contributionCountsByContributor = new Map<string, number>();
+    ): any {
+        const contributionCountsByContributor = new Map<string, number[]>();
+        const countsOfContributions: number[] = [];
 
-        let contributionsCount;
         for (const sponsorables of sponsorablesByReponame) {
-            for (const [contributor] of contributorContributionByRepoIdentifier) {
-                const users = contributorContributionByRepoIdentifier.get(contributor);
+            // console.log(sponsorables);
+
+            for (const [contributor, users] of contributorContributionByRepoIdentifier) {
+                // const users = contributorContributionByRepoIdentifier.get(contributor);
 
                 if (!users) {
                     throw new Error(`Error when accessing this user: ${users} login `);
                 }
 
+                // const a = this.getContributionCountOfUser(sponsorables.login, users);
+                // countsOfContributions.push(a);
+                // output:
+                //   [[2699], [], [479], [], [430], [], [369], [], [15], [], [], [1]];
+
                 for (const user of users) {
-                    if (sponsorables.login === user.login) {
-                        contributionsCount = user.contributions;
-                        contributionCountsByContributor.set(sponsorables.login, contributionsCount);
+                    let idx = users.indexOf(user);
+                    if (sponsorables.login === user.login && user.repoIdentifier === contributor) {
+                        // contributionsCount = user.contributions;
+
+                        countsOfContributions.push(user.contributions);
+                        idx = users.indexOf(user, idx + 1);
                     }
                 }
-
-                // if (repoLanguages.has(contributor)) {
-
-                // }
-                // const contributionsCount = this.getContributionCountOfUser(
-                //     sponsorables.login,
-                //     users
-                // );
-                // counts.push(contributionsCount);
-                // contributionCountsByRepoId.set(contributor, counts);
+                contributionCountsByContributor.set(contributor, countsOfContributions);
             }
+            // if (repoLanguages.has(contributor)) {
+
+            // }
         }
 
         //     const withContributionCount: SponsorableWithListingNameAndLink =
         //         this.convertToSponsorListingAndLink(sponsorable, contributionsCount);
         //     allSponsorableWithCount.push({ repoId, contributor: withContributionCount });
         // });
+
+        console.log(contributionCountsByContributor.entries());
 
         return contributionCountsByContributor;
     }
@@ -157,11 +163,24 @@ export class SponsorabilityFinder {
         let contributionCounts = 0;
 
         contributors.forEach((contributor) => {
+            let idx = contributors.indexOf(contributor);
+
             if (sponsorableLogin === contributor.login) {
-                console.log(sponsorableLogin);
+                // contributionCounts.push(contributor.contributions);
+
                 contributionCounts = contributor.contributions;
+                idx = contributors.indexOf(contributor, idx + 1); // not rewritting value;
             }
+
+            return contributionCounts;
+            // if (sponsorableLogin === contributor.login) {
+            //     // contributionCounts.push(contributor.contributions);
+
+            //     contributionCounts = contributor.contributions;
+            //     // idx = contributors.indexOf(contributor, idx + 1); // not rewritting value;
+            // }
         });
+        // console.log(contributionCounts, 'line 230');
 
         return contributionCounts;
     }
@@ -341,3 +360,17 @@ export class SponsorabilityFinder {
 
 //     return a;
 // }
+
+//  const filtered = users
+//      .filter((user) => {
+//          // let idx = users.indexOf(user);
+//          return sponsorables.login === user.login;
+//          // if (!contributionsCount.includes(user.contributions)) {
+
+//          // idx = users.indexOf(user, idx + 1); // not rewritting value;
+//      })
+//      .map((user, idx) => {
+//          return user.contributions;
+//          idx = users.indexOf(user, idx + 1);
+//      });
+//  console.log(filtered);
