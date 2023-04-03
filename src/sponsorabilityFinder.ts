@@ -47,13 +47,6 @@ export class SponsorabilityFinder {
         const sponsorablesWithListingAndLink =
             this.convertToSponsorablesWithListingAndLink(sponsorables);
 
-        /*
-        Goal is to do a .map of Sponsorables[], and for each one look up their
-        contributionCountsByRepo. For each of those, look up the repo in
-        languagesByRepo and add 1 to that person's language count for each
-        language of that repo. And for each contributionCountsByRepo,
-        add the repo-impact * contribution count into that repo to the user's impact score.
-*/
         const repositoryFetcher = new RepoLanguagesFetcher(this.config);
         const repositoryLanguages = await repositoryFetcher.fetchAllRepositoryLanguages(
             token,
@@ -106,7 +99,6 @@ export class SponsorabilityFinder {
         });
     }
 
-    /// flagging it to discuss during pairing session
     public countSponsorablesContributionsByRepoId(
         sponsorablesByReponame: SponsorableWithListingNameAndLink[],
         contributorContributionByRepoIdentifier: ContributorContributionCountsByRepoIdentifier,
