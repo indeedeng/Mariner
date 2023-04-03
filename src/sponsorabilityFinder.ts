@@ -41,8 +41,10 @@ export class SponsorabilityFinder {
             await sponsorableContributorsFetcher.fetchSponsorableContributorsInformation(
                 token,
                 queryTemplate,
-                allContributors // keep getting duplicates
+                allContributors
             );
+
+        console.log(sponsorables);
 
         const sponsorablesWithListingAndLink =
             this.convertToSponsorablesWithListingAndLink(sponsorables);
