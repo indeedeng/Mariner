@@ -44,8 +44,6 @@ export class SponsorabilityFinder {
                 allContributors
             );
 
-        console.log(sponsorables);
-
         const sponsorablesWithListingAndLink =
             this.convertToSponsorablesWithListingAndLink(sponsorables);
 
@@ -79,7 +77,7 @@ export class SponsorabilityFinder {
         //     contributorContributionCountsByRepoIdentifier
         // );
 
-        console.log(repositoryLanguages, 'language count');
+        console.log(repositoryLanguages, 'languages in each repo');
         console.log(sponsorablesWithListingAndLink.length);
 
         // need to convert everything and return SponsorContributionHistory[]
@@ -108,41 +106,54 @@ export class SponsorabilityFinder {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any {
         const contributionCountsByContributor = new Map<string, number[]>();
-        const countsOfContributions: number[] = [];
-        let contributionsCount = 0;
+
         for (const sponsorables of sponsorablesByReponame) {
             // console.log(sponsorables);
 
-            for (const [contributor, users] of contributorContributionByRepoIdentifier) {
-                // const users = contributorContributionByRepoIdentifier.get(contributor);
-
-                if (!users) {
-                    throw new Error(`Error when accessing this user: ${users} login `);
-                }
-
-                // const a = this.getContributionCountOfUser(sponsorables.login, users);
-                // countsOfContributions.push(a);
-                // output:
-                //   [[2699], [], [479], [], [430], [], [369], [], [15], [], [], [1]];
-
-                for (const user of users) {
-                    // let idx = users.indexOf(user);
-                    if (sponsorables.login === user.login) {
-                        contributionsCount = user.contributions;
-
-                        countsOfContributions.push(contributionsCount);
-                        // idx = users.indexOf(user, idx + 1);
-                    }
-                }
-
-                if (repoLanguages.has(contributor)) {
-                    console.log('do something'); //placeholder
-                }
-            }
+            const countsOfContributionsPerUser = this.extractCountsOfContributions(
+                sponsorables,
+                contributorContributionByRepoIdentifier,
+                repoLanguages
+            );
         }
 
         console.log(contributionCountsByContributor);
 
         return contributionCountsByContributor;
+    }
+
+    public extractCountsOfContributions(
+        sponsorables: SponsorableWithListingNameAndLink,
+        contributorContributionByRepoIdentifier: ContributorContributionCountsByRepoIdentifier,
+        repoLanguages: Map<string, Languages[]>
+    ): any {
+        let contributionsCount = 0;
+        const countsOfContributions: number[] = [];
+        for (const [contributor, users] of contributorContributionByRepoIdentifier) {
+            // const users = contributorContributionByRepoIdentifier.get(contributor);
+
+            if (!users) {
+                throw new Error(`Error when accessing this user: ${users} login `);
+            }
+
+            // const a = this.getContributionCountOfUser(sponsorables.login, users);
+            // countsOfContributions.push(a);
+            // output:
+            //   [[2699], [], [479], [], [430], [], [369], [], [15], [], [], [1]];
+
+            for (const user of users) {
+                // let idx = users.indexOf(user);
+                if (sponsorables.login === user.login) {
+                    contributionsCount = user.contributions;
+
+                    countsOfContributions.push(contributionsCount);
+                    // idx = users.indexOf(user, idx + 1);
+                }
+            }
+
+            if (repoLanguages.has(contributor)) {
+                console.log('do something'); //placeholder
+            }
+        }
     }
 }
