@@ -7,6 +7,7 @@
     "author": "",
     "license": "Apache-2.0",
     "scripts": {
+        "start": "node dist/examples/runExample.js",
         "test": "jest",
         "check": "tsc -noEmit true --project tsconfig.json",
         "lint": "eslint src/ --ext .js,.ts",
@@ -24,6 +25,7 @@
     },
     "dependencies": {
         "@octokit/graphql": "^5.0.0",
+        "@octokit/rest": "^19.0.7",
         "@types/luxon": "^3.0.0",
         "axios": "^0.27.2",
         "html-entities": "^2.3.3",
