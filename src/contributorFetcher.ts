@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 
-export interface GitHubContributor {
+interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
     node_id?: string | undefined;
