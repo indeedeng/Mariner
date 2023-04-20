@@ -1,5 +1,4 @@
-import { Config } from './config';
-// import { Octokit } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 
 export interface GitHubContributor {
     login?: string | undefined;
@@ -28,20 +27,23 @@ export type RepoOwnerAndName = {
     repo: string;
 };
 
+export interface Contributor {
+    login: string;
+}
+
 export class ContributorFetcher {
-    private readonly config: Config;
-
-    public constructor(config: Config) {
-        this.config = config;
-    }
-
     public async fetchContributorsByRepoName(
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<string[]> {
-        const ownerAndRepo = this.extractOwnerAndRepoNames(repositoryIdentifiers);
+        const ownerAndRepos = this.extractOwnerAndRepoNames(repositoryIdentifiers);
 
-        console.log(ownerAndRepo);
+        const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(
+            token,
+            ownerAndRepos
+        );
+
+        console.log(gitHubContributorsByRepoName);
 
         return [];
     }
@@ -55,5 +57,38 @@ export class ContributorFetcher {
 
             return contributorOwnerAndRepo;
         });
+    }
+
+    public async fetchGitHubContributorsByRepoName(
+        token: string,
+        ownerAndRepos: RepoOwnerAndName[]
+    ): Promise<Map<string, GitHubContributor[]>> {
+        const octokit = new Octokit({
+            auth: token,
+        });
+
+        const gitHubContributorsByRepoName = new Map<string, GitHubContributor[]>();
+
+        for (const ownerAndRepoName of ownerAndRepos.values()) {
+            const repoIdentifier = {
+                owner: ownerAndRepoName.owner,
+                repo: ownerAndRepoName.repo,
+            };
+
+            const response = await octokit.repos?.listContributors(repoIdentifier);
+
+            if (response.status !== 200) {
+                throw new Error(`Could not retrieve repositories for ${ownerAndRepoName}`);
+            }
+
+            if (!response.data) {
+                throw new Error(`No data for ${ownerAndRepoName}`);
+            }
+            const ownerRepo = `${repoIdentifier.owner}/${repoIdentifier.repo}`;
+
+            gitHubContributorsByRepoName.set(ownerRepo, response.data);
+        }
+
+        return gitHubContributorsByRepoName;
     }
 }
