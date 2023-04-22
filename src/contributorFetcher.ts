@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 
-interface GitHubContributor {
+export interface GitHubContributor {
     login?: string | undefined;
     id?: number | undefined;
     node_id?: string | undefined;
@@ -36,6 +36,7 @@ export class ContributorFetcher {
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<string[]> {
+        console.log(repositoryIdentifiers);
         const ownerAndRepos = this.extractOwnerAndRepoNames(repositoryIdentifiers);
 
         const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(

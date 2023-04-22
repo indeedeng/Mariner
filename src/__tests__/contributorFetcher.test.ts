@@ -1,4 +1,53 @@
-import { ContributorFetcher } from '../contributorFetcher';
+import { ContributorFetcher, GitHubContributor } from '../contributorFetcher';
+
+// const myMock1 = jest.fn();
+
+const fakeContributor1: GitHubContributor[] = [
+    {
+        login: 'someContributor',
+        id: 6993258,
+        node_id: 'MDQ6VXNlcjY5OTMyN23=',
+        avatar_url: 'https://avatars.githubusercontent.com/u/6993258?v=4',
+        gravatar_id: '',
+        url: 'https://api.github.com/users/someContributor',
+        html_url: 'https://github.com/someContributor',
+        followers_url: 'https://api.github.com/users/someContributor/followers',
+        following_url: 'https://api.github.com/users/someContributor/following{/other_user}',
+        gists_url: 'https://api.github.com/users/someContributor/gists{/gist_id}',
+        starred_url: 'https://api.github.com/users/someContributor/starred{/owner}{/repo}',
+        subscriptions_url: 'https://api.github.com/users/someContributor/subscriptions',
+        organizations_url: 'https://api.github.com/users/someContributor/orgs',
+        repos_url: 'https://api.github.com/users/someContributor/repos',
+        events_url: 'https://api.github.com/users/someContributor/events{/privacy}',
+        received_events_url: 'https://api.github.com/users/someContributor/received_events',
+        type: 'User',
+        site_admin: false,
+        contributions: 4,
+    },
+];
+const fakeContributor2: GitHubContributor[] = [
+    {
+        login: 'anotherContributor',
+        id: 4829874,
+        node_id: 'MDQ6VXNlchI4Mjk4NzQ=',
+        avatar_url: 'https://avatars.githubusercontent.com/u/4829874?v=4',
+        gravatar_id: '',
+        url: 'https://api.github.com/users/anotherContributor',
+        html_url: 'https://github.com/anotherContributor',
+        followers_url: 'https://api.github.com/users/anotherContributor/followers',
+        following_url: 'https://api.github.com/users/anotherContributor/following{/other_user}',
+        gists_url: 'https://api.github.com/users/anotherContributor/gists{/gist_id}',
+        starred_url: 'https://api.github.com/users/anotherContributor/starred{/owner}{/repo}',
+        subscriptions_url: 'https://api.github.com/users/anotherContributor/subscriptions',
+        organizations_url: 'https://api.github.com/users/anotherContributor/orgs',
+        repos_url: 'https://api.github.com/users/anotherContributor/repos',
+        events_url: 'https://api.github.com/users/anotherContributor/events{/privacy}',
+        received_events_url: 'https://api.github.com/users/anotherContributor/received_events',
+        type: 'User',
+        site_admin: false,
+        contributions: 7,
+    },
+];
 
 describe('contributor fetcher class', () => {
     const contributorsFinder = new ContributorFetcher();
@@ -15,4 +64,8 @@ describe('contributor fetcher class', () => {
 
         expect(extracted).toEqual(expectedOutput);
     });
+
+    // it('should get a list of GitHub contributors', () => {
+
+    // });
 });
