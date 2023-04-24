@@ -32,7 +32,7 @@ export interface Contributor {
 }
 
 export class GitHubContributorFetcher {
-    public async fetchContributorsByRepoName(
+    public async fetchContributors(
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, GitHubContributor[]>> {
