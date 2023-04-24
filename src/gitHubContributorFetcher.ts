@@ -35,7 +35,7 @@ export class GitHubContributorFetcher {
     public async fetchContributors(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<Map<string, GitHubContributor[]>> {
+    ): Promise<Map<string, Contributor[]>> {
         const ownerAndRepos = this.extractOwnerAndRepoNames(repositoryIdentifiers);
 
         const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(
