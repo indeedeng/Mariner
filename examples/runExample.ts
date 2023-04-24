@@ -85,11 +85,9 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-contributorsFinder
-    .fetchContributorsByRepoName(token, repositoryIdentifiers)
-    .then((contributors) => {
-        console.log(contributors);
-    });
+contributorsFinder.fetchContributors(token, repositoryIdentifiers).then((contributors) => {
+    console.log(contributors.size);
+});
 
 finder
     .findIssues(token, repositoryLookupName)

@@ -1,10 +1,11 @@
-import { GitHubContributor, GitHubContributorFetcher } from './gitHubContributorFetcher';
+import { GitHubContributorFetcher } from './gitHubContributorFetcher';
+import { GithubSponsorable, SponsorableFetcher, queryTemplate } from './sponsorableFetcher';
 
 export class ContributorFetcher {
     public async fetchContributors(
         token: string,
         repositoryIdentifiers: string[]
-    ): Promise<Map<string, GitHubContributor[]>> {
+    ): Promise<Map<string, GithubSponsorable[]>> {
         const gitHubContributors = new GitHubContributorFetcher();
 
         const allGitHubContributors = await gitHubContributors.fetchContributors(
@@ -12,6 +13,14 @@ export class ContributorFetcher {
             repositoryIdentifiers
         );
 
-        return allGitHubContributors;
+        const sponsorableContributors = new SponsorableFetcher();
+
+        const sponsorable = await sponsorableContributors.fetchSponsorablesInformation(
+            token,
+            queryTemplate,
+            allGitHubContributors
+        );
+
+        return sponsorable;
     }
 }
