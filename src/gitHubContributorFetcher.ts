@@ -31,7 +31,7 @@ export interface Contributor {
     login: string;
 }
 
-export class ContributorFetcher {
+export class GitHubContributorFetcher {
     public async fetchContributorsByRepoName(
         token: string,
         repositoryIdentifiers: string[]

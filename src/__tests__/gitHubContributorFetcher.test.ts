@@ -1,8 +1,8 @@
 // import { Octokit } from '@octokit/rest';
-import { ContributorFetcher } from '../contributorFetcher'; // GitHubContributor
+import { GitHubContributorFetcher } from '../gitHubContributorFetcher'; // GitHubContributor
 
 describe('contributor fetcher class', () => {
-    const contributorsFinder = new ContributorFetcher();
+    const contributorsFinder = new GitHubContributorFetcher();
 
     it('should extract owner and repo names', () => {
         const data = ['owner/repoName', 'facebook/jest', 'square/retrofit'];
