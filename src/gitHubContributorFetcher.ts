@@ -60,12 +60,12 @@ export class GitHubContributorFetcher {
     public async fetchGitHubContributorsByRepoName(
         token: string,
         ownerAndRepos: RepoOwnerAndName[]
-    ): Promise<Map<string, GitHubContributor[]>> {
+    ): Promise<Map<string, Contributor[]>> {
         const octokit = new Octokit({
             auth: token,
         });
 
-        const gitHubContributorsByRepoName = new Map<string, GitHubContributor[]>();
+        const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
 
         for (const ownerAndRepoName of ownerAndRepos.values()) {
             const repoIdentifier = {
@@ -84,9 +84,19 @@ export class GitHubContributorFetcher {
             }
             const ownerRepo = `${repoIdentifier.owner}/${repoIdentifier.repo}`;
 
-            gitHubContributorsByRepoName.set(ownerRepo, response.data);
+            const data = this.convertToGetLogin(response.data);
+
+            gitHubContributorsByRepoName.set(ownerRepo, data);
         }
 
         return gitHubContributorsByRepoName;
+    }
+
+    public convertToGetLogin(githubContributors: GitHubContributor[]): Contributor[] {
+        return githubContributors.map((contributor) => {
+            return {
+                login: contributor.login ?? '',
+            };
+        });
     }
 }
