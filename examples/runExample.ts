@@ -16,6 +16,7 @@ import fs from 'fs';
 import * as mariner from '../src/mariner/index'; // This is used during development
 // import mariner from 'oss-mariner'    // This is how the npm package would normally be used
 import * as path from 'path';
+
 const config = mariner.readConfigFile('examples/config.json');
 
 const htmlPath = 'examples/output.html';
@@ -67,7 +68,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const finder = new mariner.IssueFinder(config);
-const contributorsFinder = new mariner.ContributorFetcher();
+const contributorsFetcher = new mariner.ContributorFinder();
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): Record<string, mariner.Issue[]> {
     const record: Record<string, mariner.Issue[]> = {};
@@ -85,8 +86,8 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-contributorsFinder.fetchContributors(token, repositoryIdentifiers).then((contributors) => {
-    console.log(contributors.size);
+contributorsFetcher.findContributors(token, repositoryIdentifiers).then((contributors) => {
+    console.log(contributors);
 });
 
 finder
