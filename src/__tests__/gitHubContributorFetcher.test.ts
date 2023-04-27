@@ -2,7 +2,8 @@
 import { GitHubContributorFetcher } from '../gitHubContributorFetcher'; // GitHubContributor
 
 describe('contributor fetcher class', () => {
-    const contributorsFinder = new GitHubContributorFetcher();
+    const someToken = 'token';
+    const contributorsFinder = new GitHubContributorFetcher(someToken);
 
     it('should extract owner and repo names', () => {
         const data = ['owner/repoName', 'facebook/jest', 'square/retrofit'];
@@ -84,5 +85,7 @@ describe('contributor fetcher class', () => {
     //         { owner: 'fakeRepo1', repo: 'someAwesomeProject' },
     //         { owner: 'fakeRepo2', repo: 'someCoolProject' },
     //     ];
+
+    //     mockOctokit.repos.listCollaborators(fakeOwnerAndRepos[0]);
     // });
 });
