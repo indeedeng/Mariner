@@ -68,7 +68,7 @@ const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
 });
 
 const finder = new mariner.IssueFinder(config);
-const contributorsFetcher = new mariner.ContributorFinder();
+const contributorsFetcher = new mariner.ContributorFinder(token);
 
 function convertToRecord(issues: Map<string, mariner.Issue[]>): Record<string, mariner.Issue[]> {
     const record: Record<string, mariner.Issue[]> = {};
@@ -86,7 +86,7 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-contributorsFetcher.findContributors(token, repositoryIdentifiers).then((contributors) => {
+contributorsFetcher.findContributors(repositoryIdentifiers).then((contributors) => {
     console.log(contributors);
 });
 
