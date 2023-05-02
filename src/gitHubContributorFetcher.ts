@@ -41,30 +41,26 @@ export class GitHubContributorFetcher {
     public async fetchContributors(
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
-        const ownerAndRepos = this.extractOwnerAndRepoNames(repositoryIdentifiers);
-
         const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(
             this.token,
-            ownerAndRepos
+            repositoryIdentifiers
         );
 
         return gitHubContributorsByRepoName;
     }
 
-    public extractOwnerAndRepoNames(repositoryIdentifiers: string[]): RepoOwnerAndName[] {
-        return repositoryIdentifiers.map((contributorInfo) => {
-            const ownerAndRepo = contributorInfo.split('/');
-            const owner = ownerAndRepo[0];
-            const repo = ownerAndRepo[1];
-            const contributorOwnerAndRepo: RepoOwnerAndName = { owner, repo };
+    public extractOwnerAndRepoNames(repositoryIdentifiers: string): RepoOwnerAndName {
+        const ownerAndRepo = repositoryIdentifiers.split('/');
+        const owner = ownerAndRepo[0];
+        const repo = ownerAndRepo[1];
+        const contributorOwnerAndRepo: RepoOwnerAndName = { owner, repo };
 
-            return contributorOwnerAndRepo;
-        });
+        return contributorOwnerAndRepo;
     }
 
     public async fetchGitHubContributorsByRepoName(
         token: string,
-        ownerAndRepos: RepoOwnerAndName[]
+        repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
         const octokit = new Octokit({
             auth: token,
@@ -72,7 +68,9 @@ export class GitHubContributorFetcher {
 
         const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
 
-        for (const ownerAndRepoName of ownerAndRepos.values()) {
+        for (const id of repositoryIdentifiers) {
+            const ownerAndRepoName = this.extractOwnerAndRepoNames(id);
+
             const repoIdentifier = {
                 owner: ownerAndRepoName.owner,
                 repo: ownerAndRepoName.repo,
@@ -87,11 +85,10 @@ export class GitHubContributorFetcher {
             if (!response.data) {
                 throw new Error(`No data for ${ownerAndRepoName}`);
             }
-            const ownerRepo = `${repoIdentifier.owner}/${repoIdentifier.repo}`;
 
-            const data = this.convertToGetLogin(response.data);
+            const contributorLogins = this.convertToGetLogin(response.data);
 
-            gitHubContributorsByRepoName.set(ownerRepo, data);
+            gitHubContributorsByRepoName.set(id, contributorLogins);
         }
 
         return gitHubContributorsByRepoName;

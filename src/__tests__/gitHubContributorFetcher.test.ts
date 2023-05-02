@@ -6,16 +6,13 @@ describe('contributor fetcher class', () => {
     const contributorsFinder = new GitHubContributorFetcher(someToken);
 
     it('should extract owner and repo names', () => {
-        const data = ['owner/repoName', 'facebook/jest', 'square/retrofit'];
-        const expectedOutput = [
-            { owner: 'owner', repo: 'repoName' },
-            { owner: 'facebook', repo: 'jest' },
-            { owner: 'square', repo: 'retrofit' },
-        ];
+        // add more?
+        const data = 'someOwner/someRepoName';
+        const expectedOutput1 = { owner: 'someOwner', repo: 'someRepoName' };
 
         const extracted = contributorsFinder.extractOwnerAndRepoNames(data);
 
-        expect(extracted).toEqual(expectedOutput);
+        expect(expectedOutput1).toEqual(extracted);
     });
 
     // it('should get a list of GitHub contributors', () => {
