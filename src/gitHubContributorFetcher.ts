@@ -86,7 +86,7 @@ export class GitHubContributorFetcher {
                 throw new Error(`No data for ${ownerAndRepoName}`);
             }
 
-            const contributorLogins = this.convertToGetLogin(response.data);
+            const contributorLogins = this.extractLogins(response.data);
 
             gitHubContributorsByRepoName.set(id, contributorLogins);
         }
@@ -94,7 +94,7 @@ export class GitHubContributorFetcher {
         return gitHubContributorsByRepoName;
     }
 
-    public convertToGetLogin(githubContributors: GitHubContributor[]): Contributor[] {
+    public extractLogins(githubContributors: GitHubContributor[]): Contributor[] {
         return githubContributors.map((contributor) => {
             return {
                 login: contributor.login ?? '',
