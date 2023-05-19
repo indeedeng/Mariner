@@ -58,35 +58,44 @@ export class GitHubContributorFetcher {
         return contributorOwnerAndRepo;
     }
 
+    public async fetchListOfGithubContributors(
+        token: string,
+        ownerAndRepoName: RepoOwnerAndName
+    ): Promise<Contributor[]> {
+        const octokit = new Octokit({
+            auth: token,
+        });
+        const response = await octokit.repos?.listContributors({
+            owner: ownerAndRepoName.owner,
+            repo: ownerAndRepoName.repo,
+        });
+
+        if (response.status !== 200) {
+            throw new Error(`Could not retrieve repositories for ${ownerAndRepoName}`);
+        }
+
+        if (!response.data) {
+            throw new Error(`No data for ${ownerAndRepoName}`);
+        }
+
+        const contributorLogins = this.extractLogins(response.data);
+
+        return contributorLogins;
+    }
+
     public async fetchGitHubContributorsByRepoName(
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
-        const octokit = new Octokit({
-            auth: token,
-        });
-
         const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
 
         for (const id of repositoryIdentifiers) {
             const ownerAndRepoName = this.extractOwnerAndRepoNames(id);
 
-            const repoIdentifier = {
-                owner: ownerAndRepoName.owner,
-                repo: ownerAndRepoName.repo,
-            };
-
-            const response = await octokit.repos?.listContributors(repoIdentifier);
-
-            if (response.status !== 200) {
-                throw new Error(`Could not retrieve repositories for ${ownerAndRepoName}`);
-            }
-
-            if (!response.data) {
-                throw new Error(`No data for ${ownerAndRepoName}`);
-            }
-
-            const contributorLogins = this.extractLogins(response.data);
+            const contributorLogins = await this.fetchListOfGithubContributors(
+                token,
+                ownerAndRepoName
+            );
 
             gitHubContributorsByRepoName.set(id, contributorLogins);
         }
