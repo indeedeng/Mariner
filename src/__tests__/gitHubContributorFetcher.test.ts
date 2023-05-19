@@ -83,6 +83,8 @@ describe('contributor fetcher class', () => {
     //         { owner: 'fakeRepo2', repo: 'someCoolProject' },
     //     ];
 
-    //     mockOctokit.repos.listCollaborators(fakeOwnerAndRepos[0]);
+    //     const a = mockOctokit.repos.listCollaborators(fakeOwnerAndRepos[0]);
+    //     const b = mockOctokit.repos.listCollaborators(fakeOwnerAndRepos[1]);
+
     // });
 });
