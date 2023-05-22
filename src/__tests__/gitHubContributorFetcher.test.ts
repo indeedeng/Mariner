@@ -40,30 +40,6 @@ describe('contributor fetcher class', () => {
         expect(getList).toHaveBeenCalled();
         expect(getList).toBeCalledWith(someToken, fakeRepositoryIdentifiers);
         expect(contributorListMock).toBe(contributorMap);
-
-        // 'fakeRepo1/someAwesomeProject';
-        // const repo2 = 'fakeRepo1/someCoolProject';
-        // const fakeRepositoryIdentifiers = [repo1, repo2];
-
-        // const mockOctokit = new Octokit({
-        //     auth: someToken,
-        // });
-
-        // jest.spyOn(contributorsFinder, 'fetchListOfGithubContributors').mockReturnValue(
-        //     fakeContributor1
-        // );
-        // const fetchList = await contributorsFinder.fetchListOfGithubContributors(someToken, {
-        //     owner: 'fakeRepo1',
-        //     repo: 'someAwesomeProject',
-        // });
-
-        // expect(fetchList).toBe('123');
-        // expect(contributorsFinder.fetchGitHubContributorsByRepoName).toHaveBeenCalled();
-
-        // const m = mockOctokit as jest.Mocked<typeof mockOctokit>;
-
-        // // contributorsFinder.fetchGitHubContributorsByRepoName(someToken, fakeRepositoryIdentifiers);
-        // expect(Octokit).toHaveBeenCalled();
     });
 
     // it('should get a list of GitHub contributors', () => {
