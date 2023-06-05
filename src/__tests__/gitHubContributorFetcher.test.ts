@@ -1,16 +1,15 @@
-import { Octokit } from '@octokit/rest';
+import nock from 'nock';
 import {
     GitHubContributorFetcher,
     Contributor,
     GitHubContributor,
-} from '../gitHubContributorFetcher'; // GitHubContributor
+} from '../gitHubContributorFetcher';
 
 describe('contributor fetcher class', () => {
     const someToken = 'fakeToken';
     const contributorsFinder = new GitHubContributorFetcher(someToken);
 
     it('should extract owner and repo names', async () => {
-        // add more?
         const data = 'someOwner/someRepoName';
         const expectedOutput1 = { owner: 'someOwner', repo: 'someRepoName' };
 
@@ -46,9 +45,7 @@ describe('contributor fetcher class', () => {
         expect(contributorListMock).toBe(contributorMap);
     });
 
-    it('it fetches Contributors', async () => {
-        jest.mock('@octokit/rest');
-
+    it('it fetches GitHubContributors', async () => {
         const fakeContributor1: GitHubContributor[] = [
             {
                 login: 'someContributor',
@@ -74,21 +71,15 @@ describe('contributor fetcher class', () => {
             },
         ];
 
-        const mockOctokit = new Octokit({
-            auth: someToken,
-        });
+        const fakeOwner = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
+        nock('https://api.github.com')
+            .get(`/repos/${fakeOwner.owner}/${fakeOwner.repo}/contributors`)
+            .reply(200, fakeContributor1);
 
-        const fakeOwnerAndRepos = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
-        // const mocked = (mockOctokit as unknown as jest.Mock).mockReturnValue(fakeContributor1);
-        //  TypeError: mockOctokit.mockReturnValue is not a function
-
-        const gHContributors = contributorsFinder.fetchListOfGithubContributors(
+        const gitHubContributor = await contributorsFinder.fetchListOfGithubContributors(
             someToken,
-            fakeOwnerAndRepos
+            fakeOwner
         );
-
-        expect(mockOctokit).toBeInstanceOf(Octokit);
-        // const all = await mockOctokit.repos.listCollaborators(fakeOwnerAndRepos);
-        // expect(mocked).toBe(gHContributors);
+        expect(gitHubContributor).toEqual(fakeContributor1);
     });
 });
