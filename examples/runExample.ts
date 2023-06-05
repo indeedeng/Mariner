@@ -86,7 +86,7 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-contributorsFetcher.findContributors(repositoryIdentifiers).then((contributors) => {
+contributorsFetcher.findContributors(repositoryLookupName).then((contributors) => {
     console.log(contributors);
 });
 
