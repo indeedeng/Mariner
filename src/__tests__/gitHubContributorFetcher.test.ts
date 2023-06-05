@@ -15,21 +15,21 @@ describe('contributor fetcher class', () => {
 
         const extracted = contributorsFetcher.extractOwnerAndRepoName(data);
 
-        return expect(expectedOutput1).toEqual(extracted);
+        expect(expectedOutput1).toEqual(extracted);
     });
 
-    it('it fetches Contributors', async () => {
-        const fakeContributor1: Contributor[] = [
+    it('fetches Contributors', async () => {
+        const fakeContributor: Contributor[] = [
             {
                 login: 'awesomeContributor',
             },
         ];
 
         const contributorMap = new Map<string, Contributor[]>();
-        contributorMap.set('fakeRepo1', fakeContributor1);
+        contributorMap.set('fakeRepo1', fakeContributor);
 
-        const repo1 = 'fakeRepo1/someCoolProject';
-        const fakeRepositoryIdentifiers = [repo1];
+        const repo = 'fakeRepo/someCoolProject';
+        const fakeRepositoryIdentifiers = [repo];
 
         const getList = jest
             .spyOn(contributorsFetcher, 'fetchGitHubContributorsByRepoName')
@@ -45,8 +45,8 @@ describe('contributor fetcher class', () => {
         expect(contributorListMock).toBe(contributorMap);
     });
 
-    it('it fetches a GitHubContributor', async () => {
-        const fakeContributor1: GitHubContributor[] = [
+    it('fetches a GitHubContributor', async () => {
+        const fakeContributor: GitHubContributor[] = [
             {
                 login: 'someContributor',
                 id: 6993258,
@@ -74,14 +74,14 @@ describe('contributor fetcher class', () => {
         const fakeOwner = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
         const scope = nock('https://api.github.com')
             .get(`/repos/${fakeOwner.owner}/${fakeOwner.repo}/contributors`)
-            .reply(200, fakeContributor1);
+            .reply(200, fakeContributor);
 
         const gitHubContributor = await contributorsFetcher.fetchListOfGithubContributors(
             someToken,
             fakeOwner
         );
 
-        expect(gitHubContributor).toEqual(fakeContributor1);
+        expect(gitHubContributor).toEqual(fakeContributor);
         expect(scope.isDone()).toBe(true);
         nock.cleanAll();
     });
