@@ -7,13 +7,13 @@ import {
 
 describe('contributor fetcher class', () => {
     const someToken = 'fakeToken';
-    const contributorsFinder = new GitHubContributorFetcher(someToken);
+    const contributorsFetcher = new GitHubContributorFetcher(someToken);
 
     it('should extract owner and repo names', async () => {
         const data = 'someOwner/someRepoName';
         const expectedOutput1 = { owner: 'someOwner', repo: 'someRepoName' };
 
-        const extracted = contributorsFinder.extractOwnerAndRepoNames(data);
+        const extracted = contributorsFetcher.extractOwnerAndRepoNames(data);
 
         return expect(expectedOutput1).toEqual(extracted);
     });
@@ -32,10 +32,10 @@ describe('contributor fetcher class', () => {
         const fakeRepositoryIdentifiers = [repo1];
 
         const getList = jest
-            .spyOn(contributorsFinder, 'fetchGitHubContributorsByRepoName')
+            .spyOn(contributorsFetcher, 'fetchGitHubContributorsByRepoName')
             .mockResolvedValue(Promise.resolve(contributorMap));
 
-        const contributorListMock = await contributorsFinder.fetchGitHubContributorsByRepoName(
+        const contributorListMock = await contributorsFetcher.fetchGitHubContributorsByRepoName(
             someToken,
             fakeRepositoryIdentifiers
         );
@@ -76,7 +76,7 @@ describe('contributor fetcher class', () => {
             .get(`/repos/${fakeOwner.owner}/${fakeOwner.repo}/contributors`)
             .reply(200, fakeContributor1);
 
-        const gitHubContributor = await contributorsFinder.fetchListOfGithubContributors(
+        const gitHubContributor = await contributorsFetcher.fetchListOfGithubContributors(
             someToken,
             fakeOwner
         );
