@@ -81,5 +81,6 @@ describe('contributor fetcher class', () => {
             fakeOwner
         );
         expect(gitHubContributor).toEqual(fakeContributor1);
+        nock.cleanAll();
     });
 });
