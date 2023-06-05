@@ -49,7 +49,7 @@ export class GitHubContributorFetcher {
         return gitHubContributorsByRepoName;
     }
 
-    public extractOwnerAndRepoNames(repositoryIdentifiers: string): RepoOwnerAndName {
+    public extractOwnerAndRepoName(repositoryIdentifiers: string): RepoOwnerAndName {
         const ownerAndRepo = repositoryIdentifiers.split('/');
         const owner = ownerAndRepo[0];
         const repo = ownerAndRepo[1];
@@ -88,7 +88,7 @@ export class GitHubContributorFetcher {
         const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
 
         for (const id of repositoryIdentifiers) {
-            const ownerAndRepoName = this.extractOwnerAndRepoNames(id);
+            const ownerAndRepoName = this.extractOwnerAndRepoName(id);
 
             const githubContributorLogins = await this.fetchListOfGithubContributors(
                 token,

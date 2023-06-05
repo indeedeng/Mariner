@@ -13,7 +13,7 @@ describe('contributor fetcher class', () => {
         const data = 'someOwner/someRepoName';
         const expectedOutput1 = { owner: 'someOwner', repo: 'someRepoName' };
 
-        const extracted = contributorsFetcher.extractOwnerAndRepoNames(data);
+        const extracted = contributorsFetcher.extractOwnerAndRepoName(data);
 
         return expect(expectedOutput1).toEqual(extracted);
     });
