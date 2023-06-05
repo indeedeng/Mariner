@@ -45,7 +45,7 @@ describe('contributor fetcher class', () => {
         expect(contributorListMock).toBe(contributorMap);
     });
 
-    it('it fetches GitHubContributors', async () => {
+    it('it fetches a GitHubContributor', async () => {
         const fakeContributor1: GitHubContributor[] = [
             {
                 login: 'someContributor',
