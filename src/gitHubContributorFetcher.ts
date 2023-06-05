@@ -61,7 +61,7 @@ export class GitHubContributorFetcher {
     public async fetchListOfGithubContributors(
         token: string,
         ownerAndRepoName: RepoOwnerAndName
-    ): Promise<Contributor[]> {
+    ): Promise<GitHubContributor[]> {
         const octokit = new Octokit({
             auth: token,
         });
@@ -78,9 +78,7 @@ export class GitHubContributorFetcher {
             throw new Error(`No data for ${ownerAndRepoName}`);
         }
 
-        const contributorLogins = this.extractLogins(response.data);
-
-        return contributorLogins;
+        return response.data;
     }
 
     public async fetchGitHubContributorsByRepoName(
@@ -92,10 +90,12 @@ export class GitHubContributorFetcher {
         for (const id of repositoryIdentifiers) {
             const ownerAndRepoName = this.extractOwnerAndRepoNames(id);
 
-            const contributorLogins = await this.fetchListOfGithubContributors(
+            const githubContributorLogins = await this.fetchListOfGithubContributors(
                 token,
                 ownerAndRepoName
             );
+
+            const contributorLogins = this.extractLogins(githubContributorLogins);
 
             gitHubContributorsByRepoName.set(id, contributorLogins);
         }
