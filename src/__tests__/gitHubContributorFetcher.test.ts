@@ -72,7 +72,7 @@ describe('contributor fetcher class', () => {
         ];
 
         const fakeOwner = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
-        nock('https://api.github.com')
+        const scope = nock('https://api.github.com')
             .get(`/repos/${fakeOwner.owner}/${fakeOwner.repo}/contributors`)
             .reply(200, fakeContributor1);
 
@@ -80,7 +80,9 @@ describe('contributor fetcher class', () => {
             someToken,
             fakeOwner
         );
+
         expect(gitHubContributor).toEqual(fakeContributor1);
+        expect(scope.isDone()).toBe(true);
         nock.cleanAll();
     });
 });
