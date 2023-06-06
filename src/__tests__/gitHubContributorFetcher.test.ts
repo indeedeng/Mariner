@@ -5,10 +5,31 @@ import {
     GitHubContributor,
 } from '../gitHubContributorFetcher';
 
-describe('contributor fetcher class', () => {
-    const someToken = 'fakeToken';
-    const contributorsFetcher = new GitHubContributorFetcher(someToken);
+let contributorsFetcher: GitHubContributorFetcher;
+const someToken = 'fakeToken';
 
+beforeEach(() => {
+    contributorsFetcher = new GitHubContributorFetcher(someToken);
+});
+
+describe('extractOwnerAndRepoName', () => {
+    it('extracts owner and repoName', async () => {
+        const data = 'someOwner/someRepoName';
+        const expectedOutput = { owner: 'someOwner', repo: 'someRepoName' };
+
+        const extracted = contributorsFetcher.extractOwnerAndRepoName(data);
+        expect(expectedOutput).toEqual(extracted);
+    });
+
+    it('expect to Throw if .split() fails or missing "/"', async () => {
+        const missingSlash = 'ownerAndRepoWithoutSlash';
+        expect(() => {
+            contributorsFetcher.extractOwnerAndRepoName(missingSlash); // Code block that should throw error
+        }).toThrow();
+    });
+});
+
+describe('fetchGithubContributors', () => {
     const fakeGitHubContributor: GitHubContributor[] = [
         {
             login: 'someContributor',
@@ -33,22 +54,25 @@ describe('contributor fetcher class', () => {
         },
     ];
 
-    it('extractOwnerAndRepoName', async () => {
-        const data = 'someOwner/someRepoName';
-        const expectedOutput = { owner: 'someOwner', repo: 'someRepoName' };
+    it('mocks call to fetch a GitHubContributor', async () => {
+        const fakeRepo = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
+        const scope = nock('https://api.github.com')
+            .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
+            .reply(200, fakeGitHubContributor);
 
-        const extracted = contributorsFetcher.extractOwnerAndRepoName(data);
-        expect(expectedOutput).toEqual(extracted);
+        const gitHubContributor = await contributorsFetcher.fetchListOfGithubContributors(
+            someToken,
+            fakeRepo
+        );
+
+        expect(gitHubContributor).toEqual(fakeGitHubContributor);
+        expect(scope.isDone()).toBe(true);
+        nock.cleanAll();
     });
+});
 
-    it('expect extractOwnerAndRepoName() to Throw if .split() fails or missing "/"', async () => {
-        const missingSlash = 'ownerAndRepoWithoutSlash';
-        expect(() => {
-            contributorsFetcher.extractOwnerAndRepoName(missingSlash); // Code block that should throw error
-        }).toThrow();
-    });
-
-    it('fetches Contributors', async () => {
+describe('fetchListOfContributors', () => {
+    it('fetches Contributors and returns logins', async () => {
         const fakeContributorLogin: Contributor[] = [
             {
                 login: 'awesomeContributor',
@@ -73,21 +97,5 @@ describe('contributor fetcher class', () => {
         expect(getList).toHaveBeenCalled();
         expect(getList).toBeCalledWith(someToken, fakeRepositoryIdentifiers);
         expect(contributorListMock).toBe(contributorMap);
-    });
-
-    it('fetches a GitHubContributor', async () => {
-        const fakeRepo = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
-        const scope = nock('https://api.github.com')
-            .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
-            .reply(200, fakeGitHubContributor);
-
-        const gitHubContributor = await contributorsFetcher.fetchListOfGithubContributors(
-            someToken,
-            fakeRepo
-        );
-
-        expect(gitHubContributor).toEqual(fakeGitHubContributor);
-        expect(scope.isDone()).toBe(true);
-        nock.cleanAll();
     });
 });
