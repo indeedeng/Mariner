@@ -35,11 +35,17 @@ describe('contributor fetcher class', () => {
 
     it('extractOwnerAndRepoName', async () => {
         const data = 'someOwner/someRepoName';
-        const expectedOutput1 = { owner: 'someOwner', repo: 'someRepoName' };
+        const expectedOutput = { owner: 'someOwner', repo: 'someRepoName' };
 
-        const extracted1 = contributorsFetcher.extractOwnerAndRepoName(data);
+        const extracted = contributorsFetcher.extractOwnerAndRepoName(data);
+        expect(expectedOutput).toEqual(extracted);
+    });
 
-        expect(expectedOutput1).toEqual(extracted1);
+    it('expect extractOwnerAndRepoName() to Throw if .split() fails or missing "/"', async () => {
+        const missingSlash = 'ownerAndRepoWithoutSlash';
+        expect(() => {
+            contributorsFetcher.extractOwnerAndRepoName(missingSlash); // Code block that should throw error
+        }).toThrow();
     });
 
     it('fetches Contributors', async () => {
