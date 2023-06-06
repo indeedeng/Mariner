@@ -5,6 +5,30 @@ import {
     GitHubContributor,
 } from '../gitHubContributorFetcher';
 
+const fakeGitHubContributor: GitHubContributor[] = [
+    {
+        login: 'someContributor',
+        id: 6993258,
+        node_id: 'MDQ6VXNlcjY5OTMyN23=',
+        avatar_url: 'https://avatars.githubusercontent.com/u/6993258?v=4',
+        gravatar_id: '',
+        url: 'https://api.github.com/users/someContributor',
+        html_url: 'https://github.com/someContributor',
+        followers_url: 'https://api.github.com/users/someContributor/followers',
+        following_url: 'https://api.github.com/users/someContributor/following{/other_user}',
+        gists_url: 'https://api.github.com/users/someContributor/gists{/gist_id}',
+        starred_url: 'https://api.github.com/users/someContributor/starred{/owner}{/repo}',
+        subscriptions_url: 'https://api.github.com/users/someContributor/subscriptions',
+        organizations_url: 'https://api.github.com/users/someContributor/orgs',
+        repos_url: 'https://api.github.com/users/someContributor/repos',
+        events_url: 'https://api.github.com/users/someContributor/events{/privacy}',
+        received_events_url: 'https://api.github.com/users/someContributor/received_events',
+        type: 'User',
+        site_admin: false,
+        contributions: 4,
+    },
+];
+
 let contributorsFetcher: GitHubContributorFetcher;
 const someToken = 'fakeToken';
 
@@ -30,30 +54,6 @@ describe('extractOwnerAndRepoName', () => {
 });
 
 describe('fetchGithubContributors', () => {
-    const fakeGitHubContributor: GitHubContributor[] = [
-        {
-            login: 'someContributor',
-            id: 6993258,
-            node_id: 'MDQ6VXNlcjY5OTMyN23=',
-            avatar_url: 'https://avatars.githubusercontent.com/u/6993258?v=4',
-            gravatar_id: '',
-            url: 'https://api.github.com/users/someContributor',
-            html_url: 'https://github.com/someContributor',
-            followers_url: 'https://api.github.com/users/someContributor/followers',
-            following_url: 'https://api.github.com/users/someContributor/following{/other_user}',
-            gists_url: 'https://api.github.com/users/someContributor/gists{/gist_id}',
-            starred_url: 'https://api.github.com/users/someContributor/starred{/owner}{/repo}',
-            subscriptions_url: 'https://api.github.com/users/someContributor/subscriptions',
-            organizations_url: 'https://api.github.com/users/someContributor/orgs',
-            repos_url: 'https://api.github.com/users/someContributor/repos',
-            events_url: 'https://api.github.com/users/someContributor/events{/privacy}',
-            received_events_url: 'https://api.github.com/users/someContributor/received_events',
-            type: 'User',
-            site_admin: false,
-            contributions: 4,
-        },
-    ];
-
     it('mocks call to fetch a GitHubContributor', async () => {
         const fakeRepo = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
         const scope = nock('https://api.github.com')
