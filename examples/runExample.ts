@@ -86,13 +86,19 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
     fs.writeFileSync(config.outputFilePath, jsonResults);
 }
 
-contributorsFinder.findContributors(repositoryLookupName).then((contributors) => {
-    // const allContributors = await Promise.all(contributors);
-    const outputPath = 'examples/contributorsOutput.json'; // hardcoded for now
-    fs.appendFileSync(outputPath, JSON.stringify(contributors, undefined, 2));
+contributorsFinder
+    .findContributors(repositoryLookupName)
+    .then((contributors) => {
+        // const allContributors = await Promise.all(contributors);
+        const outputPath = 'examples/contributorsOutput.json'; // hardcoded for now
+        fs.appendFileSync(outputPath, JSON.stringify(contributors, undefined, 2));
 
-    logger.info(`Saved contributor results to: ${outputPath}`);
-});
+        logger.info(`Saved contributor results to: ${outputPath}`);
+    })
+    .catch((err) => {
+        logger.error(err.message);
+        console.log(err);
+    });
 
 finder
     .findIssues(token, repositoryLookupName)
