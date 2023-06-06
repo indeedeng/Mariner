@@ -41,7 +41,7 @@ export class GitHubContributorFetcher {
     public async fetchContributors(
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
-        const gitHubContributorsByRepoName = await this.fetchGitHubContributorsByRepoName(
+        const gitHubContributorsByRepoName = await this.fetchContributorsForMultipleRepos(
             this.token,
             repositoryIdentifiers
         );
@@ -62,7 +62,7 @@ export class GitHubContributorFetcher {
         return contributorOwnerAndRepo;
     }
 
-    public async fetchListOfGithubContributors(
+    public async fetchContributorsForRepo(
         token: string,
         ownerAndRepoName: RepoOwnerAndName
     ): Promise<GitHubContributor[]> {
@@ -85,7 +85,7 @@ export class GitHubContributorFetcher {
         return response.data;
     }
 
-    public async fetchGitHubContributorsByRepoName(
+    public async fetchContributorsForMultipleRepos(
         token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
@@ -94,7 +94,7 @@ export class GitHubContributorFetcher {
         for (const id of repositoryIdentifiers) {
             const ownerAndRepoName = this.extractOwnerAndRepoName(id);
 
-            const githubContributorLogins = await this.fetchListOfGithubContributors(
+            const githubContributorLogins = await this.fetchContributorsForRepo(
                 token,
                 ownerAndRepoName
             );

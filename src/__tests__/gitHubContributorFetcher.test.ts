@@ -45,22 +45,22 @@ describe('extractOwnerAndRepoName', () => {
         expect(expectedOutput).toEqual(extracted);
     });
 
-    it('expect to Throw if .split() fails or missing "/"', async () => {
+    it('should Throw if .split() fails or missing "/"', async () => {
         const missingSlash = 'ownerAndRepoWithoutSlash';
         expect(() => {
-            contributorsFetcher.extractOwnerAndRepoName(missingSlash); // Code block that should throw error
+            contributorsFetcher.extractOwnerAndRepoName(missingSlash);
         }).toThrow();
     });
 });
 
 describe('fetchGithubContributors', () => {
-    it('mocks call to fetch a GitHubContributor', async () => {
+    it('returns the contributor that it got from github', async () => {
         const fakeRepo = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
         const scope = nock('https://api.github.com')
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
             .reply(200, fakeGitHubContributor);
 
-        const gitHubContributor = await contributorsFetcher.fetchListOfGithubContributors(
+        const gitHubContributor = await contributorsFetcher.fetchContributorsForRepo(
             someToken,
             fakeRepo
         );
@@ -86,10 +86,10 @@ describe('fetchListOfContributors', () => {
         const fakeRepositoryIdentifiers = [repo];
 
         const getList = jest
-            .spyOn(contributorsFetcher, 'fetchGitHubContributorsByRepoName')
+            .spyOn(contributorsFetcher, 'fetchContributorsForMultipleRepos')
             .mockResolvedValue(Promise.resolve(contributorMap));
 
-        const contributorListMock = await contributorsFetcher.fetchGitHubContributorsByRepoName(
+        const contributorListMock = await contributorsFetcher.fetchContributorsForMultipleRepos(
             someToken,
             fakeRepositoryIdentifiers
         );

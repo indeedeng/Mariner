@@ -1,6 +1,6 @@
 import { GitHubContributor, GitHubContributorFetcher } from './gitHubContributorFetcher';
 
-export class ContributorFinder {
+export class ContributorsFinder {
     private readonly token: string;
 
     public constructor(token: string) {
