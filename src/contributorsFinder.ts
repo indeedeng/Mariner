@@ -1,4 +1,4 @@
-import { GitHubContributor, GitHubContributorFetcher } from './gitHubContributorFetcher';
+import { Contributor, GitHubContributorFetcher } from './gitHubContributorFetcher';
 
 export class ContributorsFinder {
     private readonly token: string;
@@ -8,7 +8,7 @@ export class ContributorsFinder {
     }
     public async findContributors(
         repositoryIdentifiers: string[]
-    ): Promise<Map<string, GitHubContributor[]>> {
+    ): Promise<Map<string, Contributor[]>> {
         const gitHubContributors = new GitHubContributorFetcher(this.token);
 
         const allContributors = await gitHubContributors.fetchContributors(repositoryIdentifiers);
