@@ -53,9 +53,9 @@ describe('extractOwnerAndRepoName', () => {
     });
 });
 
-describe('fetchGithubContributors', () => {
+describe('fetchContributorsForRepo', () => {
     it('returns the contributor that it got from github', async () => {
-        const fakeRepo = { owner: 'fakeRepo1', repo: 'someAwesomeProject' };
+        const fakeRepo = { owner: 'fakeRepo', repo: 'someAwesomeProject' };
         const scope = nock('https://api.github.com')
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
             .reply(200, fakeGitHubContributor);
@@ -71,7 +71,7 @@ describe('fetchGithubContributors', () => {
     });
 });
 
-describe('fetchListOfContributors', () => {
+describe('fetchContributorsForMultipleRepos', () => {
     it('fetches Contributor and returns login', async () => {
         const fakeContributorLogin: Contributor[] = [
             {
