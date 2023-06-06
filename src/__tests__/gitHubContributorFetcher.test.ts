@@ -72,7 +72,7 @@ describe('fetchGithubContributors', () => {
 });
 
 describe('fetchListOfContributors', () => {
-    it('fetches Contributors and returns logins', async () => {
+    it('fetches Contributor and returns login', async () => {
         const fakeContributorLogin: Contributor[] = [
             {
                 login: 'awesomeContributor',
