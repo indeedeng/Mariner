@@ -29,6 +29,7 @@ export type RepoOwnerAndName = {
 
 export interface Contributor {
     login: string;
+    contributions: number;
 }
 
 export class GitHubContributorFetcher {
@@ -111,6 +112,7 @@ export class GitHubContributorFetcher {
         return githubContributors.map((contributor) => {
             return {
                 login: contributor.login ?? '',
+                contributions: contributor.contributions ?? -1,
             };
         });
     }

@@ -76,6 +76,7 @@ describe('fetchContributorsForMultipleRepos', () => {
         const fakeContributorLogin: Contributor[] = [
             {
                 login: 'awesomeContributor',
+                contributions: 3,
             },
         ];
 
