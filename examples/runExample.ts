@@ -59,7 +59,7 @@ const contents = fs.readFileSync(config.inputFilePath, {
 const countsByLibrary = JSON.parse(contents) as Record<string, number>;
 const repositoryIdentifiers = Object.keys(countsByLibrary);
 const prefix = 'https://api.github.com/repos/';
-const repositoryLookupName = repositoryIdentifiers.map((identifier) => {
+const repositories = repositoryIdentifiers.map((identifier) => {
     if (identifier.startsWith(prefix)) {
         return identifier.substring(prefix.length);
     } else {
@@ -87,14 +87,14 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
 }
 
 contributorsFinder
-    .findContributors(repositoryLookupName)
+    .findContributors(repositories)
     .then((contributors) => {
         const outputPath = 'examples/contributorsOutput.json'; // hardcoded for now
-        const record: Record<string, mariner.Contributor[]> = {};
-        contributors.forEach((contributorsByRepo: mariner.Contributor[], repo: string) => {
-            record[repo] = contributorsByRepo;
+        const contributorByRepo: Record<string, mariner.Contributor[]> = {};
+        contributors.forEach((allContributors: mariner.Contributor[], repo: string) => {
+            contributorByRepo[repo] = allContributors;
         });
-        fs.appendFileSync(outputPath, JSON.stringify(record, undefined, 2));
+        fs.appendFileSync(outputPath, JSON.stringify(contributorByRepo, undefined, 2));
 
         logger.info(`Saved contributor results to: ${outputPath}`);
     })
@@ -104,7 +104,7 @@ contributorsFinder
     });
 
 finder
-    .findIssues(token, repositoryLookupName)
+    .findIssues(token, repositories)
     .then((issues) => {
         let issueCount = 0;
         issues.forEach((issuesForRepo) => {

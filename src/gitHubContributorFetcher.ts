@@ -39,20 +39,31 @@ export class GitHubContributorFetcher {
         this.token = token;
     }
 
-    public async fetchContributors(
+    public async fetchContributorsForMultipleRepos(
+        token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
-        const gitHubContributorsByRepoName = await this.fetchContributorsForMultipleRepos(
-            this.token,
-            repositoryIdentifiers
-        );
+        const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
+
+        for (const id of repositoryIdentifiers) {
+            const ownerAndRepoName = this.extractOwnerAndRepoName(id);
+
+            const githubContributorLogins = await this.fetchRawContributorsForRepo(
+                token,
+                ownerAndRepoName
+            );
+
+            const contributorLogins = this.convertToContributors(githubContributorLogins);
+
+            gitHubContributorsByRepoName.set(id, contributorLogins);
+        }
 
         return gitHubContributorsByRepoName;
     }
 
     public extractOwnerAndRepoName(repositoryIdentifiers: string): RepoOwnerAndName {
         const ownerAndRepo = repositoryIdentifiers.split('/');
-        if (ownerAndRepo.length < 2 && !ownerAndRepo.includes('/')) {
+        if (ownerAndRepo.length < 2) {
             throw new Error(`Could not split() ${repositoryIdentifiers}`);
         }
 
@@ -63,7 +74,16 @@ export class GitHubContributorFetcher {
         return contributorOwnerAndRepo;
     }
 
-    public async fetchContributorsForRepo(
+    public convertToContributors(githubContributors: GitHubContributor[]): Contributor[] {
+        return githubContributors.map((contributor) => {
+            return {
+                login: contributor.login ?? '',
+                contributions: contributor.contributions ?? -1,
+            };
+        });
+    }
+
+    public async fetchRawContributorsForRepo(
         token: string,
         ownerAndRepoName: RepoOwnerAndName
     ): Promise<GitHubContributor[]> {
@@ -84,36 +104,5 @@ export class GitHubContributorFetcher {
         }
 
         return response.data;
-    }
-
-    public async fetchContributorsForMultipleRepos(
-        token: string,
-        repositoryIdentifiers: string[]
-    ): Promise<Map<string, Contributor[]>> {
-        const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
-
-        for (const id of repositoryIdentifiers) {
-            const ownerAndRepoName = this.extractOwnerAndRepoName(id);
-
-            const githubContributorLogins = await this.fetchContributorsForRepo(
-                token,
-                ownerAndRepoName
-            );
-
-            const contributorLogins = this.extractLogins(githubContributorLogins);
-
-            gitHubContributorsByRepoName.set(id, contributorLogins);
-        }
-
-        return gitHubContributorsByRepoName;
-    }
-
-    public extractLogins(githubContributors: GitHubContributor[]): Contributor[] {
-        return githubContributors.map((contributor) => {
-            return {
-                login: contributor.login ?? '',
-                contributions: contributor.contributions ?? -1,
-            };
-        });
     }
 }

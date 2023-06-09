@@ -60,7 +60,7 @@ describe('fetchContributorsForRepo', () => {
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
             .reply(200, fakeGitHubContributor);
 
-        const gitHubContributor = await contributorsFetcher.fetchContributorsForRepo(
+        const gitHubContributor = await contributorsFetcher.fetchRawContributorsForRepo(
             someToken,
             fakeRepo
         );

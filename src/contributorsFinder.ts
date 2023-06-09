@@ -11,7 +11,10 @@ export class ContributorsFinder {
     ): Promise<Map<string, Contributor[]>> {
         const gitHubContributors = new GitHubContributorFetcher(this.token);
 
-        const allContributors = await gitHubContributors.fetchContributors(repositoryIdentifiers);
+        const allContributors = await gitHubContributors.fetchContributorsForMultipleRepos(
+            this.token,
+            repositoryIdentifiers
+        );
 
         return allContributors;
     }
