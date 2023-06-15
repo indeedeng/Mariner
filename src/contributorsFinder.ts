@@ -9,10 +9,9 @@ export class ContributorsFinder {
     public async findContributors(
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
-        const gitHubContributors = new GitHubContributorFetcher(this.token);
+        const fetcher = new GitHubContributorFetcher(this.token);
 
-        const allContributors = await gitHubContributors.fetchContributorsForMultipleRepos(
-            this.token,
+        const allContributors = await fetcher.fetchContributorsForMultipleRepos(
             repositoryIdentifiers
         );
 

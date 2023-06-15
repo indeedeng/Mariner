@@ -60,10 +60,7 @@ describe('fetchContributorsForRepo', () => {
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
             .reply(200, fakeGitHubContributor);
 
-        const gitHubContributor = await contributorsFetcher.fetchRawContributorsForRepo(
-            someToken,
-            fakeRepo
-        );
+        const gitHubContributor = await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
 
         expect(gitHubContributor).toEqual(fakeGitHubContributor);
         expect(scope.isDone()).toBe(true);
@@ -76,7 +73,7 @@ describe('fetchContributorsForMultipleRepos', () => {
         const fakeContributorLogin: Contributor[] = [
             {
                 login: 'awesomeContributor',
-                contributions: 3,
+                contributionsCount: 3,
             },
         ];
 
@@ -91,12 +88,11 @@ describe('fetchContributorsForMultipleRepos', () => {
             .mockResolvedValue(Promise.resolve(contributorMap));
 
         const contributorListMock = await contributorsFetcher.fetchContributorsForMultipleRepos(
-            someToken,
             fakeRepositoryIdentifiers
         );
 
         expect(getList).toHaveBeenCalled();
-        expect(getList).toBeCalledWith(someToken, fakeRepositoryIdentifiers);
+        expect(getList).toBeCalledWith(fakeRepositoryIdentifiers);
         expect(contributorListMock).toBe(contributorMap);
     });
 });

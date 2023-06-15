@@ -29,7 +29,7 @@ export type RepoOwnerAndName = {
 
 export interface Contributor {
     login: string;
-    contributions: number;
+    contributionsCount: number;
 }
 
 export class GitHubContributorFetcher {
@@ -40,7 +40,6 @@ export class GitHubContributorFetcher {
     }
 
     public async fetchContributorsForMultipleRepos(
-        token: string,
         repositoryIdentifiers: string[]
     ): Promise<Map<string, Contributor[]>> {
         const gitHubContributorsByRepoName = new Map<string, Contributor[]>();
@@ -49,7 +48,6 @@ export class GitHubContributorFetcher {
             const ownerAndRepoName = this.extractOwnerAndRepoName(id);
 
             const githubContributorLogins = await this.fetchRawContributorsForRepo(
-                token,
                 ownerAndRepoName
             );
 
@@ -78,17 +76,16 @@ export class GitHubContributorFetcher {
         return githubContributors.map((contributor) => {
             return {
                 login: contributor.login ?? '',
-                contributions: contributor.contributions ?? -1,
+                contributionsCount: contributor.contributions ?? -1,
             };
         });
     }
 
     public async fetchRawContributorsForRepo(
-        token: string,
         ownerAndRepoName: RepoOwnerAndName
     ): Promise<GitHubContributor[]> {
         const octokit = new Octokit({
-            auth: token,
+            auth: this.token,
         });
         const response = await octokit.repos?.listContributors({
             owner: ownerAndRepoName.owner,
