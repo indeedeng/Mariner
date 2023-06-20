@@ -1,25 +1,25 @@
 import { Octokit } from '@octokit/rest';
 
 export interface GitHubContributor {
-    login?: string | undefined;
-    id?: number | undefined;
-    node_id?: string | undefined;
-    avatar_url?: string | undefined;
-    gravatar_id?: string | null | undefined;
-    url?: string | undefined;
-    html_url?: string | undefined;
-    followers_url?: string | undefined;
-    following_url?: string | undefined;
-    gists_url?: string | undefined;
-    starred_url?: string | undefined;
-    subscriptions_url?: string | undefined;
-    organizations_url?: string | undefined;
-    repos_url?: string | undefined;
-    events_url?: string | undefined;
-    received_events_url?: string | undefined;
-    type?: string | undefined;
-    site_admin?: boolean | undefined;
-    contributions?: number | undefined;
+    login?: string;
+    id?: number;
+    node_id?: string;
+    avatar_url?: string;
+    gravatar_id?: string | null;
+    url?: string;
+    html_url?: string;
+    followers_url?: string;
+    following_url?: string;
+    gists_url?: string;
+    starred_url?: string;
+    subscriptions_url?: string;
+    organizations_url?: string;
+    repos_url?: string;
+    events_url?: string;
+    received_events_url?: string;
+    type?: string;
+    site_admin?: boolean;
+    contributions?: number;
 }
 
 export type RepoOwnerAndName = {
