@@ -70,15 +70,19 @@ describe('fetchContributorsForRepo', () => {
 
 describe('fetchContributorsForMultipleRepos', () => {
     it('fetches Contributor and returns login', async () => {
-        const fakeContributorLogin: Contributor[] = [
+        const fakeContributorsLogin: Contributor[] = [
             {
                 login: 'awesomeContributor',
                 contributionsCount: 3,
             },
+            {
+                login: 'epicContributorLogin',
+                contributionsCount: 5,
+            },
         ];
 
         const contributorMap = new Map<string, Contributor[]>();
-        contributorMap.set('fakeRepo', fakeContributorLogin);
+        contributorMap.set('fakeRepo', fakeContributorsLogin);
 
         const repo = 'fakeRepo/someCoolProject';
         const fakeRepositoryIdentifiers = [repo];
