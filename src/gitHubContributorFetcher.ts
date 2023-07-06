@@ -17,9 +17,9 @@ export interface GitHubContributor {
     repos_url?: string;
     events_url?: string;
     received_events_url?: string;
-    type?: string;
+    type: string;
     site_admin?: boolean;
-    contributions?: number;
+    contributions: number;
 }
 
 export type RepoOwnerAndName = {
