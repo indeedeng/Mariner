@@ -93,11 +93,13 @@ export class GitHubContributorFetcher {
         });
 
         if (response.status !== 200) {
-            throw new Error(`Could not retrieve repositories for ${ownerAndRepoName}`);
+            throw new Error(
+                `Could not retrieve repositories for ${JSON.stringify(ownerAndRepoName)}`
+            );
         }
 
         if (!response.data) {
-            throw new Error(`No data for ${ownerAndRepoName}`);
+            throw new Error(`No data for ${JSON.stringify(ownerAndRepoName)}`);
         }
 
         return response.data;
