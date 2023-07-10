@@ -66,6 +66,22 @@ describe('fetchContributorsForRepo', () => {
         expect(scope.isDone()).toBe(true);
         nock.cleanAll();
     });
+    // it('should throw if response status is not 200', async () => {
+    //     const fakeRepo = { owner: 'someOwner', repo: 'someAwesomeProject' };
+    //     const scope = nock('https://api.github.com')
+    //         .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
+    //         .replyWithError({
+    //             message: 'Could not retrieve repos',
+    //             response: 'error',
+    //             status: 400,
+    //         });
+
+    //     const errors = await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
+    //     expect(errors).toThrowError();
+
+    //     expect(scope.isDone()).toBe(true);
+    //     nock.cleanAll();
+    // });
 });
 
 describe('fetchContributorsForMultipleRepos', () => {
