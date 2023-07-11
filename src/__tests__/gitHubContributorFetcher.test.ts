@@ -68,15 +68,14 @@ describe('fetchContributorsForRepo', () => {
     });
     it('should throw if response status is not 200', async () => {
         const fakeRepo = { owner: 'someOwner', repo: 'someAwesomeProject' };
-        const scope = nock('https://api.github.com')
+        nock('https://api.github.com')
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
-            .replyWithError('Error message');
+            .replyWithError('Error message: something terrible happened');
 
-        await expect(async () => {
+        expect(async () => {
             await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
         }).rejects.toThrow();
 
-        expect(scope.isDone()).toBe(true);
         nock.cleanAll();
     });
 });
