@@ -64,9 +64,7 @@ export class GitHubContributorFetcher {
         if (ownerAndRepo.length < 2) {
             throw new Error(`Could not split() ${repositoryIdentifiers}`);
         }
-
-        const owner = ownerAndRepo[0];
-        const repo = ownerAndRepo[1];
+        const [owner, repo] = ownerAndRepo;
         const contributorOwnerAndRepo: RepoOwnerAndName = { owner, repo };
 
         return contributorOwnerAndRepo;
