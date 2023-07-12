@@ -89,7 +89,8 @@ function outputToJson(record: Record<string, mariner.Issue[]>): void {
 contributorsFinder
     .findContributors(repositories)
     .then((contributors) => {
-        const outputPath = 'examples/contributorsOutput.json'; // hardcoded for now
+        const random = Math.random().toString(36);
+        const outputPath = `examples/contributorsOutput-${random}.json`; // hardcoded for now
         const contributorByRepo: Record<string, mariner.Contributor[]> = {};
         contributors.forEach((allContributors: mariner.Contributor[], repo: string) => {
             contributorByRepo[repo] = allContributors;
