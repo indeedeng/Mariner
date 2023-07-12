@@ -66,22 +66,18 @@ describe('fetchContributorsForRepo', () => {
         expect(scope.isDone()).toBe(true);
         nock.cleanAll();
     });
-    // it('should throw if response status is not 200', async () => {
-    //     const fakeRepo = { owner: 'someOwner', repo: 'someAwesomeProject' };
-    //     const scope = nock('https://api.github.com')
-    //         .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
-    //         .replyWithError({ message: 'Bad credentials' });
+    it('should throw if response status is not 200', async () => {
+        const fakeRepo = { owner: 'someOwner', repo: 'someAwesomeProject' };
+        nock('https://api.github.com')
+            .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
+            .replyWithError({ message: 'Bad credentials', status: 400 });
 
-    //     const throwError = await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
+        await expect(async () => {
+            await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
+        }).rejects.toThrow();
 
-    //     await expect(throwError).rejects.toThrow(Error);
-
-    //     // expect(async () => {
-    //     //     await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
-    //     // }).rejects.toThrow(new Error('Bad credentials'));
-
-    //     nock.cleanAll();
-    // });
+        nock.cleanAll();
+    });
 });
 
 describe('fetchContributorsForMultipleRepos', () => {
