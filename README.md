@@ -7,6 +7,12 @@
 ![Issues](https://img.shields.io/github/issues/indeedeng/Mariner)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 
+As of July 2023, this project is no longer being actively maintained by Indeed. We are immensely grateful for all the support and contributions from our community throughout the years.
+
+While Indeed will no longer actively be maintaining the project, there are currently active maintainers outside of Indeed that we hope will continue updating the project moving forward.
+
+Thank you once again for your support and understanding.
+
 ## Introduction
 
 A node.js library for analyzing open source library dependencies.
