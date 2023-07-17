@@ -54,6 +54,10 @@ describe('extractOwnerAndRepoName', () => {
 });
 
 describe('fetchContributorsForRepo', () => {
+    afterEach(() => {
+        nock.cleanAll();
+    });
+
     it('returns the contributor that it got from github', async () => {
         const fakeRepo = { owner: 'fakeRepo', repo: 'someAwesomeProject' };
         const scope = nock('https://api.github.com')
@@ -64,11 +68,10 @@ describe('fetchContributorsForRepo', () => {
 
         expect(gitHubContributor).toEqual(fakeGitHubContributor);
         expect(scope.isDone()).toBe(true);
-        nock.cleanAll();
     });
     it('should throw if response status is not 200', async () => {
         const fakeRepo = { owner: 'someOwner', repo: 'someAwesomeProject' };
-        nock('https://api.github.com')
+        const scope = nock('https://api.github.com')
             .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
             .replyWithError({ message: 'Bad credentials', status: 400 });
 
@@ -76,7 +79,19 @@ describe('fetchContributorsForRepo', () => {
             await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
         }).rejects.toThrow();
 
-        nock.cleanAll();
+        expect(scope.isDone()).toBe(true);
+    });
+    it('should throw if response data is null', async () => {
+        const fakeRepo = { owner: 'someOwner', repo: 'thisProject' };
+        const scope = nock('https://api.github.com')
+            .get(`/repos/${fakeRepo.owner}/${fakeRepo.repo}/contributors`)
+            .replyWithError({ message: 'No data found for request', status: 404 });
+
+        await expect(async () => {
+            await contributorsFetcher.fetchRawContributorsForRepo(fakeRepo);
+        }).rejects.toThrow();
+
+        expect(scope.isDone()).toBe(true);
     });
 });
 
