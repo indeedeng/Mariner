@@ -93,11 +93,20 @@ describe('fetchContributorsForMultipleRepos', () => {
             },
         ];
 
+        const fakeContributorsLogin2: Contributor[] = [
+            {
+                login: 'greatContributor',
+                contributionsCount: 8,
+            },
+        ];
+
         const contributorMap = new Map<string, Contributor[]>();
         contributorMap.set('fakeRepo', fakeContributorsLogin);
+        contributorMap.set('anotherFakeRepo', fakeContributorsLogin2);
 
         const repo = 'fakeRepo/someCoolProject';
-        const fakeRepositoryIdentifiers = [repo];
+        const repo2 = 'anotherFakeRepo/greatProject';
+        const fakeRepositoryIdentifiers = [repo, repo2];
 
         const getList = jest
             .spyOn(contributorsFetcher, 'fetchContributorsForMultipleRepos')
@@ -109,6 +118,7 @@ describe('fetchContributorsForMultipleRepos', () => {
 
         expect(getList).toHaveBeenCalled();
         expect(getList).toBeCalledWith(fakeRepositoryIdentifiers);
-        expect(contributorListMock).toBe(contributorMap);
+        expect(contributorListMock).toEqual(contributorMap);
+        expect(contributorListMock.size).toEqual(contributorMap.size);
     });
 });
