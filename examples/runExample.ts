@@ -91,11 +91,11 @@ contributorsFinder
     .then((contributors) => {
         const random = Math.random().toString(36);
         const outputPath = `examples/contributorsOutput-${random}.json`; // hardcoded for now
-        const contributorByRepo: Record<string, mariner.Contributor[]> = {};
+        const contributorsByRepo: Record<string, mariner.Contributor[]> = {};
         contributors.forEach((allContributors: mariner.Contributor[], repo: string) => {
-            contributorByRepo[repo] = allContributors;
+            contributorsByRepo[repo] = allContributors;
         });
-        fs.appendFileSync(outputPath, JSON.stringify(contributorByRepo, undefined, 2));
+        fs.appendFileSync(outputPath, JSON.stringify(contributorsByRepo, undefined, 2));
 
         logger.info(`Saved contributor results to: ${outputPath}`);
     })
