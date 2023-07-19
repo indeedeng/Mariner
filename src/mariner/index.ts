@@ -5,3 +5,5 @@ export { Logger, getLogger, setLogger } from '../tab-level-logger';
 export { generateConfluenceMarkup } from '../Utilities/generateConfluenceMarkup';
 export { generateHtml } from '../Utilities/generateHtml';
 export { generateGitHubMarkdown } from '../Utilities/generateGitHubMarkdown';
+export { ContributorsFinder } from '../contributorsFinder';
+export { Contributor } from '../gitHubContributorFetcher';
